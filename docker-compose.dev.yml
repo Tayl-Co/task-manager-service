@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  task_manager:
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./:/usr/src/
+    command: npm run start:dev
