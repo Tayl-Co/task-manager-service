@@ -11,3 +11,18 @@ services:
     volumes:
       - ./:/usr/src/
     command: npm run start:dev
+
+  database:
+    image: postgres:14-alpine
+    ports:
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+    volumes:
+      - data:/data/db
+
+volumes:
+  data: {}
