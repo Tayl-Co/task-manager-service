@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamModule } from './team/team.module';
 
 @Module({
@@ -10,6 +11,16 @@ import { TeamModule } from './team/team.module';
             driver: ApolloDriver,
             autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
             playground: true,
+        }),
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: process.env['TYPEORM_HOST'],
+            port: ~~process.env['TYPEORM_PORT'],
+            username: process.env['TYPEORM_USERNAME'],
+            password: process.env['TYPEORM_PASSWORD'],
+            database: process.env['TYPEORM_DATABASE'],
+            entities: [],
+            synchronize: false,
         }),
         TeamModule,
     ],
