@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TeamEntity } from '../entity/team.entity';
 import { Team } from '../interface/team.interface';
+import { TeamDto } from '../dtos/team.dto';
 
 @Injectable()
 export class TeamRepository {
@@ -16,13 +17,17 @@ export class TeamRepository {
         ownerId,
         membersIds,
         managersIds,
-    }: Team): Promise<Team> {
-        const team = this.teamEntity.create();
-        team.name = name;
-        team.ownerId = ownerId;
-        team.membersIds = membersIds;
-        team.managersIds = managersIds;
-
+    }: TeamDto): Promise<Team> {
+        const team = this.teamEntity.create({
+            name,
+            ownerId,
+            membersIds,
+            managersIds,
+        });
         return await this.teamEntity.save(team);
+    }
+
+    async findOne(id: number): Promise<Team> {
+        return await this.teamEntity.findOne({ where: { id: id } });
     }
 }

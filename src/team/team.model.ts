@@ -1,8 +1,11 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 //TODO: Add the Project property
 @ObjectType()
 export class Team {
+    @Field(() => ID)
+    id: number;
+
     @Field()
     name: string;
 

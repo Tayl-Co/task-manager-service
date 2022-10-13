@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 //TODO: Add the Project property. Obs: The Relation is One to Many
 @Entity()
 export class TeamEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ unique: true, generated: true })
     id: number;
 
     @Column()
