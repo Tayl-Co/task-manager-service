@@ -2,16 +2,19 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 //TODO: Add the Project property. Obs: The Relation is One to Many
 @Entity()
-export class Team {
+export class TeamEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
+    name: string;
+
+    @Column()
     ownerId: string;
 
-    @Column({ array: true, default: [] })
+    @Column({ array: true, type: 'text', default: [] })
     membersIds: Array<string>;
 
-    @Column({ array: true, default: [] })
+    @Column({ array: true, type: 'text', default: [] })
     managersIds: Array<string>;
 }

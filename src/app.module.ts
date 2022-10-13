@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamModule } from './team/team.module';
+import { TeamEntity } from './team/entity/team.entity';
 
 @Module({
     imports: [
@@ -19,7 +20,7 @@ import { TeamModule } from './team/team.module';
             username: process.env['TYPEORM_USERNAME'],
             password: process.env['TYPEORM_PASSWORD'],
             database: process.env['TYPEORM_DATABASE'],
-            entities: [],
+            entities: [TeamEntity],
             synchronize: false,
         }),
         TeamModule,
