@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TeamRepository } from './repository/team.repository';
 import { Team } from './entity/team.entity';
 import { TeamDto } from './dtos/team.dto';
+import { SearchFilterDto } from './dtos/searchFilterDto.dto';
 
 @Injectable()
 export class TeamService {
@@ -17,5 +18,9 @@ export class TeamService {
 
     async findOne(id: number): Promise<Team> {
         return await this.teamRepository.findOne(id);
+    }
+
+    async search(search: SearchFilterDto): Promise<Array<Team>> {
+        return await this.teamRepository.search(search);
     }
 }

@@ -2,6 +2,7 @@ import { Resolver, Mutation, Query, Args, Int } from '@nestjs/graphql';
 import { TeamService } from './team.service';
 import { TeamDto } from './dtos/team.dto';
 import { Team } from './entity/team.entity';
+import { SearchFilterDto } from './dtos/searchFilterDto.dto';
 
 @Resolver(() => Team)
 export class TeamResolver {
@@ -23,5 +24,13 @@ export class TeamResolver {
     @Query(() => Team, { name: 'findOneTeam', nullable: true })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.teamService.findOne(id);
+    }
+
+    @Query(() => [Team], { name: 'searchTeams' })
+    async search(
+        @Args('search', { type: () => SearchFilterDto })
+        search: SearchFilterDto,
+    ) {
+        return await this.teamService.search(search);
     }
 }
