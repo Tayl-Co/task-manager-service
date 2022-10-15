@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TeamRepository } from '@team/repository/team.repository';
 import { Team } from '@team/entity/team.entity';
 import { TeamDto } from '@team/dtos/team.dto';
@@ -13,10 +13,18 @@ export class TeamService {
     }
 
     async delete(id: number): Promise<Team> {
+        const team = await this.teamRepository.findOne(id);
+
+        if (!team) throw new NotFoundException(`Team ${id} not found`);
+
         return await this.teamRepository.delete(id);
     }
 
     async update(id: number, team: TeamDto): Promise<Team> {
+        const updateTeam = await this.teamRepository.findOne(id);
+
+        if (!updateTeam) throw new NotFoundException(`Team ${id} not found`);
+
         return await this.teamRepository.update(id, team);
     }
 
