@@ -21,6 +21,14 @@ export class TeamResolver {
         return await this.teamService.delete(id);
     }
 
+    @Mutation(() => Team, { name: 'updateTeam' })
+    async update(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('team', { type: () => TeamDto }) team: TeamDto,
+    ) {
+        return await this.teamService.update(id, team);
+    }
+
     @Query(() => Team, { name: 'findOneTeam', nullable: true })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.teamService.findOne(id);
