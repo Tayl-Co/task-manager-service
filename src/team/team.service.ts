@@ -28,6 +28,10 @@ export class TeamService {
         return await this.teamRepository.update(id, team);
     }
 
+    async findAll(): Promise<Array<Team>> {
+        return await this.teamRepository.findAll();
+    }
+
     async findOne(id: number): Promise<Team> {
         return await this.teamRepository.findOne(id);
     }

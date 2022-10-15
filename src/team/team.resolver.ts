@@ -41,4 +41,9 @@ export class TeamResolver {
     ) {
         return await this.teamService.search(search);
     }
+
+    @Query(() => [Team], { name: 'findAllTeams' })
+    async findAll() {
+        return await this.teamService.findAll();
+    }
 }

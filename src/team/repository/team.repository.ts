@@ -52,6 +52,12 @@ export class TeamRepository {
         return await this.teamEntity.remove(team);
     }
 
+    async findAll(): Promise<Array<Team>> {
+        return await this.teamEntity.find({
+            order: { name: 'ASC' as FindOptionsOrderValue },
+        });
+    }
+
     async findOne(id: number): Promise<Team> {
         return await this.teamEntity.findOne({ where: { id: id } });
     }
