@@ -33,6 +33,19 @@ export class TeamRepository {
         return await this.teamEntity.save(team);
     }
 
+    async update(
+        id: number,
+        { name, ownerId, membersIds, managersIds }: TeamDto,
+    ) {
+        const team = await this.teamEntity.findOneBy({ id });
+        team.name = name;
+        team.ownerId = ownerId;
+        team.membersIds = membersIds;
+        team.managersIds = managersIds;
+
+        return await this.teamEntity.save(team);
+    }
+
     async delete(id: number): Promise<Team> {
         const team = await this.teamEntity.findOneBy({ id });
 
