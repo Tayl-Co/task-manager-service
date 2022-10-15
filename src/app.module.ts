@@ -1,11 +1,11 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TeamModule } from './team/team.module';
-import { Team } from './team/entity/team.entity';
+import { TeamModule } from '@team/team.module';
+import { Team } from '@team/entity/team.entity';
 
 @Module({
     imports: [

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TeamRepository } from './repository/team.repository';
-import { Team } from './entity/team.entity';
-import { TeamDto } from './dtos/team.dto';
-import { SearchFilterDto } from './dtos/searchFilterDto.dto';
+import { TeamRepository } from '@team/repository/team.repository';
+import { Team } from '@team/entity/team.entity';
+import { TeamDto } from '@team/dtos/team.dto';
+import { SearchFilterDto } from '@team/dtos/searchFilterDto.dto';
 
 @Injectable()
 export class TeamService {

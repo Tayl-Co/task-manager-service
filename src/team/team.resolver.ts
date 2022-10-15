@@ -1,8 +1,8 @@
 import { Resolver, Mutation, Query, Args, Int } from '@nestjs/graphql';
-import { TeamService } from './team.service';
-import { TeamDto } from './dtos/team.dto';
-import { Team } from './entity/team.entity';
-import { SearchFilterDto } from './dtos/searchFilterDto.dto';
+import { TeamService } from '@team/team.service';
+import { TeamDto } from '@team/dtos/team.dto';
+import { Team } from '@team/entity/team.entity';
+import { SearchFilterDto } from '@team/dtos/searchFilterDto.dto';
 
 @Resolver(() => Team)
 export class TeamResolver {

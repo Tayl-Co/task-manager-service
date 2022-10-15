@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Team } from '@team/entity/team.entity';
+import { TeamDto } from '@team/dtos/team.dto';
+import { SearchFilterDto } from '@team/dtos/searchFilterDto.dto';
 import {
     Repository,
     Like,
@@ -7,9 +10,6 @@ import {
     In,
     FindOptionsOrderValue,
 } from 'typeorm';
-import { Team } from '../entity/team.entity';
-import { TeamDto } from '../dtos/team.dto';
-import { SearchFilterDto } from '../dtos/searchFilterDto.dto';
 
 @Injectable()
 export class TeamRepository {
