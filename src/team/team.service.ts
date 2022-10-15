@@ -16,6 +16,10 @@ export class TeamService {
         return await this.teamRepository.delete(id);
     }
 
+    async update(id: number, team: TeamDto): Promise<Team> {
+        return await this.teamRepository.update(id, team);
+    }
+
     async findOne(id: number): Promise<Team> {
         return await this.teamRepository.findOne(id);
     }
