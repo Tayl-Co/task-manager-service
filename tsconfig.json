@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@src/*": ["src/*"],
-      "@team/*": ["src/team/*"]
+      "@team/*": ["src/team/*"],
+      "@project/*": ["src/project/*"]
     }
   }
 }
