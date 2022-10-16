@@ -13,9 +13,9 @@ export class ProjectService {
 
     async create(project: ProjectDto): Promise<Project> {
         const { name, teamId } = project;
-        const createdProject = await this.projectRepository.findByName(name);
+        const projectExists = await this.projectRepository.findByName(name);
 
-        if (createdProject)
+        if (projectExists)
             throw new ConflictException(`Project already exists`);
 
         const team = await this.teamService.findOne(teamId);
