@@ -1,6 +1,6 @@
 import {
-    Injectable,
     ConflictException,
+    Injectable,
     NotFoundException,
 } from '@nestjs/common';
 import { ProjectRepository } from '@project/repository/project.repository';
@@ -41,5 +41,25 @@ export class ProjectService {
         if (!project) throw new NotFoundException(`Project ${id} not found`);
 
         return await this.projectRepository.remove(project);
+    }
+
+    async update(
+        id: number,
+        { name, description, active, teamId }: ProjectDto,
+    ): Promise<Project> {
+        const projectUpdate = await this.projectRepository.findOne(id);
+
+        if (!projectUpdate)
+            throw new NotFoundException(`Project ${id} not found`);
+
+        if (teamId !== projectUpdate.team.id) {
+            projectUpdate.team = await this.teamService.findOne(teamId);
+        }
+
+        projectUpdate.name = name;
+        projectUpdate.description = description;
+        projectUpdate.active = active;
+
+        return await this.projectRepository.update(projectUpdate);
     }
 }

@@ -19,6 +19,14 @@ export class ProjectResolver {
         return await this.projectService.delete(id);
     }
 
+    @Mutation(() => Project, { name: 'updateProject' })
+    async update(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('project', { type: () => ProjectDto }) project: ProjectDto,
+    ) {
+        return await this.projectService.update(id, project);
+    }
+
     @Query(() => Project, { name: 'findOneProject' })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.projectService.findOne(id);

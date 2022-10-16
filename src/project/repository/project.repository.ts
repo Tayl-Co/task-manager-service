@@ -38,7 +38,11 @@ export class ProjectRepository {
         });
     }
 
-    async remove(project: Project) {
+    async remove(project: Project): Promise<Project> {
         return await this.projectEntity.remove(project);
+    }
+
+    async update(project: Project): Promise<Project> {
+        return await this.projectEntity.save(project);
     }
 }
