@@ -33,7 +33,11 @@ export class TeamService {
     }
 
     async findOne(id: number): Promise<Team> {
-        return await this.teamRepository.findOne(id);
+        const team = await this.teamRepository.findOne(id);
+
+        if (!team) throw new NotFoundException(`Team ${id} not found`);
+
+        return team;
     }
 
     async search(search: SearchFilterDto): Promise<Array<Team>> {

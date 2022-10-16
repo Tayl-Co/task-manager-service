@@ -8,6 +8,6 @@ import { TeamRepository } from '@team/repository/team.repository';
 @Module({
     imports: [TypeOrmModule.forFeature([Team])],
     providers: [TeamResolver, TeamService, TeamRepository],
-    exports: [TypeOrmModule],
+    exports: [TypeOrmModule, TeamService],
 })
 export class TeamModule {}

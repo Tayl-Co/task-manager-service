@@ -54,12 +54,16 @@ export class TeamRepository {
 
     async findAll(): Promise<Array<Team>> {
         return await this.teamEntity.find({
+            relations: { projects: true },
             order: { name: 'ASC' as FindOptionsOrderValue },
         });
     }
 
     async findOne(id: number): Promise<Team> {
-        return await this.teamEntity.findOne({ where: { id: id } });
+        return await this.teamEntity.findOne({
+            relations: { projects: true },
+            where: { id: id },
+        });
     }
 
     async search({
@@ -85,6 +89,9 @@ export class TeamRepository {
             where = { ...where, managersIds: ArrayContains(managersIds) };
 
         return this.teamEntity.find({
+            relations: {
+                projects: true,
+            },
             where: { name: Like(`%${name}%`), ...where },
             order: { name: order as FindOptionsOrderValue },
             take: limit,
