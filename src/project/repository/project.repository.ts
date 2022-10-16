@@ -45,4 +45,9 @@ export class ProjectRepository {
     async update(project: Project): Promise<Project> {
         return await this.projectEntity.save(project);
     }
+
+    async disable(project: Project): Promise<Project> {
+        project.active = false;
+        return await this.projectEntity.save(project);
+    }
 }

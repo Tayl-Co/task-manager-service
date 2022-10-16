@@ -62,4 +62,10 @@ export class ProjectService {
 
         return await this.projectRepository.update(projectUpdate);
     }
+
+    async disable(id: number): Promise<Project> {
+        const project = await this.findOne(id);
+
+        return await this.projectRepository.disable(project);
+    }
 }

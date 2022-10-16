@@ -27,6 +27,11 @@ export class ProjectResolver {
         return await this.projectService.update(id, project);
     }
 
+    @Mutation(() => Project, { name: 'disableProject' })
+    async disable(@Args('id', { type: () => Int }) id: number) {
+        return await this.projectService.disable(id);
+    }
+
     @Query(() => Project, { name: 'findOneProject' })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.projectService.findOne(id);
