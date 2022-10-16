@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, JoinTable } from 'typeorm';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Project } from '@project/entity/project.entity';
 
-//TODO: Add the Project property. Obs: The Relation is One to Many
 @ObjectType()
 @Entity()
 export class Team {
@@ -24,4 +24,9 @@ export class Team {
     @Column({ array: true, type: 'text', default: [] })
     @Field(() => [String])
     managersIds: Array<string>;
+
+    @Field(() => [Project])
+    @OneToMany(() => Project, project => project.team)
+    @JoinTable()
+    projects: Array<Project>;
 }
