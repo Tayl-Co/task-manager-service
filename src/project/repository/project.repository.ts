@@ -30,4 +30,11 @@ export class ProjectRepository {
         });
         return await this.projectEntity.save(project);
     }
+
+    async findOne(id: number): Promise<Project> {
+        return await this.projectEntity.findOne({
+            relations: { team: true },
+            where: { id },
+        });
+    }
 }

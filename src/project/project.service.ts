@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+} from '@nestjs/common';
 import { ProjectRepository } from '@project/repository/project.repository';
 import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
@@ -21,5 +25,13 @@ export class ProjectService {
         const team = await this.teamService.findOne(teamId);
 
         return await this.projectRepository.create({ ...project, team });
+    }
+
+    async findOne(id: number): Promise<Project> {
+        const project = await this.projectRepository.findOne(id);
+
+        if (!project) throw new NotFoundException(`Project ${id} not found`);
+
+        return project;
     }
 }
