@@ -37,4 +37,8 @@ export class ProjectRepository {
             where: { id },
         });
     }
+
+    async remove(project: Project) {
+        return await this.projectEntity.remove(project);
+    }
 }

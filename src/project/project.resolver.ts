@@ -14,6 +14,11 @@ export class ProjectResolver {
         return await this.projectService.create(project);
     }
 
+    @Mutation(() => Project, { name: 'deleteProject' })
+    async delete(@Args('id', { type: () => Int }) id: number) {
+        return await this.projectService.delete(id);
+    }
+
     @Query(() => Project, { name: 'findOneProject' })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.projectService.findOne(id);

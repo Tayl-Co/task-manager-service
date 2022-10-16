@@ -34,4 +34,12 @@ export class ProjectService {
 
         return project;
     }
+
+    async delete(id: number) {
+        const project = await this.projectRepository.findOne(id);
+
+        if (!project) throw new NotFoundException(`Project ${id} not found`);
+
+        return await this.projectRepository.remove(project);
+    }
 }

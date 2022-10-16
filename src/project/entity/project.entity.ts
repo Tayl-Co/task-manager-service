@@ -7,7 +7,7 @@ import { Team } from '@team/entity/team.entity';
 @Entity()
 export class Project {
     @PrimaryColumn({ unique: true, generated: true })
-    @Field(() => ID)
+    @Field(() => ID, { nullable: true })
     id: number;
 
     @Field()
@@ -20,7 +20,8 @@ export class Project {
 
     @Field(() => Team)
     @ManyToOne(() => Team, team => team.projects, {
-        cascade: ['insert', 'update', 'remove'],
+        cascade: ['insert', 'update'],
+        onDelete: 'CASCADE',
     })
     @JoinTable()
     team: Team;
