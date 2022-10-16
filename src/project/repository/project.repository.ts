@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
+import { Equal, FindOptionsOrderValue, In, Like, Repository } from 'typeorm';
 import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
+import { SearchProjectDto } from '@project/dtos/searchProject.dto';
 
 @Injectable()
 export class ProjectRepository {
@@ -29,6 +30,33 @@ export class ProjectRepository {
             active,
         });
         return await this.projectEntity.save(project);
+    }
+
+    async search({
+        ids,
+        name,
+        description,
+        active,
+        order,
+        page,
+        limit,
+    }: SearchProjectDto): Promise<Array<Project>> {
+        let where = {};
+
+        if (ids) where = { ...where, id: In(ids) };
+
+        if (description)
+            where = { ...where, description: Like(`%${description}%`) };
+
+        if (active !== undefined) where = { ...where, active };
+
+        return await this.projectEntity.find({
+            relations: { team: true },
+            where: { name: Like(`%${name}%`), ...where },
+            order: { name: order as FindOptionsOrderValue },
+            take: limit,
+            skip: page * limit,
+        });
     }
 
     async findOne(id: number): Promise<Project> {

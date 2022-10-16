@@ -7,6 +7,7 @@ import { ProjectRepository } from '@project/repository/project.repository';
 import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
 import { TeamService } from '@team/team.service';
+import { SearchProjectDto } from '@project/dtos/searchProject.dto';
 
 @Injectable()
 export class ProjectService {
@@ -25,6 +26,10 @@ export class ProjectService {
         const team = await this.teamService.findOne(teamId);
 
         return await this.projectRepository.create({ ...project, team });
+    }
+
+    async search(search: SearchProjectDto): Promise<Array<Project>> {
+        return await this.projectRepository.search(search);
     }
 
     async findOne(id: number): Promise<Project> {

@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
 import { ProjectService } from '@project/project.service';
 import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
+import { SearchProjectDto } from '@project/dtos/searchProject.dto';
 
 @Resolver()
 export class ProjectResolver {
@@ -35,5 +36,13 @@ export class ProjectResolver {
     @Query(() => Project, { name: 'findOneProject' })
     async findOne(@Args('id', { type: () => Int }) id: number) {
         return await this.projectService.findOne(id);
+    }
+
+    @Query(() => [Project], { name: 'searchProject' })
+    async search(
+        @Args('search', { type: () => SearchProjectDto })
+        search: SearchProjectDto,
+    ): Promise<Array<Project>> {
+        return await this.projectService.search(search);
     }
 }
