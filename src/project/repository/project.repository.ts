@@ -1,0 +1,33 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Repository } from 'typeorm';
+import { Project } from '@project/entity/project.entity';
+import { ProjectDto } from '@project/dtos/project.dto';
+
+@Injectable()
+export class ProjectRepository {
+    constructor(
+        @InjectRepository(Project) private projectEntity: Repository<Project>,
+    ) {}
+
+    async findByName(name: string): Promise<Project> {
+        return await this.projectEntity.findOne({
+            where: { name: Equal(name) },
+        });
+    }
+
+    async create({
+        name,
+        description,
+        team,
+        active,
+    }: ProjectDto): Promise<Project> {
+        const project = this.projectEntity.create({
+            name,
+            description,
+            team,
+            active,
+        });
+        return await this.projectEntity.save(project);
+    }
+}
