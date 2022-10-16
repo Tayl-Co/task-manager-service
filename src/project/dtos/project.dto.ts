@@ -20,7 +20,8 @@ export class ProjectDto {
     @Field(() => Int)
     teamId: number;
 
+    @IsOptional()
     @IsBoolean()
-    @Field()
+    @Field({ nullable: true })
     active: boolean;
 }

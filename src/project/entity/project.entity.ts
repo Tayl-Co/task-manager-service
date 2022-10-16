@@ -26,6 +26,6 @@ export class Project {
     team: Team;
 
     @Field()
-    @Column()
+    @Column({ default: true, nullable: true })
     active: boolean;
 }
