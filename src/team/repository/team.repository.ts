@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Team } from '@team/entity/team.entity';
 import { TeamDto } from '@team/dtos/team.dto';
-import { SearchFilterDto } from '@team/dtos/searchFilterDto.dto';
+import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
 import {
     Repository,
     Like,

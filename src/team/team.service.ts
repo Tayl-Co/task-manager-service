@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TeamRepository } from '@team/repository/team.repository';
 import { Team } from '@team/entity/team.entity';
 import { TeamDto } from '@team/dtos/team.dto';
-import { SearchFilterDto } from '@team/dtos/searchFilterDto.dto';
+import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
 
 @Injectable()
 export class TeamService {
