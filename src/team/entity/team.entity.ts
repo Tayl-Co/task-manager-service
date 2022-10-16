@@ -6,7 +6,7 @@ import { Project } from '@project/entity/project.entity';
 @Entity()
 export class Team {
     @PrimaryColumn({ unique: true, generated: true })
-    @Field(() => ID)
+    @Field(() => ID, { nullable: true })
     id: number;
 
     @Field()
@@ -26,7 +26,7 @@ export class Team {
     managersIds: Array<string>;
 
     @Field(() => [Project])
-    @OneToMany(() => Project, project => project.team)
+    @OneToMany(() => Project, project => project.team, { onDelete: 'CASCADE' })
     @JoinTable()
     projects: Array<Project>;
 }
