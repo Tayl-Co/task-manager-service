@@ -46,9 +46,7 @@ export class TeamRepository {
         return await this.teamEntity.save(team);
     }
 
-    async delete(id: number): Promise<Team> {
-        const team = await this.teamEntity.findOneBy({ id });
-
+    async remove(team: Team): Promise<Team> {
         return await this.teamEntity.remove(team);
     }
 

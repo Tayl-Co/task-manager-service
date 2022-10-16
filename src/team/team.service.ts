@@ -17,7 +17,7 @@ export class TeamService {
 
         if (!team) throw new NotFoundException(`Team ${id} not found`);
 
-        return await this.teamRepository.delete(id);
+        return await this.teamRepository.remove(team);
     }
 
     async update(id: number, team: TeamDto): Promise<Team> {
