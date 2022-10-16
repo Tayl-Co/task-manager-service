@@ -6,6 +6,8 @@ import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamModule } from '@team/team.module';
 import { Team } from '@team/entity/team.entity';
+import { Project } from '@project/entity/project.entity';
+import { ProjectModule } from '@project/project.module';
 
 @Module({
     imports: [
@@ -24,11 +26,12 @@ import { Team } from '@team/entity/team.entity';
                 username: config.get<string>('TYPEORM_USERNAME'),
                 password: config.get<string>('TYPEORM_PASSWORD'),
                 database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team],
+                entities: [Team, Project],
                 synchronize: true,
             }),
         }),
         TeamModule,
+        ProjectModule,
     ],
     controllers: [],
     providers: [],
