@@ -18,7 +18,7 @@ export class Project {
     @Column()
     description: string;
 
-    @Field(() => Team)
+    @Field(() => Team, { nullable: true })
     @ManyToOne(() => Team, team => team.projects, {
         cascade: ['insert', 'update'],
         onDelete: 'CASCADE',
