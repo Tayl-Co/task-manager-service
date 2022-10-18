@@ -85,6 +85,15 @@ describe('TeamService', () => {
     });
 
     describe('delete Function', () => {
+        it('Should return an error message if the team is not found', async () => {
+            try {
+                await service.delete(50);
+            } catch ({ message }) {
+                expect(message).toBeDefined();
+                expect(message).toEqual(`Team 50 not found`);
+            }
+        });
+
         it('Should return deleted team and remove team within data', async () => {
             const response = await service.delete(5);
             const team = {
