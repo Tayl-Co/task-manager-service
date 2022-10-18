@@ -18,6 +18,11 @@ describe('TeamService', () => {
 
                 return Promise.resolve(team);
             },
+            async remove(team: Team): Promise<Team> {
+                const indexTeam = data.map(e => e.id).indexOf(team.id);
+                delete data[indexTeam];
+                return Promise.resolve(team);
+            },
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -76,6 +81,35 @@ describe('TeamService', () => {
             } catch ({ message }) {
                 expect(message).toEqual(`Team 50 not found`);
             }
+        });
+    });
+
+    describe('delete Function', () => {
+        it('Should return deleted team and remove team within data', async () => {
+            const response = await service.delete(5);
+            const team = {
+                id: 5,
+                name: 'Team 5',
+                ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
+                membersIds: [
+                    'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
+                    '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
+                ],
+                managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
+                projects: [
+                    {
+                        id: 5,
+                        name: 'Project 5',
+                        description: 'Description of project 5',
+                        active: false,
+                        team: null,
+                    },
+                ],
+            };
+
+            expect(response).toBeDefined();
+            expect(response).toEqual(team);
+            expect(data).not.toContainEqual(team);
         });
     });
 });
