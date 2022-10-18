@@ -69,5 +69,13 @@ describe('TeamService', () => {
                 ],
             });
         });
+
+        it('Should return an error message if the team is not found', async () => {
+            try {
+                await service.findOne(50);
+            } catch ({ message }) {
+                expect(message).toEqual(`Team 50 not found`);
+            }
+        });
     });
 });
