@@ -3,6 +3,7 @@ import { TeamService } from '@team/team.service';
 import { TeamRepository } from '@team/repository/team.repository';
 import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
+import { TeamDto } from '@team/dtos/team.dto';
 
 describe('TeamService', () => {
     let service: TeamService;
@@ -21,6 +22,24 @@ describe('TeamService', () => {
             async remove(team: Team): Promise<Team> {
                 const indexTeam = data.map(e => e.id).indexOf(team.id);
                 delete data[indexTeam];
+                return Promise.resolve(team);
+            },
+            async create({
+                name,
+                ownerId,
+                membersIds,
+                managersIds,
+            }: TeamDto): Promise<Team> {
+                const team = {
+                    id: 6,
+                    name,
+                    ownerId,
+                    membersIds,
+                    managersIds,
+                    projects: [],
+                };
+
+                data.push(team);
                 return Promise.resolve(team);
             },
         };
@@ -81,6 +100,21 @@ describe('TeamService', () => {
             } catch ({ message }) {
                 expect(message).toEqual(`Team 50 not found`);
             }
+        });
+    });
+
+    describe('create Function', () => {
+        it('Should return the team created if the entries are correct', async () => {
+            const team = {
+                name: 'Team 6',
+                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+            };
+            const response = await service.create(team);
+            expect(response).toBeDefined();
+            expect(response).toEqual({ id: 6, ...team, projects: [] });
+            expect(data).toContainEqual({ id: 6, ...team, projects: [] });
         });
     });
 
