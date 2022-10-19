@@ -117,13 +117,22 @@ describe('TeamService', () => {
     });
 
     describe('update Function', () => {
+        const team = {
+            name: 'Team 10',
+            managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+            membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+            ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+        };
+
+        it('Should return an error message if the team is not found', async () => {
+            try {
+                await service.update(99, team);
+            } catch ({ message }) {
+                expect(message).toEqual(`Team 99 not found`);
+            }
+        });
+
         it('Should return the updated team', async () => {
-            const team = {
-                name: 'Team 10',
-                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
-            };
             const response = await service.update(1, team);
 
             expect(response).toBeDefined();
