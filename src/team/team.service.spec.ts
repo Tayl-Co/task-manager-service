@@ -42,6 +42,19 @@ describe('TeamService', () => {
                 data.push(team);
                 return Promise.resolve(team);
             },
+
+            async update(
+                id: number,
+                { name, ownerId, membersIds, managersIds }: TeamDto,
+            ): Promise<Team> {
+                const team = data.find(e => e.id === id);
+                team.name = name;
+                team.managersIds = managersIds;
+                team.membersIds = membersIds;
+                team.ownerId = ownerId;
+
+                return Promise.resolve(team);
+            },
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -100,6 +113,33 @@ describe('TeamService', () => {
             } catch ({ message }) {
                 expect(message).toEqual(`Team 50 not found`);
             }
+        });
+    });
+
+    describe('update Function', () => {
+        it('Should return the updated team', async () => {
+            const team = {
+                name: 'Team 10',
+                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+            };
+            const response = await service.update(1, team);
+
+            expect(response).toBeDefined();
+            expect(response).toEqual({
+                id: 1,
+                ...team,
+                projects: [
+                    {
+                        id: 1,
+                        name: 'Project 1',
+                        description: 'Description of project 1',
+                        active: true,
+                        team: null,
+                    },
+                ],
+            });
         });
     });
 
