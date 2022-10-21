@@ -88,7 +88,8 @@ describe('TeamService', () => {
 
                         if (ids && ids.includes(e.id)) resultsQuery.push(true);
 
-                        if (e.name === name || '') resultsQuery.push(true);
+                        if (e.name === name || name === '')
+                            resultsQuery.push(true);
 
                         return resultsQuery.length > 0
                             ? resultsQuery.every(e => e === true)
@@ -129,6 +130,13 @@ describe('TeamService', () => {
     });
 
     describe('search Function', () => {
+        it('Should return all teams if it does not contain filters', async () => {
+            const response = await service.search({});
+
+            expect(response).toMatchObject(data);
+            expect(response.length).toEqual(5);
+        });
+
         it('Should return the team if the name exists', async () => {
             const response = await service.search({ name: 'Team 1' });
 
@@ -153,6 +161,7 @@ describe('TeamService', () => {
                     ],
                 },
             ]);
+            expect(response.length).toEqual(1);
         });
     });
 
