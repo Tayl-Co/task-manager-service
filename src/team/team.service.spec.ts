@@ -4,6 +4,7 @@ import { TeamRepository } from '@team/repository/team.repository';
 import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
 import { TeamDto } from '@team/dtos/team.dto';
+import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
 
 describe('TeamService', () => {
     let service: TeamService;
@@ -55,6 +56,52 @@ describe('TeamService', () => {
 
                 return Promise.resolve(team);
             },
+
+            async search({
+                ids,
+                name = '',
+                ownerId,
+                membersIds,
+                managersIds,
+                page = 0,
+                order = 'ASC',
+                limit = 50,
+            }: SearchFilterDto): Promise<Array<Team>> {
+                const team = data
+                    .filter(e => {
+                        const resultsQuery: Array<boolean> = [];
+
+                        if (
+                            membersIds &&
+                            e.membersIds.every(r => membersIds.includes(r))
+                        )
+                            resultsQuery.push(true);
+
+                        if (
+                            managersIds &&
+                            e.managersIds.every(r => managersIds.includes(r))
+                        )
+                            resultsQuery.push(true);
+
+                        if (e.ownerId && e.ownerId === ownerId)
+                            resultsQuery.push(true);
+
+                        if (ids && ids.includes(e.id)) resultsQuery.push(true);
+
+                        if (e.name === name || '') resultsQuery.push(true);
+
+                        return resultsQuery.length > 0
+                            ? resultsQuery.every(e => e === true)
+                            : false;
+                    })
+                    .sort((a, b) => {
+                        if (order === 'DESC') return b.name > a.name ? 1 : -1;
+
+                        return a.name > b.name ? 1 : -1;
+                    })
+                    .slice(page * limit, limit);
+                return Promise.resolve(team);
+            },
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -78,6 +125,34 @@ describe('TeamService', () => {
             expect(response).toBeDefined();
             expect(response).toEqual(data);
             expect(response.length).toEqual(5);
+        });
+    });
+
+    describe('search Function', () => {
+        it('Should return the team if the name exists', async () => {
+            const response = await service.search({ name: 'Team 1' });
+
+            expect(response).toMatchObject([
+                {
+                    id: 1,
+                    name: 'Team 1',
+                    ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
+                    membersIds: [
+                        '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                        'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+                    ],
+                    managersIds: ['a192fd6d-67c1-4090-8011-d96f83cf3e9b'],
+                    projects: [
+                        {
+                            id: 1,
+                            name: 'Project 1',
+                            description: 'Description of project 1',
+                            active: true,
+                            team: null,
+                        },
+                    ],
+                },
+            ]);
         });
     });
 
