@@ -136,6 +136,13 @@ describe('TeamService', () => {
             expect(response.length).toEqual(5);
         });
 
+        it('Should return teams in descending order', async () => {
+            const response = await service.search({ order: 'DESC' });
+
+            expect(response).toMatchObject(data.reverse());
+            expect(response.length).toEqual(data.length);
+        });
+
         it('Should return items based on page and limit quantity', async () => {
             const response = await service.search({ page: 1, limit: 2 });
 
