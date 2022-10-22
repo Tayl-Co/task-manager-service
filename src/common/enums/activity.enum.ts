@@ -1,0 +1,9 @@
+export enum ActivityEnum {
+    STATUS_CHANGED,
+    ASSIGNEE_ADDED,
+    ASSIGNEE_REMOVED,
+    DEADLINE_CHANGED,
+    TITLE_CHANGED,
+    LABEL_ADDED,
+    LABEL_REMOVED,
+}
