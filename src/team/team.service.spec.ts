@@ -76,13 +76,13 @@ describe('TeamService', () => {
                     response = response.filter(e => {
                         if (
                             membersIds &&
-                            e.membersIds.every(r => membersIds.includes(r))
+                            e.membersIds.some(r => membersIds.includes(r))
                         )
                             return true;
 
                         if (
                             managersIds &&
-                            e.managersIds.every(r => managersIds.includes(r))
+                            e.managersIds.some(r => managersIds.includes(r))
                         )
                             return true;
 
@@ -282,6 +282,34 @@ describe('TeamService', () => {
                 },
             ]);
             expect(response.length).toEqual(1);
+        });
+
+        it("Should return the teams that contain the members' IDs", async () => {
+            const response = await service.search({
+                membersIds: ['db9ce25e-5de3-41db-80c0-ee637ac3813f'],
+            });
+
+            expect(response).toMatchObject([
+                {
+                    id: 3,
+                    name: 'Team 3',
+                    ownerId: 'd18f9873-6707-4df6-9a16-b3bf2d74cbc5',
+                    membersIds: [
+                        'db9ce25e-5de3-41db-80c0-ee637ac3813f',
+                        '745149b6-c4fe-4801-a2ca-d247f94405ac',
+                    ],
+                    managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
+                    projects: [
+                        {
+                            id: 3,
+                            name: 'Project 3',
+                            description: 'Description of project 3',
+                            active: false,
+                            team: null,
+                        },
+                    ],
+                },
+            ]);
         });
     });
 
