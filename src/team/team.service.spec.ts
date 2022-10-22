@@ -67,6 +67,7 @@ describe('TeamService', () => {
                 order = 'ASC',
                 limit = 50,
             }: SearchFilterDto): Promise<Array<Team>> {
+                const indexOfPage = page * limit;
                 let response = data.filter(e => {
                     return name === '' ? true : e.name === name;
                 });
@@ -98,7 +99,7 @@ describe('TeamService', () => {
 
                             return a.name > b.name ? 1 : -1;
                         })
-                        .slice(page * limit, limit),
+                        .slice(indexOfPage, indexOfPage + limit),
                 );
             },
         };
@@ -133,6 +134,52 @@ describe('TeamService', () => {
 
             expect(response).toMatchObject(data);
             expect(response.length).toEqual(5);
+        });
+
+        it('Should return items based on page and limit quantity', async () => {
+            const response = await service.search({ page: 1, limit: 2 });
+
+            expect(response).toMatchObject([
+                {
+                    id: 3,
+                    name: 'Team 3',
+                    ownerId: 'd18f9873-6707-4df6-9a16-b3bf2d74cbc5',
+                    membersIds: [
+                        'db9ce25e-5de3-41db-80c0-ee637ac3813f',
+                        '745149b6-c4fe-4801-a2ca-d247f94405ac',
+                    ],
+                    managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
+                    projects: [
+                        {
+                            id: 3,
+                            name: 'Project 3',
+                            description: 'Description of project 3',
+                            active: false,
+                            team: null,
+                        },
+                    ],
+                },
+                {
+                    id: 4,
+                    name: 'Team 4',
+                    ownerId: '93a8a626-9938-40b5-9072-273cfc061c10',
+                    membersIds: [
+                        '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                        '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
+                    ],
+                    managersIds: ['f522b8f6-3cf8-46cc-982f-b7017dc2c22c'],
+                    projects: [
+                        {
+                            id: 4,
+                            name: 'Project 4',
+                            description: 'Description of project 4',
+                            active: true,
+                            team: null,
+                        },
+                    ],
+                },
+            ]);
+            expect(response.length).toEqual(2);
         });
 
         it('Should return the teams referring to the ids informed', async () => {
