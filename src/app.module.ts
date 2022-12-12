@@ -8,6 +8,8 @@ import { TeamModule } from '@team/team.module';
 import { Team } from '@team/entity/team.entity';
 import { Project } from '@project/entity/project.entity';
 import { ProjectModule } from '@project/project.module';
+import { TodoModule } from '@todo/todo.module';
+import { ToDo } from '@todo/entity/todo.entity';
 
 @Module({
     imports: [
@@ -26,12 +28,13 @@ import { ProjectModule } from '@project/project.module';
                 username: config.get<string>('TYPEORM_USERNAME'),
                 password: config.get<string>('TYPEORM_PASSWORD'),
                 database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team, Project],
+                entities: [Team, Project, ToDo],
                 synchronize: true,
             }),
         }),
         TeamModule,
         ProjectModule,
+        TodoModule,
     ],
     controllers: [],
     providers: [],
