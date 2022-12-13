@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
 
 // TODO: Add property Reference
@@ -37,8 +37,8 @@ export class ToDo {
     authorId: number;
 
     @Column({ array: true, type: 'text', default: [] })
-    @Field(() => [String])
-    assigneesIds: Array<string>;
+    @Field(() => [Int])
+    assigneesIds: Array<number>;
 
     @Column({ default: new Date() })
     @Field()
