@@ -20,7 +20,7 @@ export class CreateToDoDto {
 
     @IsNotEmpty({ message: 'Required Type' })
     @IsNumber()
-    @Field()
+    @Field(() => Int)
     type: number;
 
     @IsArray()
@@ -30,7 +30,7 @@ export class CreateToDoDto {
 
     @IsOptional()
     @IsNumber()
-    @Field({ nullable: true })
+    @Field(() => Int, { nullable: true })
     projectId: number;
 
     @IsOptional()

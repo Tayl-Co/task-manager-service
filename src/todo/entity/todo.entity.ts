@@ -18,6 +18,10 @@ export class ToDo {
 
     @Column()
     @Field()
+    type: number;
+
+    @Column({ default: '' })
+    @Field()
     description: string;
 
     @Column()
@@ -29,40 +33,36 @@ export class ToDo {
     priority: number;
 
     @Column()
-    @Field()
-    parentId: number;
+    @Field({ nullable: true })
+    parentId: string;
 
     @Column()
     @Field()
     authorId: string;
 
     @Column({ array: true, type: 'text', default: [] })
-    @Field(() => [Int])
+    @Field(() => [Int], { nullable: true })
     assigneesIds: Array<number>;
 
     @Column({ default: new Date() })
-    @Field()
+    @Field({ nullable: true })
     creationDate: Date;
 
-    @Column()
-    @Field()
+    @Column({ nullable: true })
+    @Field({ nullable: true })
     lastUpdateDate: Date;
 
-    @Column()
-    @Field()
+    @Column({ nullable: true })
+    @Field({ nullable: true })
     estimatedDueDate: Date;
 
-    @Column()
-    @Field()
+    @Column({ nullable: true })
+    @Field({ nullable: true })
     dueDate: Date;
 
-    @Column()
+    @Column({ default: false })
     @Field()
     pinned: boolean;
-
-    @Column()
-    @Field()
-    type: number;
 
     @ManyToOne(() => Project, project => project.issues, {
         nullable: true,

@@ -5,20 +5,24 @@ import { Repository } from 'typeorm';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
+import { Project } from '@project/entity/project.entity';
 
 @Injectable()
 export class ToDoRepository {
     constructor(@InjectRepository(ToDo) private todoEntity: Repository<ToDo>) {}
 
     // TODO: Add labels property
-    async create({
-        title,
-        description,
-        assigneesIds,
-        project,
-        parentId,
-        dueDate,
-    }: CreateToDoDto): Promise<ToDo> {
+    async create(
+        {
+            title,
+            description,
+            assigneesIds,
+            parentId,
+            dueDate,
+            type,
+        }: CreateToDoDto,
+        project: Project | null,
+    ): Promise<ToDo> {
         const todo = this.todoEntity.create({
             title,
             description,
@@ -26,6 +30,7 @@ export class ToDoRepository {
             project,
             parentId,
             dueDate,
+            type,
             status: IssueStatusEnum.OPEN,
             priority: PriorityEnum.LOW,
             authorId: 'username', // TODO: Remove username mock

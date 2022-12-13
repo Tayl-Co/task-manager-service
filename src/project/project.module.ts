@@ -9,6 +9,6 @@ import { TeamModule } from '@team/team.module';
 @Module({
     imports: [TypeOrmModule.forFeature([Project]), TeamModule],
     providers: [ProjectResolver, ProjectService, ProjectRepository],
-    exports: [TypeOrmModule],
+    exports: [TypeOrmModule, ProjectService],
 })
 export class ProjectModule {}
