@@ -38,4 +38,15 @@ export class ToDoRepository {
 
         return await this.todoEntity.save(todo);
     }
+
+    async remove(todo: ToDo): Promise<ToDo> {
+        return await this.todoEntity.remove(todo);
+    }
+
+    async findOne(id: number): Promise<ToDo> {
+        return await this.todoEntity.findOne({
+            relations: { project: true },
+            where: { id },
+        });
+    }
 }
