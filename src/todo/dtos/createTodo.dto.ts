@@ -1,6 +1,11 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsString, IsArray, IsNotEmpty, IsNumber } from 'class-validator';
-import { Project } from '@project/entity/project.entity';
+import {
+    IsString,
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+} from 'class-validator';
 
 @InputType()
 export class CreateToDoDto {
@@ -13,19 +18,28 @@ export class CreateToDoDto {
     @Field()
     description: string;
 
+    @IsNotEmpty({ message: 'Required Type' })
+    @IsNumber()
+    @Field()
+    type: number;
+
     @IsArray()
     @IsNumber({}, { each: true })
-    @Field(() => [Int])
+    @Field(() => [Int], { nullable: true })
     assigneesIds: Array<number>;
 
-    @Field(() => Project, { nullable: null })
-    project: Project;
+    @IsOptional()
+    @IsNumber()
+    @Field({ nullable: true })
+    projectId: number;
 
+    @IsOptional()
     @IsString()
     @Field({ nullable: true })
     dueDate: string;
 
-    @IsNumber()
+    @IsOptional()
+    @IsString()
     @Field({ nullable: true })
-    parentId: number;
+    parentId: string;
 }
