@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ToDoRepository } from '@todo/repository/todo.repository';
 import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
@@ -21,5 +21,19 @@ export class TodoService {
         }
 
         return this.todoRepository.create(todoInput, project);
+    }
+
+    async findOne(id: number): Promise<ToDo> {
+        const todo = await this.todoRepository.findOne(id);
+
+        if (!todo) throw new NotFoundException(`ToDo ${id} not found`);
+
+        return todo;
+    }
+
+    async remove(id: number): Promise<ToDo> {
+        const todo = await this.findOne(id);
+
+        return await this.todoRepository.remove(todo);
     }
 }
