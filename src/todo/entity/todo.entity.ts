@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Project } from '@project/entity/project.entity';
 
 // TODO: Add property Reference
 // TODO: Add property Activity
 // TODO: Add property Label
-// TODO: Add property project
 @ObjectType()
 @Entity()
 export class ToDo {
@@ -63,4 +63,12 @@ export class ToDo {
     @Column()
     @Field()
     type: number;
+
+    @ManyToOne(() => Project, project => project.issues, {
+        nullable: true,
+        cascade: ['insert', 'update'],
+        onDelete: 'CASCADE',
+    })
+    @Field(() => Project, { nullable: true })
+    project: Project | null;
 }
