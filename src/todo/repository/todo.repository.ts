@@ -28,6 +28,7 @@ export class ToDoRepository {
             dueDate,
             status: IssueStatusEnum.OPEN,
             priority: PriorityEnum.LOW,
+            authorId: 'username', // TODO: Remove username mock
         });
 
         return await this.todoEntity.save(todo);

@@ -34,7 +34,7 @@ export class ToDo {
 
     @Column()
     @Field()
-    authorId: number;
+    authorId: string;
 
     @Column({ array: true, type: 'text', default: [] })
     @Field(() => [Int])
