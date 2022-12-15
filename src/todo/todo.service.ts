@@ -23,6 +23,10 @@ export class TodoService {
         return this.todoRepository.create(todoInput, project);
     }
 
+    async findAll(): Promise<Array<ToDo>> {
+        return await this.todoRepository.findAll();
+    }
+
     async findOne(id: number): Promise<ToDo> {
         const todo = await this.todoRepository.findOne(id);
 

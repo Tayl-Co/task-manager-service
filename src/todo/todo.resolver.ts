@@ -20,6 +20,11 @@ export class TodoResolver {
         return await this.todoService.remove(id);
     }
 
+    @Query(() => [ToDo], { name: 'findAll' })
+    async findAll(): Promise<Array<ToDo>> {
+        return await this.todoService.findAll();
+    }
+
     @Query(() => ToDo, { name: 'findOneToDo' })
     async findOne(@Args('id', { type: () => Int }) id: number): Promise<ToDo> {
         return await this.todoService.findOne(id);

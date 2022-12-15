@@ -29,7 +29,7 @@ export class ToDoRepository {
             assigneesIds,
             project,
             parentId,
-            dueDate,
+            dueDate: dueDate ? new Date(dueDate) : null,
             type,
             status: IssueStatusEnum.OPEN,
             priority: PriorityEnum.LOW,
@@ -37,6 +37,10 @@ export class ToDoRepository {
         });
 
         return await this.todoEntity.save(todo);
+    }
+
+    async findAll(): Promise<Array<ToDo>> {
+        return await this.todoEntity.find();
     }
 
     async remove(todo: ToDo): Promise<ToDo> {
