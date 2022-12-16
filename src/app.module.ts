@@ -10,6 +10,7 @@ import { Project } from '@project/entity/project.entity';
 import { ProjectModule } from '@project/project.module';
 import { TodoModule } from '@todo/todo.module';
 import { ToDo } from '@todo/entity/todo.entity';
+import { Reference } from '@todo/entity/reference.entity';
 
 @Module({
     imports: [
@@ -28,7 +29,7 @@ import { ToDo } from '@todo/entity/todo.entity';
                 username: config.get<string>('TYPEORM_USERNAME'),
                 password: config.get<string>('TYPEORM_PASSWORD'),
                 database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team, Project, ToDo],
+                entities: [Team, Project, ToDo, Reference],
                 synchronize: true,
             }),
         }),

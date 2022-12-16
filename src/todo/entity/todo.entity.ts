@@ -1,6 +1,14 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToOne,
+    OneToMany,
+    PrimaryColumn,
+} from 'typeorm';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
+import { Reference } from '@todo/entity/reference.entity';
 
 // TODO: Add property Reference
 // TODO: Add property Activity
@@ -71,4 +79,9 @@ export class ToDo {
     })
     @Field(() => Project, { nullable: true })
     project: Project | null;
+
+    @OneToMany(() => Reference, reference => reference.todo)
+    @JoinTable()
+    @Field(() => [Reference])
+    references: Array<Reference>;
 }
