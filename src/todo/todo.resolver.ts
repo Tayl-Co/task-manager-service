@@ -2,6 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { TodoService } from '@todo/todo.service';
 import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
+import { CreateReferenceDto } from '@todo/dtos/createReference.dto';
 
 @Resolver()
 export class TodoResolver {
@@ -18,6 +19,14 @@ export class TodoResolver {
     @Mutation(() => ToDo, { name: 'deleteToDo' })
     async remove(@Args('id', { type: () => Int }) id: number): Promise<ToDo> {
         return await this.todoService.remove(id);
+    }
+
+    @Mutation(() => ToDo, { name: 'addReference' })
+    async addReference(
+        @Args('id') id: number,
+        @Args('referenceInput') referenceInput: CreateReferenceDto,
+    ): Promise<ToDo> {
+        return await this.todoService.addReference(id, referenceInput);
     }
 
     @Query(() => [ToDo], { name: 'findAll' })

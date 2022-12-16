@@ -6,10 +6,16 @@ import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { Project } from '@project/entity/project.entity';
+import { Reference } from '@todo/entity/reference.entity';
+import { CreateReferenceDto } from '@todo/dtos/createReference.dto';
 
 @Injectable()
 export class ToDoRepository {
-    constructor(@InjectRepository(ToDo) private todoEntity: Repository<ToDo>) {}
+    constructor(
+        @InjectRepository(ToDo) private todoRepository: Repository<ToDo>,
+        @InjectRepository(Reference)
+        private referenceRepository: Repository<Reference>,
+    ) {}
 
     // TODO: Add labels property
     async create(
@@ -23,7 +29,7 @@ export class ToDoRepository {
         }: CreateToDoDto,
         project: Project | null,
     ): Promise<ToDo> {
-        const todo = this.todoEntity.create({
+        const todo = this.todoRepository.create({
             title,
             description,
             assigneesIds,
@@ -36,21 +42,34 @@ export class ToDoRepository {
             authorId: 'username', // TODO: Remove username mock
         });
 
-        return await this.todoEntity.save(todo);
+        return await this.todoRepository.save(todo);
     }
 
     async findAll(): Promise<Array<ToDo>> {
-        return await this.todoEntity.find();
+        return await this.todoRepository.find();
     }
 
     async remove(todo: ToDo): Promise<ToDo> {
-        return await this.todoEntity.remove(todo);
+        return await this.todoRepository.remove(todo);
     }
 
     async findOne(id: number): Promise<ToDo> {
-        return await this.todoEntity.findOne({
-            relations: { project: true },
+        return await this.todoRepository.findOne({
+            relations: { project: true, references: true },
             where: { id },
+        });
+    }
+
+    async addReference(
+        todo: ToDo,
+        referenceInput: CreateReferenceDto,
+    ): Promise<ToDo> {
+        const reference = await this.referenceRepository.create(referenceInput);
+        const newReference = await this.referenceRepository.save(reference);
+
+        return await this.todoRepository.save({
+            ...todo,
+            references: [...todo.references, newReference],
         });
     }
 }
