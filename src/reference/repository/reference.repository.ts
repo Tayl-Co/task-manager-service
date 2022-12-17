@@ -44,6 +44,7 @@ export class ReferenceRepository {
 
     search({
         ids,
+        idsToDo,
         type,
         key,
         page,
@@ -53,10 +54,17 @@ export class ReferenceRepository {
 
         if (ids) where = { ...where, id: In(ids) };
 
+        if (idsToDo) where = { ...where, todo: In(idsToDo) };
+
         if (type) where = { ...where, type: Like(`%${type}%`) };
 
         if (key) where = { ...where, key: Like(`%${key}%`) };
 
-        return this.repository.find({ where, take: limit, skip: page * limit });
+        return this.repository.find({
+            where,
+            take: limit,
+            skip: page * limit,
+            relations: { todo: true },
+        });
     }
 }
