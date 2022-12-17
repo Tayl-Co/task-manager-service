@@ -14,7 +14,7 @@ export class LabelService {
     async findOne(id: number): Promise<Label> {
         const label = await this.labelRepository.findOne(id);
 
-        if (label) throw new NotFoundException(`Label ${id} not found`);
+        if (!label) throw new NotFoundException(`Label ${id} not found`);
 
         return label;
     }
