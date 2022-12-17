@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, In, Repository } from 'typeorm';
+import { DeleteResult, In, Like, Repository } from 'typeorm';
 import { Reference } from '@reference/entity/reference.entity';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
@@ -44,12 +44,15 @@ export class ReferenceRepository {
 
     search({
         ids,
+        type,
         page,
         limit,
     }: SearchReferenceDto): Promise<Array<Reference>> {
         let where = {};
 
         if (ids) where = { ...where, id: In(ids) };
+
+        if (type) where = { ...where, type: Like(`%${type}%`) };
 
         return this.repository.find({ where, take: limit, skip: page * limit });
     }
