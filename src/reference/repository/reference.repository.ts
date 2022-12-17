@@ -16,4 +16,8 @@ export class ReferenceRepository {
 
         return this.repository.save(reference);
     }
+
+    findOne(id: number): Promise<Reference> {
+        return this.repository.findOne({ where: { id } });
+    }
 }

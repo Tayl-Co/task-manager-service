@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ReferenceService } from '@reference/reference.service';
 import { Reference } from '@reference/entity/reference.entity';
 import { CreateReferenceDto } from '@reference/dtos/createReference.dto';
@@ -12,5 +12,10 @@ export class ReferenceResolver {
         @Args('referenceInput') referenceInput: CreateReferenceDto,
     ): Promise<Reference> {
         return await this.referenceService.create(referenceInput);
+    }
+
+    @Query(() => Reference, { name: 'findOneReference' })
+    async findOne(@Args('id') id: number): Promise<Reference> {
+        return await this.referenceService.findOne(id);
     }
 }
