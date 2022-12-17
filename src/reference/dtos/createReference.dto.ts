@@ -1,5 +1,12 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
-import { Field, InputType } from '@nestjs/graphql';
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUrl,
+} from 'class-validator';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { ToDo } from '@todo/entity/todo.entity';
 
 @InputType()
 export class CreateReferenceDto {
@@ -17,4 +24,12 @@ export class CreateReferenceDto {
     @IsUrl()
     @Field()
     url: string;
+
+    @IsNotEmpty({ message: 'Required TodoId' })
+    @IsNumber()
+    @Field(() => Int)
+    todoId: number;
+
+    @IsOptional()
+    todo: ToDo;
 }
