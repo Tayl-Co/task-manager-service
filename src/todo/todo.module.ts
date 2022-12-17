@@ -8,7 +8,7 @@ import { ProjectModule } from '@project/project.module';
 
 @Module({
     imports: [TypeOrmModule.forFeature([ToDo]), ProjectModule],
-    exports: [TypeOrmModule],
+    exports: [TypeOrmModule, TodoService],
     providers: [TodoService, TodoResolver, ToDoRepository],
 })
 export class TodoModule {}

@@ -25,6 +25,6 @@ export class Reference {
         cascade: ['insert', 'update'],
         onDelete: 'CASCADE',
     })
-    @Field(() => ToDo)
+    @Field(() => ToDo, { nullable: true })
     todo: ToDo;
 }
