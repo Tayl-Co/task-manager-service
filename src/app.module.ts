@@ -11,6 +11,7 @@ import { ProjectModule } from '@project/project.module';
 import { TodoModule } from '@todo/todo.module';
 import { ToDo } from '@todo/entity/todo.entity';
 import { Reference } from '@reference/entity/reference.entity';
+import { ReferenceModule } from '@reference/reference.module';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { Reference } from '@reference/entity/reference.entity';
         TeamModule,
         ProjectModule,
         TodoModule,
+        ReferenceModule,
     ],
     controllers: [],
     providers: [],

@@ -6,14 +6,11 @@ import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { Project } from '@project/entity/project.entity';
-import { Reference } from '@reference/entity/reference.entity';
 
 @Injectable()
 export class ToDoRepository {
     constructor(
         @InjectRepository(ToDo) private todoRepository: Repository<ToDo>,
-        @InjectRepository(Reference)
-        private referenceRepository: Repository<Reference>,
     ) {}
 
     // TODO: Add labels property
