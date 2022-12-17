@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ReferenceService } from '@reference/reference.service';
 import { Reference } from '@reference/entity/reference.entity';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
+import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
 
 @Resolver()
 export class ReferenceResolver {
@@ -30,5 +31,12 @@ export class ReferenceResolver {
     @Query(() => Reference, { name: 'findOneReference' })
     async findOne(@Args('id') id: number): Promise<Reference> {
         return await this.referenceService.findOne(id);
+    }
+
+    @Query(() => [Reference], { name: 'searchReference' })
+    async search(
+        @Args('searchInput') searchInput: SearchReferenceDto,
+    ): Promise<Array<Reference>> {
+        return await this.referenceService.search(searchInput);
     }
 }
