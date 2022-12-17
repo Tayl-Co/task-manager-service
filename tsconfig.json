@@ -23,7 +23,8 @@
       "@src/*": ["src/*"],
       "@team/*": ["src/team/*"],
       "@project/*": ["src/project/*"],
-      "@todo/*": ["src/todo/*"]
+      "@todo/*": ["src/todo/*"],
+      "@reference/*": ["src/reference/*"]
     }
   }
 }

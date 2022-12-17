@@ -5,7 +5,7 @@ import { TodoService } from './todo.service';
 import { TodoResolver } from './todo.resolver';
 import { ToDoRepository } from '@todo/repository/todo.repository';
 import { ProjectModule } from '@project/project.module';
-import { Reference } from '@todo/entity/reference.entity';
+import { Reference } from '@reference/entity/reference.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([ToDo, Reference]), ProjectModule],

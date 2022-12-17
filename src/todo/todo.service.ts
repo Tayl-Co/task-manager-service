@@ -1,14 +1,9 @@
-import {
-    ConflictException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ToDoRepository } from '@todo/repository/todo.repository';
 import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { ProjectService } from '@project/project.service';
 import { Project } from '@project/entity/project.entity';
-import { CreateReferenceDto } from '@todo/dtos/createReference.dto';
 
 @Injectable()
 export class TodoService {
@@ -44,19 +39,5 @@ export class TodoService {
         const todo = await this.findOne(id);
 
         return await this.todoRepository.remove(todo);
-    }
-
-    async addReference(
-        id: number,
-        referenceInput: CreateReferenceDto,
-    ): Promise<ToDo> {
-        const todo = await this.findOne(id);
-        const reference = todo.references.find(
-            e => e.key === referenceInput.key,
-        );
-
-        if (reference) throw new ConflictException(`Reference already exists`);
-
-        return await this.todoRepository.addReference(todo, referenceInput);
     }
 }

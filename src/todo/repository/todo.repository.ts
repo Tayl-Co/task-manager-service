@@ -6,8 +6,7 @@ import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { Project } from '@project/entity/project.entity';
-import { Reference } from '@todo/entity/reference.entity';
-import { CreateReferenceDto } from '@todo/dtos/createReference.dto';
+import { Reference } from '@reference/entity/reference.entity';
 
 @Injectable()
 export class ToDoRepository {
@@ -57,19 +56,6 @@ export class ToDoRepository {
         return await this.todoRepository.findOne({
             relations: { project: true, references: true },
             where: { id },
-        });
-    }
-
-    async addReference(
-        todo: ToDo,
-        referenceInput: CreateReferenceDto,
-    ): Promise<ToDo> {
-        const reference = await this.referenceRepository.create(referenceInput);
-        const newReference = await this.referenceRepository.save(reference);
-
-        return await this.todoRepository.save({
-            ...todo,
-            references: [...todo.references, newReference],
         });
     }
 }

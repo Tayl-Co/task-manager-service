@@ -10,7 +10,7 @@ import { Project } from '@project/entity/project.entity';
 import { ProjectModule } from '@project/project.module';
 import { TodoModule } from '@todo/todo.module';
 import { ToDo } from '@todo/entity/todo.entity';
-import { Reference } from '@todo/entity/reference.entity';
+import { Reference } from '@reference/entity/reference.entity';
 
 @Module({
     imports: [

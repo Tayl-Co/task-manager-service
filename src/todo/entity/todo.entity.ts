@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
-import { Reference } from '@todo/entity/reference.entity';
+import { Reference } from '@reference/entity/reference.entity';
 
 // TODO: Add property Reference
 // TODO: Add property Activity
