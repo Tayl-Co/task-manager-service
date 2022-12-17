@@ -4,14 +4,20 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TeamModule } from '@team/team.module';
-import { Team } from '@team/entity/team.entity';
-import { Project } from '@project/entity/project.entity';
+
+// Modules
+import { ReferenceModule } from '@reference/reference.module';
 import { ProjectModule } from '@project/project.module';
 import { TodoModule } from '@todo/todo.module';
-import { ToDo } from '@todo/entity/todo.entity';
+import { LabelModule } from '@label/label.module';
+import { TeamModule } from '@team/team.module';
+
+// Entities
+import { Project } from '@project/entity/project.entity';
 import { Reference } from '@reference/entity/reference.entity';
-import { ReferenceModule } from '@reference/reference.module';
+import { Label } from '@label/entity/label.entity';
+import { Team } from '@team/entity/team.entity';
+import { ToDo } from '@todo/entity/todo.entity';
 
 @Module({
     imports: [
@@ -30,7 +36,7 @@ import { ReferenceModule } from '@reference/reference.module';
                 username: config.get<string>('TYPEORM_USERNAME'),
                 password: config.get<string>('TYPEORM_PASSWORD'),
                 database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team, Project, ToDo, Reference],
+                entities: [Team, Project, ToDo, Reference, Label],
                 synchronize: true,
             }),
         }),
@@ -38,6 +44,7 @@ import { ReferenceModule } from '@reference/reference.module';
         ProjectModule,
         TodoModule,
         ReferenceModule,
+        LabelModule,
     ],
     controllers: [],
     providers: [],
