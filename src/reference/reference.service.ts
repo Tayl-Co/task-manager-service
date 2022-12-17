@@ -3,6 +3,7 @@ import { ReferenceRepository } from '@reference/repository/reference.repository'
 import { Reference } from '@reference/entity/reference.entity';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { TodoService } from '@todo/todo.service';
+import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -37,5 +38,9 @@ export class ReferenceService {
         const todo = await this.todoService.findOne(referenceInput.todoId);
 
         return this.repository.update(id, { ...referenceInput, todo });
+    }
+
+    search(searchInput: SearchReferenceDto): Promise<Array<Reference>> {
+        return this.repository.search(searchInput);
     }
 }
