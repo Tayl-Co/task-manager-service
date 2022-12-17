@@ -8,9 +8,13 @@ export class LabelRepository {
         @InjectRepository(Label) private labelRepository: Repository<Label>,
     ) {}
 
-    create(labelInput: LabelDto) {
+    create(labelInput: LabelDto): Promise<Label> {
         const label = this.labelRepository.create(labelInput);
 
         return this.labelRepository.save(label);
+    }
+
+    findOne(id: number): Promise<Label> {
+        return this.labelRepository.findOne({ where: { id } });
     }
 }
