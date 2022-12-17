@@ -1,12 +1,12 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ToDo } from '@todo/entity/todo.entity';
 
 @ObjectType()
 @Entity()
 export class Reference {
     @PrimaryColumn({ generated: true, unique: true })
-    @Field(() => Int)
+    @Field(() => ID)
     id: number;
 
     @Column()

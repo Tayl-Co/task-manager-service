@@ -17,10 +17,18 @@ export class ReferenceService {
         return this.repository.create({ ...referenceInput, todo });
     }
 
-    findOne(id: number): Promise<Reference> {
-        const reference = this.repository.findOne(id);
+    async findOne(id: number): Promise<Reference> {
+        const reference = await this.repository.findOne(id);
 
-        if (reference) throw new NotFoundException(`Reference ${id} not found`);
+        if (!reference)
+            throw new NotFoundException(`Reference ${id} not found`);
+
+        return reference;
+    }
+
+    async delete(id: number): Promise<Reference> {
+        const reference = await this.findOne(id);
+        await this.repository.delete(id);
 
         return reference;
     }

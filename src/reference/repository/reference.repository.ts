@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Reference } from '@reference/entity/reference.entity';
 import { CreateReferenceDto } from '@reference/dtos/createReference.dto';
 
@@ -19,5 +19,9 @@ export class ReferenceRepository {
 
     findOne(id: number): Promise<Reference> {
         return this.repository.findOne({ where: { id } });
+    }
+
+    delete(id: number): Promise<DeleteResult> {
+        return this.repository.delete(id);
     }
 }

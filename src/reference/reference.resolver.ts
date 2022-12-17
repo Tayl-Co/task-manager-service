@@ -14,6 +14,11 @@ export class ReferenceResolver {
         return await this.referenceService.create(referenceInput);
     }
 
+    @Mutation(() => Reference, { name: 'deleteReference' })
+    async delete(@Args('id') id: number): Promise<Reference> {
+        return await this.referenceService.delete(id);
+    }
+
     @Query(() => Reference, { name: 'findOneReference' })
     async findOne(@Args('id') id: number): Promise<Reference> {
         return await this.referenceService.findOne(id);
