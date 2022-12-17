@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, In, Like, Repository } from 'typeorm';
+import {
+    DeleteResult,
+    FindOptionsOrderValue,
+    In,
+    Like,
+    Repository,
+} from 'typeorm';
 import { Reference } from '@reference/entity/reference.entity';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
@@ -47,6 +53,7 @@ export class ReferenceRepository {
         idsToDo,
         type,
         key,
+        order,
         page,
         limit,
     }: SearchReferenceDto): Promise<Array<Reference>> {
@@ -64,6 +71,7 @@ export class ReferenceRepository {
             where,
             take: limit,
             skip: page * limit,
+            order: { id: order as FindOptionsOrderValue },
             relations: { todo: true },
         });
     }
