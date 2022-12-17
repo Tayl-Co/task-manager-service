@@ -45,6 +45,7 @@ export class ReferenceRepository {
     search({
         ids,
         type,
+        key,
         page,
         limit,
     }: SearchReferenceDto): Promise<Array<Reference>> {
@@ -53,6 +54,8 @@ export class ReferenceRepository {
         if (ids) where = { ...where, id: In(ids) };
 
         if (type) where = { ...where, type: Like(`%${type}%`) };
+
+        if (key) where = { ...where, key: Like(`%${key}%`) };
 
         return this.repository.find({ where, take: limit, skip: page * limit });
     }
