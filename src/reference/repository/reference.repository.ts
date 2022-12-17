@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
 import { Reference } from '@reference/entity/reference.entity';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
@@ -42,8 +42,14 @@ export class ReferenceRepository {
         return this.repository.save(reference);
     }
 
-    search({ page, limit }: SearchReferenceDto): Promise<Array<Reference>> {
+    search({
+        ids,
+        page,
+        limit,
+    }: SearchReferenceDto): Promise<Array<Reference>> {
         let where = {};
+
+        if (ids) where = { ...where, id: In(ids) };
 
         return this.repository.find({ where, take: limit, skip: page * limit });
     }
