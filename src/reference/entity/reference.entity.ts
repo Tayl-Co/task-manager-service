@@ -21,7 +21,10 @@ export class Reference {
     @Field()
     url: string;
 
-    @ManyToOne(() => ToDo, todo => todo.references)
+    @ManyToOne(() => ToDo, todo => todo.references, {
+        cascade: ['insert', 'update'],
+        onDelete: 'CASCADE',
+    })
     @Field(() => ToDo)
     todo: ToDo;
 }

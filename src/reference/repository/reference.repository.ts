@@ -11,12 +11,7 @@ export class ReferenceRepository {
         private repository: Repository<Reference>,
     ) {}
 
-    createReference({
-        type,
-        todo,
-        url,
-        key,
-    }: CreateReferenceDto): Promise<Reference> {
+    create({ type, todo, url, key }: CreateReferenceDto): Promise<Reference> {
         const reference = this.repository.create({ type, todo, url, key });
 
         return this.repository.save(reference);
