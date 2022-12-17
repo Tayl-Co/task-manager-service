@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ReferenceService } from '@reference/reference.service';
 import { Reference } from '@reference/entity/reference.entity';
-import { CreateReferenceDto } from '@reference/dtos/createReference.dto';
+import { ReferenceDto } from '@reference/dtos/reference.dto';
 
 @Resolver()
 export class ReferenceResolver {
@@ -9,7 +9,7 @@ export class ReferenceResolver {
 
     @Mutation(() => Reference, { name: 'createReference' })
     async create(
-        @Args('referenceInput') referenceInput: CreateReferenceDto,
+        @Args('referenceInput') referenceInput: ReferenceDto,
     ): Promise<Reference> {
         return await this.referenceService.create(referenceInput);
     }
@@ -17,6 +17,14 @@ export class ReferenceResolver {
     @Mutation(() => Reference, { name: 'deleteReference' })
     async delete(@Args('id') id: number): Promise<Reference> {
         return await this.referenceService.delete(id);
+    }
+
+    @Mutation(() => Reference, { name: 'updateReference' })
+    async update(
+        @Args('id') id: number,
+        @Args('referenceInput') referenceInput: ReferenceDto,
+    ): Promise<Reference> {
+        return await this.referenceService.update(id, referenceInput);
     }
 
     @Query(() => Reference, { name: 'findOneReference' })

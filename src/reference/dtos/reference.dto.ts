@@ -9,7 +9,7 @@ import { Field, InputType } from '@nestjs/graphql';
 import { ToDo } from '@todo/entity/todo.entity';
 
 @InputType()
-export class CreateReferenceDto {
+export class ReferenceDto {
     @IsNotEmpty({ message: 'Required Type' })
     @IsString()
     @Field()

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReferenceRepository } from '@reference/repository/reference.repository';
 import { Reference } from '@reference/entity/reference.entity';
-import { CreateReferenceDto } from '@reference/dtos/createReference.dto';
+import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { TodoService } from '@todo/todo.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ReferenceService {
         private todoService: TodoService,
     ) {}
 
-    async create(referenceInput: CreateReferenceDto): Promise<Reference> {
+    async create(referenceInput: ReferenceDto): Promise<Reference> {
         const todo = await this.todoService.findOne(referenceInput.todoId);
 
         return this.repository.create({ ...referenceInput, todo });
@@ -31,5 +31,11 @@ export class ReferenceService {
         await this.repository.delete(id);
 
         return reference;
+    }
+
+    async update(id: number, referenceInput: ReferenceDto): Promise<Reference> {
+        const todo = await this.todoService.findOne(referenceInput.todoId);
+
+        return this.repository.update(id, { ...referenceInput, todo });
     }
 }
