@@ -1,16 +1,16 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { BaseSearchFilterDto } from '@src/common/dtos/baseSearchFilter.dto';
 import { IsOptional, IsString } from 'class-validator';
 
-@ObjectType()
+@InputType()
 export class SearchLabelDto extends BaseSearchFilterDto {
     @IsOptional()
     @IsString()
-    @Field()
+    @Field({ nullable: true })
     name: string;
 
     @IsOptional()
     @IsString()
-    @Field()
+    @Field({ nullable: true })
     color: string;
 }
