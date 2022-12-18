@@ -50,10 +50,12 @@ export class LabelService {
     }
 
     search(searchInput: SearchLabelDto): Promise<Array<Label>> {
-        const { name, limit, order, page } = searchInput;
+        const { name, color, limit, order, page } = searchInput;
         let where = {};
 
         if (name) where = { ...where, name: Like(`%${name}%`) };
+
+        if (color) where = { ...where, color: Like(`%${color}%`) };
 
         return this.labelRepository.find({
             where,
