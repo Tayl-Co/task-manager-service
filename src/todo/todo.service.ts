@@ -77,4 +77,12 @@ export class TodoService {
         todo.labels = [...todo.labels, label];
         return this.todoRepository.save(todo);
     }
+
+    async removeLabel(id: number, idLabel: number): Promise<ToDo> {
+        const todo = await this.findOne(id);
+
+        todo.labels = todo.labels.filter(label => idLabel !== label.id);
+
+        return this.todoRepository.save(todo);
+    }
 }

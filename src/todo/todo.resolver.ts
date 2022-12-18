@@ -28,6 +28,14 @@ export class TodoResolver {
         return await this.todoService.addLabel(id, idLabel);
     }
 
+    @Mutation(() => ToDo, { name: 'removeLabel' })
+    async removeLabel(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('idLabel', { type: () => Int }) idLabel: number,
+    ): Promise<ToDo> {
+        return await this.todoService.removeLabel(id, idLabel);
+    }
+
     @Query(() => [ToDo], { name: 'findAll' })
     async findAll(): Promise<Array<ToDo>> {
         return await this.todoService.findAll();
