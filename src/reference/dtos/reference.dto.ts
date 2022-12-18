@@ -1,12 +1,5 @@
-import {
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUrl,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsUrl } from 'class-validator';
 import { Field, InputType } from '@nestjs/graphql';
-import { ToDo } from '@todo/entity/todo.entity';
 
 @InputType()
 export class ReferenceDto {
@@ -29,7 +22,4 @@ export class ReferenceDto {
     @IsNumber()
     @Field()
     todoId: number;
-
-    @IsOptional()
-    todo: ToDo;
 }
