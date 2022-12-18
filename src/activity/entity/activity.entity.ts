@@ -11,7 +11,7 @@ export class Activity {
 
     @Column()
     @Field()
-    authorId: number;
+    authorId: string;
 
     @Column()
     @Field()
