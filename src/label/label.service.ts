@@ -1,18 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { LabelRepository } from '@label/repository/label.repository';
+import {
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { LabelDto } from '@label/dtos/label.dto';
 
 @Injectable()
 export class LabelService {
-    constructor(private labelRepository: LabelRepository) {}
+    constructor(
+        @InjectRepository(Label) private labelRepository: Repository<Label>,
+    ) {}
 
-    create(labelInput: LabelDto): Promise<Label> {
-        return this.labelRepository.create(labelInput);
+    async create(labelInput: LabelDto): Promise<Label> {
+        const label = await this.labelRepository.findOne({
+            where: { name: Equal(labelInput.name) },
+        });
+
+        if (label) throw new ConflictException(`${label.name} already exists`);
+
+        const newLabel = this.labelRepository.create(labelInput);
+
+        return this.labelRepository.save(newLabel);
     }
 
     async findOne(id: number): Promise<Label> {
-        const label = await this.labelRepository.findOne(id);
+        const label = await this.labelRepository.findOneBy({ id });
 
         if (!label) throw new NotFoundException(`Label ${id} not found`);
 
@@ -24,5 +39,12 @@ export class LabelService {
         await this.labelRepository.delete(id);
 
         return label;
+    }
+
+    async update(id: number, labelInput: LabelDto): Promise<Label> {
+        const label = await this.findOne(id);
+        Object.assign(label, labelInput);
+
+        return this.labelRepository.save(label);
     }
 }
