@@ -4,9 +4,10 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
+import { Equal, Like, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { LabelDto } from '@label/dtos/label.dto';
+import { SearchLabelDto } from '@label/dtos/searchLabel.dto';
 
 @Injectable()
 export class LabelService {
@@ -46,5 +47,14 @@ export class LabelService {
         Object.assign(label, labelInput);
 
         return this.labelRepository.save(label);
+    }
+
+    search(searchInput: SearchLabelDto): Promise<Array<Label>> {
+        const { name } = searchInput;
+        let where = {};
+
+        if (name) where = { ...where, name: Like(`%${name}%`) };
+
+        return this.labelRepository.find({ where });
     }
 }
