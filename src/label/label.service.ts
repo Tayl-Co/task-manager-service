@@ -18,4 +18,11 @@ export class LabelService {
 
         return label;
     }
+
+    async delete(id: number): Promise<Label> {
+        const label = await this.findOne(id);
+        await this.labelRepository.delete(id);
+
+        return label;
+    }
 }

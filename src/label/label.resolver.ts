@@ -12,6 +12,11 @@ export class LabelResolver {
         return await this.labelService.create(labelInput);
     }
 
+    @Mutation(() => Label, { name: 'deleteLabel' })
+    async delete(@Args('id') id: number): Promise<Label> {
+        return await this.labelService.delete(id);
+    }
+
     @Query(() => Label, { name: 'findOneLabel' })
     async findOne(@Args('id') id: number): Promise<Label> {
         return await this.labelService.findOne(id);

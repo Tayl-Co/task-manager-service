@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Label } from '@label/entity/label.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { LabelDto } from '@label/dtos/label.dto';
 
 export class LabelRepository {
@@ -16,5 +16,9 @@ export class LabelRepository {
 
     findOne(id: number): Promise<Label> {
         return this.labelRepository.findOne({ where: { id } });
+    }
+
+    delete(id: number): Promise<DeleteResult> {
+        return this.labelRepository.delete(id);
     }
 }
