@@ -7,5 +7,6 @@ import { Label } from '@label/entity/label.entity';
 @Module({
     imports: [TypeOrmModule.forFeature([Label])],
     providers: [LabelService, LabelResolver],
+    exports: [LabelService],
 })
 export class LabelModule {}

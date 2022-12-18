@@ -7,12 +7,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
+import { LabelService } from '@label/label.service';
 
 @Injectable()
 export class TodoService {
     constructor(
         @InjectRepository(ToDo) private todoRepository: Repository<ToDo>,
         private projectService: ProjectService,
+        private labelService: LabelService,
     ) {}
 
     async create(todoInput: CreateToDoDto): Promise<ToDo> {
@@ -53,7 +55,7 @@ export class TodoService {
 
     async findOne(id: number): Promise<ToDo> {
         const todo = await this.todoRepository.findOne({
-            relations: { project: true, references: true },
+            relations: { project: true, references: true, labels: true },
             where: { id },
         });
 
@@ -66,5 +68,13 @@ export class TodoService {
         const todo = await this.findOne(id);
 
         return await this.todoRepository.remove(todo);
+    }
+
+    async addLabel(id: number, idLabel: number): Promise<ToDo> {
+        const label = await this.labelService.findOne(idLabel);
+        const todo = await this.findOne(id);
+
+        todo.labels = [...todo.labels, label];
+        return this.todoRepository.save(todo);
     }
 }

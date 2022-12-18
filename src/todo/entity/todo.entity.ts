@@ -2,6 +2,7 @@ import {
     Column,
     Entity,
     JoinTable,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryColumn,
@@ -9,10 +10,9 @@ import {
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
 import { Reference } from '@reference/entity/reference.entity';
+import { Label } from '@label/entity/label.entity';
 
-// TODO: Add property Reference
 // TODO: Add property Activity
-// TODO: Add property Label
 @ObjectType()
 @Entity()
 export class ToDo {
@@ -84,4 +84,9 @@ export class ToDo {
     @JoinTable()
     @Field(() => [Reference])
     references: Array<Reference>;
+
+    @ManyToMany(() => Label)
+    @JoinTable()
+    @Field(() => [Label], { nullable: true })
+    labels: Array<Label>;
 }
