@@ -11,6 +11,7 @@ import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
 import { Reference } from '@reference/entity/reference.entity';
 import { Label } from '@label/entity/label.entity';
+import { Activity } from '@src/activity/entity/activity.entity';
 
 // TODO: Add property Activity
 @ObjectType()
@@ -84,6 +85,11 @@ export class ToDo {
     @JoinTable()
     @Field(() => [Reference])
     references: Array<Reference>;
+
+    @OneToMany(() => Activity, activity => activity.todo)
+    @JoinTable()
+    @Field(() => [Activity])
+    activities: Array<Activity>;
 
     @ManyToMany(() => Label)
     @JoinTable()

@@ -25,7 +25,8 @@
       "@project/*": ["src/project/*"],
       "@todo/*": ["src/todo/*"],
       "@reference/*": ["src/reference/*"],
-      "@label/*": ["src/label/*"]
+      "@label/*": ["src/label/*"],
+      "@activity/*": ["src/activity/*"]
     }
   }
 }

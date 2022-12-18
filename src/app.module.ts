@@ -11,6 +11,7 @@ import { ProjectModule } from '@project/project.module';
 import { TodoModule } from '@todo/todo.module';
 import { LabelModule } from '@label/label.module';
 import { TeamModule } from '@team/team.module';
+import { ActivityModule } from '@activity/activity.module';
 
 // Entities
 import { Project } from '@project/entity/project.entity';
@@ -18,6 +19,7 @@ import { Reference } from '@reference/entity/reference.entity';
 import { Label } from '@label/entity/label.entity';
 import { Team } from '@team/entity/team.entity';
 import { ToDo } from '@todo/entity/todo.entity';
+import { Activity } from '@activity/entity/activity.entity';
 
 @Module({
     imports: [
@@ -36,7 +38,7 @@ import { ToDo } from '@todo/entity/todo.entity';
                 username: config.get<string>('TYPEORM_USERNAME'),
                 password: config.get<string>('TYPEORM_PASSWORD'),
                 database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team, Project, ToDo, Reference, Label],
+                entities: [Team, Project, ToDo, Reference, Label, Activity],
                 synchronize: true,
             }),
         }),
@@ -45,6 +47,7 @@ import { ToDo } from '@todo/entity/todo.entity';
         TodoModule,
         ReferenceModule,
         LabelModule,
+        ActivityModule,
     ],
     controllers: [],
     providers: [],
