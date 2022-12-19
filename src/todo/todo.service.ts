@@ -224,13 +224,25 @@ export class TodoService {
     }
 
     search(searchInput: SearchTodoDto): Promise<Array<ToDo>> {
-        const { ids, title, type, status, priority, page, limit, order } =
-            searchInput;
+        const {
+            ids,
+            title,
+            type,
+            status,
+            priority,
+            description,
+            page,
+            limit,
+            order,
+        } = searchInput;
         let where = {};
 
         if (ids) where = { ...where, id: In(ids) };
 
         if (title) where = { ...where, title: Like(`%${title}%`) };
+
+        if (description)
+            where = { ...where, description: Like(`%${description}%`) };
 
         if (type) where = { ...where, type: Equal(type) };
 
