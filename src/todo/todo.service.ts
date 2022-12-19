@@ -123,4 +123,24 @@ export class TodoService {
 
         return this.todoRepository.save(todo);
     }
+
+    async removeAssignee(id: number, assigneeId: string): Promise<ToDo> {
+        const todo = await this.findOne(id);
+        const isIncluded = todo.assigneesIds.includes(assigneeId);
+
+        if (!isIncluded)
+            throw new NotFoundException(`${assigneeId} does not exist`);
+
+        const activity = await this.activityService.create({
+            authorId: 'username',
+            type: ActivityEnum.ASSIGNEE_REMOVED,
+            newValue: assigneeId,
+            todo,
+        });
+
+        todo.assigneesIds = todo.assigneesIds.filter(id => assigneeId !== id);
+        todo.activities = [...todo.activities, activity];
+
+        return this.todoRepository.save(todo);
+    }
 }
