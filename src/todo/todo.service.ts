@@ -13,6 +13,7 @@ import {
     Equal,
     FindOptionsOrderValue,
     In,
+    LessThanOrEqual,
     Like,
     MoreThanOrEqual,
     Repository,
@@ -244,6 +245,7 @@ export class TodoService {
             parentIds,
             assigneesIds,
             startDate,
+            endDate,
             page,
             limit,
             order,
@@ -274,6 +276,9 @@ export class TodoService {
 
         if (startDate)
             where = { ...where, creationDate: MoreThanOrEqual(startDate) };
+
+        if (endDate)
+            where = { ...where, creationDate: LessThanOrEqual(endDate) };
 
         return this.todoRepository.find({
             relations: {
