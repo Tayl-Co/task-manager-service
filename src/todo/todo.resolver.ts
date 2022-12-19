@@ -3,6 +3,7 @@ import { TodoService } from '@todo/todo.service';
 import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { UpdateTodoDto } from '@todo/dtos/updateTodo.dto';
+import { SearchTodoDto } from '@todo/dtos/searchTodo.dto';
 
 @Resolver()
 export class TodoResolver {
@@ -70,5 +71,13 @@ export class TodoResolver {
     @Query(() => ToDo, { name: 'findOneToDo' })
     async findOne(@Args('id', { type: () => Int }) id: number): Promise<ToDo> {
         return await this.todoService.findOne(id);
+    }
+
+    @Query(() => [ToDo], { name: 'searchToDo' })
+    async search(
+        @Args('searchInput', { type: () => SearchTodoDto })
+        searchInput: SearchTodoDto,
+    ): Promise<Array<ToDo>> {
+        return await this.todoService.search(searchInput);
     }
 }

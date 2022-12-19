@@ -8,7 +8,7 @@ import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { ProjectService } from '@project/project.service';
 import { Project } from '@project/entity/project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsOrderValue, Repository } from 'typeorm';
+import { FindOptionsOrderValue, In, Repository } from 'typeorm';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { LabelService } from '@label/label.service';
@@ -224,10 +224,18 @@ export class TodoService {
     }
 
     search(searchInput: SearchTodoDto): Promise<Array<ToDo>> {
-        const { page, limit, order } = searchInput;
+        const { ids, page, limit, order } = searchInput;
         let where = {};
 
+        if (ids) where = { ...where, id: In(ids) };
+
         return this.todoRepository.find({
+            relations: {
+                project: true,
+                references: true,
+                labels: true,
+                activities: true,
+            },
             where,
             order: { title: order as FindOptionsOrderValue },
             take: limit,
