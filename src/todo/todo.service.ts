@@ -8,7 +8,14 @@ import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { ProjectService } from '@project/project.service';
 import { Project } from '@project/entity/project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsOrderValue, In, Like, Repository } from 'typeorm';
+import {
+    ArrayContains,
+    Equal,
+    FindOptionsOrderValue,
+    In,
+    Like,
+    Repository,
+} from 'typeorm';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { LabelService } from '@label/label.service';
@@ -234,6 +241,7 @@ export class TodoService {
             pinned,
             authorId,
             parentIds,
+            assigneesIds,
             page,
             limit,
             order,
@@ -258,6 +266,9 @@ export class TodoService {
         if (authorId) where = { ...where, authorId: Equal(authorId) };
 
         if (parentIds) where = { ...where, parentId: In(parentIds) };
+
+        if (assigneesIds)
+            where = { ...where, assigneesIds: ArrayContains(assigneesIds) };
 
         return this.todoRepository.find({
             relations: {
