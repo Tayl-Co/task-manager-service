@@ -232,6 +232,7 @@ export class TodoService {
             priority,
             description,
             pinned,
+            authorId,
             page,
             limit,
             order,
@@ -252,6 +253,8 @@ export class TodoService {
         if (priority) where = { ...where, priority: Equal(priority) };
 
         if (pinned !== undefined) where = { ...where, pinned: Equal(pinned) };
+
+        if (authorId) where = { ...where, authorId: Equal(authorId) };
 
         return this.todoRepository.find({
             relations: {
