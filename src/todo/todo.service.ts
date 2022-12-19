@@ -14,6 +14,7 @@ import {
     FindOptionsOrderValue,
     In,
     Like,
+    MoreThanOrEqual,
     Repository,
 } from 'typeorm';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
@@ -242,6 +243,7 @@ export class TodoService {
             authorId,
             parentIds,
             assigneesIds,
+            startDate,
             page,
             limit,
             order,
@@ -269,6 +271,9 @@ export class TodoService {
 
         if (assigneesIds)
             where = { ...where, assigneesIds: ArrayContains(assigneesIds) };
+
+        if (startDate)
+            where = { ...where, creationDate: MoreThanOrEqual(startDate) };
 
         return this.todoRepository.find({
             relations: {
