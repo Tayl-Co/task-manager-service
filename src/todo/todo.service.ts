@@ -231,6 +231,7 @@ export class TodoService {
             status,
             priority,
             description,
+            pinned,
             page,
             limit,
             order,
@@ -249,6 +250,8 @@ export class TodoService {
         if (status) where = { ...where, status: Equal(status) };
 
         if (priority) where = { ...where, priority: Equal(priority) };
+
+        if (pinned !== undefined) where = { ...where, pinned: Equal(pinned) };
 
         return this.todoRepository.find({
             relations: {
