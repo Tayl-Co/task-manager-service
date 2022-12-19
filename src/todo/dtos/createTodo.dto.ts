@@ -25,8 +25,8 @@ export class CreateToDoDto {
 
     @IsArray()
     @IsNumber({}, { each: true })
-    @Field(() => [Int], { nullable: true })
-    assigneesIds: Array<number>;
+    @Field(() => [String], { nullable: true })
+    assigneesIds: Array<string>;
 
     @IsOptional()
     @IsNumber()

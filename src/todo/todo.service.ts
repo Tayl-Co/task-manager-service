@@ -108,4 +108,19 @@ export class TodoService {
 
         return this.todoRepository.save(todo);
     }
+
+    async addAssignee(id: number, assigneeId: string): Promise<ToDo> {
+        const todo = await this.findOne(id);
+        const activity = await this.activityService.create({
+            authorId: 'username',
+            type: ActivityEnum.ASSIGNEE_ADDED,
+            newValue: assigneeId,
+            todo,
+        });
+
+        todo.assigneesIds = [...todo.assigneesIds, assigneeId];
+        todo.activities = [...todo.activities, activity];
+
+        return this.todoRepository.save(todo);
+    }
 }

@@ -36,6 +36,14 @@ export class TodoResolver {
         return await this.todoService.removeLabel(id, idLabel);
     }
 
+    @Mutation(() => ToDo, { name: 'addAssignee' })
+    async addAssignee(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('assigneeId', { type: () => String }) assigneeId: string,
+    ): Promise<ToDo> {
+        return await this.todoService.addAssignee(id, assigneeId);
+    }
+
     @Query(() => [ToDo], { name: 'findAll' })
     async findAll(): Promise<Array<ToDo>> {
         return await this.todoService.findAll();

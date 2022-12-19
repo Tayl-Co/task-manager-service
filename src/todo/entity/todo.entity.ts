@@ -7,13 +7,12 @@ import {
     OneToMany,
     PrimaryColumn,
 } from 'typeorm';
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Project } from '@project/entity/project.entity';
 import { Reference } from '@reference/entity/reference.entity';
 import { Label } from '@label/entity/label.entity';
 import { Activity } from '@src/activity/entity/activity.entity';
 
-// TODO: Add property Activity
 @ObjectType()
 @Entity()
 export class ToDo {
@@ -50,8 +49,8 @@ export class ToDo {
     authorId: string;
 
     @Column({ array: true, type: 'text', default: [] })
-    @Field(() => [Int], { nullable: true })
-    assigneesIds: Array<number>;
+    @Field(() => [String], { nullable: true })
+    assigneesIds: Array<string>;
 
     @Column({ default: new Date() })
     @Field({ nullable: true })
