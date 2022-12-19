@@ -15,7 +15,7 @@ export class CreateToDoDto {
     title: string;
 
     @IsString()
-    @Field()
+    @Field({ nullable: true, defaultValue: '' })
     description: string;
 
     @IsNotEmpty({ message: 'Required Type' })
@@ -24,7 +24,7 @@ export class CreateToDoDto {
     type: number;
 
     @IsArray()
-    @IsNumber({}, { each: true })
+    @IsString({ each: true })
     @Field(() => [String], { nullable: true })
     assigneesIds: Array<string>;
 

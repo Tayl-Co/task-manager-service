@@ -10,6 +10,11 @@ import {
 
 @InputType()
 export class UpdateTodoDto extends CreateToDoDto {
+    @IsNotEmpty({ message: 'Required Status' })
+    @IsNumber()
+    @Field()
+    status: number;
+
     @IsNotEmpty({ message: 'Required Pinned' })
     @IsBoolean()
     @Field()

@@ -14,6 +14,8 @@ import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { LabelService } from '@label/label.service';
 import { ActivityService } from '@activity/activity.service';
 import { ActivityEnum } from '@src/common/enums/activity.enum';
+import { UpdateTodoDto } from '@todo/dtos/updateTodo.dto';
+import { Activity } from '@activity/entity/activity.entity';
 
 @Injectable()
 export class TodoService {
@@ -80,6 +82,73 @@ export class TodoService {
         const todo = await this.findOne(id);
 
         return await this.todoRepository.remove(todo);
+    }
+
+    async update(id: number, todoInput: UpdateTodoDto): Promise<ToDo> {
+        const {
+            title,
+            description,
+            parentId,
+            dueDate,
+            type,
+            priority,
+            status,
+            pinned,
+            estimatedDueDate,
+            assigneesIds,
+        } = todoInput;
+        let activities: Array<Activity> = [];
+        const todo = await this.findOne(id);
+        const newDueDate = dueDate ? new Date(dueDate) : null;
+
+        if (todo.title !== title) {
+            activities.push(
+                await this.activityService.create({
+                    todo,
+                    newValue: title,
+                    type: ActivityEnum.TITLE_CHANGED,
+                    authorId: 'username',
+                }),
+            );
+        }
+
+        if (newDueDate?.toISOString() !== todo.dueDate?.toISOString()) {
+            activities.push(
+                await this.activityService.create({
+                    todo,
+                    newValue: newDueDate?.toISOString(),
+                    type: ActivityEnum.DEADLINE_CHANGED,
+                    authorId: 'username',
+                }),
+            );
+        }
+
+        if (todo.status !== status) {
+            activities.push(
+                await this.activityService.create({
+                    todo,
+                    newValue: `${status}`,
+                    type: ActivityEnum.STATUS_CHANGED,
+                    authorId: 'username',
+                }),
+            );
+        }
+
+        Object.assign(todo, {
+            title,
+            description,
+            parentId,
+            dueDate: newDueDate,
+            type,
+            priority,
+            status,
+            pinned,
+            estimatedDueDate,
+            assigneesIds,
+            activities: [...todo.activities, ...activities],
+        });
+
+        return this.todoRepository.save(todo);
     }
 
     async addLabel(id: number, idLabel: number): Promise<ToDo> {
