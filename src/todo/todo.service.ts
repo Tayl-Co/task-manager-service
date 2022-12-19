@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { ProjectService } from '@project/project.service';
@@ -111,6 +115,11 @@ export class TodoService {
 
     async addAssignee(id: number, assigneeId: string): Promise<ToDo> {
         const todo = await this.findOne(id);
+        const isIncluded = todo.assigneesIds.includes(assigneeId);
+
+        if (isIncluded)
+            throw new ConflictException(`${assigneeId} already exists`);
+
         const activity = await this.activityService.create({
             authorId: 'username',
             type: ActivityEnum.ASSIGNEE_ADDED,
