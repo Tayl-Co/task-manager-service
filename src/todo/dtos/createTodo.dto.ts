@@ -5,6 +5,7 @@ import {
     IsNotEmpty,
     IsNumber,
     IsOptional,
+    IsDateString,
 } from 'class-validator';
 
 @InputType()
@@ -34,7 +35,7 @@ export class CreateToDoDto {
     projectId: number;
 
     @IsOptional()
-    @IsString()
+    @IsDateString()
     @Field({ nullable: true })
     dueDate: string;
 

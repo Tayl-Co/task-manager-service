@@ -2,10 +2,10 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import {
     IsBoolean,
+    IsDateString,
     IsNotEmpty,
     IsNumber,
     IsOptional,
-    IsString,
 } from 'class-validator';
 
 @InputType()
@@ -21,7 +21,7 @@ export class UpdateTodoDto extends CreateToDoDto {
     pinned: boolean;
 
     @IsOptional()
-    @IsString()
+    @IsDateString()
     @Field({ nullable: true })
     estimatedDueDate: string;
 
