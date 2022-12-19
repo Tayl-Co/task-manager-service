@@ -5,9 +5,15 @@ import { TodoService } from './todo.service';
 import { TodoResolver } from './todo.resolver';
 import { ProjectModule } from '@project/project.module';
 import { LabelModule } from '@label/label.module';
+import { ActivityModule } from '@activity/activity.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ToDo]), ProjectModule, LabelModule],
+    imports: [
+        TypeOrmModule.forFeature([ToDo]),
+        ProjectModule,
+        LabelModule,
+        ActivityModule,
+    ],
     exports: [TypeOrmModule, TodoService],
     providers: [TodoService, TodoResolver],
 })

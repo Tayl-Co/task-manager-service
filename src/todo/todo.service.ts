@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { LabelService } from '@label/label.service';
+import { ActivityService } from '@activity/activity.service';
+import { ActivityEnum } from '@src/common/enums/activity.enum';
 
 @Injectable()
 export class TodoService {
@@ -15,6 +17,7 @@ export class TodoService {
         @InjectRepository(ToDo) private todoRepository: Repository<ToDo>,
         private projectService: ProjectService,
         private labelService: LabelService,
+        private activityService: ActivityService,
     ) {}
 
     async create(todoInput: CreateToDoDto): Promise<ToDo> {
@@ -55,7 +58,12 @@ export class TodoService {
 
     async findOne(id: number): Promise<ToDo> {
         const todo = await this.todoRepository.findOne({
-            relations: { project: true, references: true, labels: true },
+            relations: {
+                project: true,
+                references: true,
+                labels: true,
+                activities: true,
+            },
             where: { id },
         });
 
@@ -73,8 +81,16 @@ export class TodoService {
     async addLabel(id: number, idLabel: number): Promise<ToDo> {
         const label = await this.labelService.findOne(idLabel);
         const todo = await this.findOne(id);
+        const activity = await this.activityService.create({
+            authorId: 'username',
+            type: ActivityEnum.LABEL_ADDED,
+            newValue: `${idLabel}`,
+            todo,
+        });
 
+        todo.activities = [...todo.activities, activity];
         todo.labels = [...todo.labels, label];
+
         return this.todoRepository.save(todo);
     }
 
