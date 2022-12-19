@@ -224,7 +224,7 @@ export class TodoService {
     }
 
     search(searchInput: SearchTodoDto): Promise<Array<ToDo>> {
-        const { ids, title, type, page, limit, order } = searchInput;
+        const { ids, title, type, status, page, limit, order } = searchInput;
         let where = {};
 
         if (ids) where = { ...where, id: In(ids) };
@@ -232,6 +232,8 @@ export class TodoService {
         if (title) where = { ...where, title: Like(`%${title}%`) };
 
         if (type) where = { ...where, type: Equal(type) };
+
+        if (status) where = { ...where, status: Equal(status) };
 
         return this.todoRepository.find({
             relations: {
