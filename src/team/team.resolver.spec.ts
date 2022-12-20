@@ -40,7 +40,6 @@ describe('TeamResolver', () => {
                     projects: [],
                 };
 
-                data.push(team);
                 return Promise.resolve(team);
             },
 
@@ -236,6 +235,55 @@ describe('TeamResolver', () => {
     });
 
     describe('search', () => {
+        it('Should return the teams referring to the ids informed', async () => {
+            const response = await resolver.search({ ids: [2, 5] });
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject([
+                {
+                    id: 2,
+                    name: 'Team 2',
+                    ownerId: '566fa276-7293-4d55-b832-2e1160fd67f2',
+                    membersIds: [
+                        'eca80c07-1486-4568-9b1a-3923d0e01d21',
+                        '5cc8904a-d849-4fee-8ef9-4999a360611d',
+                    ],
+                    managersIds: ['fc0282ea-5660-4b9f-a47f-c3d499ae185a'],
+                    projects: [
+                        {
+                            id: 2,
+                            name: 'Project 2',
+                            description: 'Description of project 2',
+                            active: true,
+                            team: null,
+                            issues: [],
+                        },
+                    ],
+                },
+                {
+                    id: 5,
+                    name: 'Team 5',
+                    ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
+                    membersIds: [
+                        'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
+                        '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
+                    ],
+                    managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
+                    projects: [
+                        {
+                            id: 5,
+                            name: 'Project 5',
+                            description: 'Description of project 5',
+                            active: false,
+                            team: null,
+                            issues: [],
+                        },
+                    ],
+                },
+            ]);
+            expect(response.length).toEqual(2);
+        });
+
         it('Should return a maximum of 50 teams if it does not contain filters', async () => {
             const response = await resolver.search({});
 
