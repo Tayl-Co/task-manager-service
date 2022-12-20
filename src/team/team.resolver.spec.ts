@@ -113,7 +113,7 @@ describe('TeamResolver', () => {
         resolver = module.get<TeamResolver>(TeamResolver);
     });
 
-    it('should be defined', () => {
+    it('Should be defined', () => {
         expect(resolver).toBeDefined();
     });
 
@@ -178,7 +178,7 @@ describe('TeamResolver', () => {
     });
 
     describe('delete', () => {
-        it('should return deleted team', async () => {
+        it('Should return deleted team', async () => {
             const response = await resolver.delete(1);
 
             expect(response).toBeDefined();
@@ -191,6 +191,36 @@ describe('TeamResolver', () => {
                     'acb63589-c2b6-43d8-aa06-1bc722666bf0',
                 ],
                 managersIds: ['a192fd6d-67c1-4090-8011-d96f83cf3e9b'],
+                projects: [
+                    {
+                        id: 1,
+                        name: 'Project 1',
+                        description: 'Description of project 1',
+                        active: true,
+                        team: null,
+                        issues: [],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe('update', () => {
+        it('Should return updated team', async () => {
+            const response = await resolver.update(1, {
+                name: 'Team',
+                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
+                membersIds: [],
+                managersIds: [],
+            });
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                id: 1,
+                name: 'Team',
+                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
+                membersIds: [],
+                managersIds: [],
                 projects: [
                     {
                         id: 1,
