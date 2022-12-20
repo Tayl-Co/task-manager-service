@@ -10,7 +10,8 @@
       "name": "Project 1",
       "description": "Description of project 1",
       "active": true,
-      "team": null
+      "team": null,
+      "issues": []
     }]
   },
   {
@@ -24,7 +25,8 @@
       "name": "Project 2",
       "description": "Description of project 2",
       "active": true,
-      "team": null
+      "team": null,
+      "issues": []
     }]
   },
   {
@@ -38,7 +40,8 @@
       "name": "Project 3",
       "description": "Description of project 3",
       "active": false,
-      "team": null
+      "team": null,
+      "issues": []
     }]
   },
   {
@@ -52,7 +55,8 @@
       "name": "Project 4",
       "description": "Description of project 4",
       "active": true,
-      "team": null
+      "team": null,
+      "issues": []
     }]
   },
   {
@@ -66,7 +70,8 @@
       "name": "Project 5",
       "description": "Description of project 5",
       "active": false,
-      "team": null
+      "team": null,
+      "issues": []
     }]
   }
 ]

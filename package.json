@@ -68,8 +68,13 @@
       "ts"
     ],
     "moduleNameMapper": {
+      "^@src(.*)$": "<rootDir>/$1",
       "^@team(.*)$": "<rootDir>/team$1",
-      "^@project(.*)$": "<rootDir>/project$1"
+      "^@project(.*)$": "<rootDir>/project$1",
+      "^@todo(.*)$": "<rootDir>/todo$1",
+      "^@reference(.*)$": "<rootDir>/reference$1",
+      "^@label(.*)$": "<rootDir>/label$1",
+      "^@activity(.*)$": "<rootDir>/activity$1"
     },
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",

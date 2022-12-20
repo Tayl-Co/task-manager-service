@@ -1,117 +1,79 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamService } from '@team/team.service';
-import { TeamRepository } from '@team/repository/team.repository';
 import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
-import { TeamDto } from '@team/dtos/team.dto';
-import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import {
+    Repository,
+    DeepPartial,
+    FindOneOptions,
+    FindOptionsWhere,
+    FindManyOptions,
+} from 'typeorm';
+
+type Jest = typeof jest;
+
+const mockRepository =
+    (jest: Jest) =>
+    <T>(data: any) => ({
+        create: jest.fn().mockImplementation((entity: DeepPartial<T>) => {
+            let lastId = data[data.length - 1]?.id;
+            return Promise.resolve({ ...entity, projects: [], id: lastId + 1 });
+        }),
+        save: jest
+            .fn()
+            .mockImplementation((entity: DeepPartial<T>) =>
+                Promise.resolve(entity),
+            ),
+        find: jest
+            .fn()
+            .mockImplementation(
+                (options: FindManyOptions<T>): DeepPartial<T> => {
+                    const { where } = options;
+                    if (!where) return data;
+                },
+            ),
+        findOne: jest
+            .fn()
+            .mockImplementation(({ where }: FindOneOptions<T>) => {
+                const { id }: FindOptionsWhere<Team> =
+                    where as FindOptionsWhere<T>;
+                const item = data.find(e => e.id === id);
+
+                return Promise.resolve(item);
+            }),
+        delete: jest
+            .fn()
+            .mockImplementation((entity: DeepPartial<T>) =>
+                Promise.resolve(entity),
+            ),
+        remove: jest
+            .fn()
+            .mockImplementation((entity: DeepPartial<T>) =>
+                Promise.resolve(entity),
+            ),
+    });
+
+const initMockRepository = mockRepository(jest);
 
 describe('TeamService', () => {
     let service: TeamService;
-    let fakeRepository: Partial<TeamRepository>;
+    let teamRepository: Repository<Team>;
+    const teamRepositoryToken = getRepositoryToken(Team);
 
     beforeEach(async () => {
-        fakeRepository = {
-            async findAll(): Promise<Array<Team>> {
-                return Promise.resolve(data);
-            },
-            async findOne(id: number): Promise<Team> {
-                const team = data.find(team => team.id === id);
-
-                return Promise.resolve(team);
-            },
-            async remove(team: Team): Promise<Team> {
-                const indexTeam = data.map(e => e.id).indexOf(team.id);
-                delete data[indexTeam];
-                return Promise.resolve(team);
-            },
-            async create({
-                name,
-                ownerId,
-                membersIds,
-                managersIds,
-            }: TeamDto): Promise<Team> {
-                const team = {
-                    id: 6,
-                    name,
-                    ownerId,
-                    membersIds,
-                    managersIds,
-                    projects: [],
-                };
-
-                data.push(team);
-                return Promise.resolve(team);
-            },
-
-            async update(
-                id: number,
-                { name, ownerId, membersIds, managersIds }: TeamDto,
-            ): Promise<Team> {
-                const team = data.find(e => e.id === id);
-                team.name = name;
-                team.managersIds = managersIds;
-                team.membersIds = membersIds;
-                team.ownerId = ownerId;
-
-                return Promise.resolve(team);
-            },
-
-            async search({
-                ids,
-                name = '',
-                ownerId,
-                membersIds,
-                managersIds,
-                page = 0,
-                order = 'ASC',
-                limit = 50,
-            }: SearchFilterDto): Promise<Array<Team>> {
-                const indexOfPage = page * limit;
-                let response = data.filter(e => {
-                    return name === '' ? true : e.name === name;
-                });
-
-                if (ids || ownerId || membersIds || managersIds)
-                    response = response.filter(e => {
-                        if (
-                            membersIds &&
-                            e.membersIds.some(r => membersIds.includes(r))
-                        )
-                            return true;
-
-                        if (
-                            managersIds &&
-                            e.managersIds.some(r => managersIds.includes(r))
-                        )
-                            return true;
-
-                        if (e.ownerId && e.ownerId === ownerId) return true;
-
-                        return ids && ids.includes(e.id);
-                    });
-
-                return Promise.resolve(
-                    response
-                        .sort((a, b) => {
-                            if (order === 'DESC')
-                                return b.name > a.name ? 1 : -1;
-
-                            return a.name > b.name ? 1 : -1;
-                        })
-                        .slice(indexOfPage, indexOfPage + limit),
-                );
-            },
-        };
-
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 TeamService,
-                { provide: TeamRepository, useValue: fakeRepository },
+                {
+                    provide: teamRepositoryToken,
+                    useValue: initMockRepository<Team>(data),
+                },
             ],
         }).compile();
 
         service = module.get<TeamService>(TeamService);
+        teamRepository = module.get<Repository<Team>>(teamRepositoryToken);
     });
 
     it('should be defined', () => {
@@ -130,6 +92,7 @@ describe('TeamService', () => {
 
     describe('search Function', () => {
         it('Should return all teams if it does not contain filters', async () => {
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(data);
             const response = await service.search({});
 
             expect(response).toMatchObject(data);
@@ -137,6 +100,9 @@ describe('TeamService', () => {
         });
 
         it('Should return teams in descending order', async () => {
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(
+                data.reverse(),
+            );
             const response = await service.search({ order: 'DESC' });
 
             expect(response).toMatchObject(data.reverse());
@@ -144,9 +110,7 @@ describe('TeamService', () => {
         });
 
         it('Should return items based on page and limit quantity', async () => {
-            const response = await service.search({ page: 1, limit: 2 });
-
-            expect(response).toMatchObject([
+            const teams = [
                 {
                     id: 3,
                     name: 'Team 3',
@@ -163,6 +127,7 @@ describe('TeamService', () => {
                             description: 'Description of project 3',
                             active: false,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
@@ -182,17 +147,20 @@ describe('TeamService', () => {
                             description: 'Description of project 4',
                             active: true,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
-            ]);
+            ];
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
+            const response = await service.search({ page: 1, limit: 2 });
+
+            expect(response).toMatchObject(teams);
             expect(response.length).toEqual(2);
         });
 
         it('Should return the teams referring to the ids informed', async () => {
-            const response = await service.search({ ids: [2, 5] });
-
-            expect(response).toMatchObject([
+            const teams = [
                 {
                     id: 2,
                     name: 'Team 2',
@@ -209,6 +177,7 @@ describe('TeamService', () => {
                             description: 'Description of project 2',
                             active: true,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
@@ -228,17 +197,20 @@ describe('TeamService', () => {
                             description: 'Description of project 5',
                             active: false,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
-            ]);
+            ];
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
+            const response = await service.search({ ids: [2, 5] });
+
+            expect(response).toMatchObject(teams);
             expect(response.length).toEqual(2);
         });
 
         it('Should return the team if the name exists', async () => {
-            const response = await service.search({ name: 'Team 1' });
-
-            expect(response).toMatchObject([
+            const teams = [
                 {
                     id: 1,
                     name: 'Team 1',
@@ -255,48 +227,52 @@ describe('TeamService', () => {
                             description: 'Description of project 1',
                             active: true,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
-            ]);
+            ];
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
+            const response = await service.search({ name: 'Team 1' });
+
+            expect(response).toMatchObject(teams);
             expect(response.length).toEqual(1);
         });
 
         it("Should return the teams that contain the managers' IDs", async () => {
+            const teams = [
+                {
+                    id: 3,
+                    name: 'Team 3',
+                    ownerId: 'd18f9873-6707-4df6-9a16-b3bf2d74cbc5',
+                    membersIds: [
+                        'db9ce25e-5de3-41db-80c0-ee637ac3813f',
+                        '745149b6-c4fe-4801-a2ca-d247f94405ac',
+                    ],
+                    managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
+                    projects: [
+                        {
+                            id: 3,
+                            name: 'Project 3',
+                            description: 'Description of project 3',
+                            active: false,
+                            team: null,
+                            issues: [],
+                        },
+                    ],
+                },
+            ];
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
             const response = await service.search({
                 managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
             });
 
-            expect(response).toMatchObject([
-                {
-                    id: 3,
-                    name: 'Team 3',
-                    ownerId: 'd18f9873-6707-4df6-9a16-b3bf2d74cbc5',
-                    membersIds: [
-                        'db9ce25e-5de3-41db-80c0-ee637ac3813f',
-                        '745149b6-c4fe-4801-a2ca-d247f94405ac',
-                    ],
-                    managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
-                    projects: [
-                        {
-                            id: 3,
-                            name: 'Project 3',
-                            description: 'Description of project 3',
-                            active: false,
-                            team: null,
-                        },
-                    ],
-                },
-            ]);
+            expect(response).toMatchObject(teams);
             expect(response.length).toEqual(1);
         });
 
         it("Should return the teams that contain the members' IDs", async () => {
-            const response = await service.search({
-                membersIds: ['db9ce25e-5de3-41db-80c0-ee637ac3813f'],
-            });
-
-            expect(response).toMatchObject([
+            const teams = [
                 {
                     id: 3,
                     name: 'Team 3',
@@ -313,10 +289,17 @@ describe('TeamService', () => {
                             description: 'Description of project 3',
                             active: false,
                             team: null,
+                            issues: [],
                         },
                     ],
                 },
-            ]);
+            ];
+            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
+            const response = await service.search({
+                membersIds: ['db9ce25e-5de3-41db-80c0-ee637ac3813f'],
+            });
+
+            expect(response).toMatchObject(teams);
         });
     });
 
@@ -341,6 +324,7 @@ describe('TeamService', () => {
                         description: 'Description of project 1',
                         active: true,
                         team: null,
+                        issues: [],
                     },
                 ],
             });
@@ -352,6 +336,20 @@ describe('TeamService', () => {
             } catch ({ message }) {
                 expect(message).toEqual(`Team 50 not found`);
             }
+        });
+    });
+
+    describe('create Function', () => {
+        it('Should return the team created if the entries are correct', async () => {
+            const team = {
+                name: 'Team 6',
+                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+            };
+            const response = await service.create(team);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({ ...team, projects: [], id: 6 });
         });
     });
 
@@ -385,24 +383,10 @@ describe('TeamService', () => {
                         description: 'Description of project 1',
                         active: true,
                         team: null,
+                        issues: [],
                     },
                 ],
             });
-        });
-    });
-
-    describe('create Function', () => {
-        it('Should return the team created if the entries are correct', async () => {
-            const team = {
-                name: 'Team 6',
-                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
-            };
-            const response = await service.create(team);
-            expect(response).toBeDefined();
-            expect(response).toEqual({ id: 6, ...team, projects: [] });
-            expect(data).toContainEqual({ id: 6, ...team, projects: [] });
         });
     });
 
@@ -434,13 +418,13 @@ describe('TeamService', () => {
                         description: 'Description of project 5',
                         active: false,
                         team: null,
+                        issues: [],
                     },
                 ],
             };
 
             expect(response).toBeDefined();
             expect(response).toEqual(team);
-            expect(data).not.toContainEqual(team);
         });
     });
 });
