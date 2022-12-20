@@ -236,6 +236,13 @@ describe('TeamResolver', () => {
     });
 
     describe('search', () => {
+        it('Should return a maximum of 50 teams if it does not contain filters', async () => {
+            const response = await resolver.search({});
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(data);
+        });
+
         it('Should return two teams in DESC order', async () => {
             const response = await resolver.search({ limit: 2, order: 'DESC' });
 
