@@ -234,4 +234,55 @@ describe('TeamResolver', () => {
             });
         });
     });
+
+    describe('search', () => {
+        it('Should return two teams in DESC order', async () => {
+            const response = await resolver.search({ limit: 2, order: 'DESC' });
+
+            expect(response).toBeDefined();
+            expect(response.length).toEqual(2);
+            expect(response).toMatchObject([
+                {
+                    id: 5,
+                    name: 'Team 5',
+                    ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
+                    membersIds: [
+                        'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
+                        '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
+                    ],
+                    managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
+                    projects: [
+                        {
+                            id: 5,
+                            name: 'Project 5',
+                            description: 'Description of project 5',
+                            active: false,
+                            team: null,
+                            issues: [],
+                        },
+                    ],
+                },
+                {
+                    id: 4,
+                    name: 'Team 4',
+                    ownerId: '93a8a626-9938-40b5-9072-273cfc061c10',
+                    membersIds: [
+                        '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                        '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
+                    ],
+                    managersIds: ['f522b8f6-3cf8-46cc-982f-b7017dc2c22c'],
+                    projects: [
+                        {
+                            id: 4,
+                            name: 'Project 4',
+                            description: 'Description of project 4',
+                            active: true,
+                            team: null,
+                            issues: [],
+                        },
+                    ],
+                },
+            ]);
+        });
+    });
 });
