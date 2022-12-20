@@ -135,4 +135,32 @@ describe('TeamResolver', () => {
             projects: [],
         });
     });
+
+    describe('findOne', () => {
+        it('Should return team if team exist', async () => {
+            const response = await resolver.findOne(1);
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                id: 1,
+                name: 'Team 1',
+                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
+                membersIds: [
+                    '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                    'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+                ],
+                managersIds: ['a192fd6d-67c1-4090-8011-d96f83cf3e9b'],
+                projects: [
+                    {
+                        id: 1,
+                        name: 'Project 1',
+                        description: 'Description of project 1',
+                        active: true,
+                        team: null,
+                        issues: [],
+                    },
+                ],
+            });
+        });
+    });
 });
