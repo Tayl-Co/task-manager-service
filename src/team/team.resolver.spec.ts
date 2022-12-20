@@ -117,22 +117,35 @@ describe('TeamResolver', () => {
         expect(resolver).toBeDefined();
     });
 
-    it('Should return created team', async () => {
-        const response = await resolver.create({
-            name: 'Team 6',
-            ownerId: '',
-            membersIds: [],
-            managersIds: [],
-        });
+    describe('findAll', () => {
+        it('Should return all teams', async () => {
+            const response = await resolver.findAll();
 
-        expect(response).toBeDefined();
-        expect(response).toMatchObject({
-            id: 6,
-            name: 'Team 6',
-            ownerId: '',
-            membersIds: [],
-            managersIds: [],
-            projects: [],
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(data);
+            expect(response).toEqual(data);
+            expect(response.length).toEqual(5);
+        });
+    });
+
+    describe('create', () => {
+        it('Should return created team', async () => {
+            const response = await resolver.create({
+                name: 'Team 6',
+                ownerId: '',
+                membersIds: [],
+                managersIds: [],
+            });
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                id: 6,
+                name: 'Team 6',
+                ownerId: '',
+                membersIds: [],
+                managersIds: [],
+                projects: [],
+            });
         });
     });
 
