@@ -23,7 +23,9 @@ import { Activity } from '@activity/entity/activity.entity';
 
 @Module({
     imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
         GraphQLModule.forRoot<ApolloDriverConfig>({
+            path: '/api/manager/task/',
             driver: ApolloDriver,
             autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
             playground: true,
@@ -31,16 +33,26 @@ import { Activity } from '@activity/entity/activity.entity';
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                type: 'postgres',
-                host: config.get<string>('TYPEORM_HOST'),
-                port: config.get<number>('TYPEORM_PORT'),
-                username: config.get<string>('TYPEORM_USERNAME'),
-                password: config.get<string>('TYPEORM_PASSWORD'),
-                database: config.get<string>('TYPEORM_DATABASE'),
-                entities: [Team, Project, ToDo, Reference, Label, Activity],
-                synchronize: true,
-            }),
+            useFactory: (config: ConfigService) => {
+                const isTest = config.get<string>('NODE_ENV') === 'test';
+                return {
+                    type: 'postgres',
+                    dropSchema: isTest,
+                    host: config.get<string>('TYPEORM_HOST'),
+                    port: config.get<number>('TYPEORM_PORT'),
+                    username: isTest
+                        ? config.get<string>('TYPEORM_TEST_USERNAME')
+                        : config.get<string>('TYPEORM_USERNAME'),
+                    password: isTest
+                        ? config.get<string>('TYPEORM_TEST_PASSWORD')
+                        : config.get<string>('TYPEORM_PASSWORD'),
+                    database: isTest
+                        ? config.get<string>('TYPEORM_TEST_DATABASE')
+                        : config.get<string>('TYPEORM_DATABASE'),
+                    entities: [Team, Project, ToDo, Reference, Label, Activity],
+                    synchronize: true,
+                };
+            },
         }),
         TeamModule,
         ProjectModule,
