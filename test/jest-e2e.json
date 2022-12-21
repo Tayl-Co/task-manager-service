@@ -5,5 +5,14 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@src(.*)$": "<rootDir>/../src$1",
+    "^@team(.*)$": "<rootDir>/../src/team$1",
+    "^@project(.*)$": "<rootDir>/../src/project$1",
+    "^@todo(.*)$": "<rootDir>/../src/todo$1",
+    "^@reference(.*)$": "<rootDir>/../src/reference$1",
+    "^@label(.*)$": "<rootDir>/../src/label$1",
+    "^@activity(.*)$": "<rootDir>/../src/activity$1"
   }
 }

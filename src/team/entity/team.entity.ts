@@ -25,7 +25,7 @@ export class Team {
     @Field(() => [String])
     managersIds: Array<string>;
 
-    @Field(() => [Project])
+    @Field(() => [Project], { nullable: true })
     @OneToMany(() => Project, project => project.team, { onDelete: 'CASCADE' })
     @JoinTable()
     projects: Array<Project>;
