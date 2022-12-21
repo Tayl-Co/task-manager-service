@@ -10,7 +10,7 @@ export class TeamResolver {
 
     @Mutation(() => Team, { name: 'createTeam' })
     async create(
-        @Args('team', { type: () => TeamDto })
+        @Args('teamInput', { type: () => TeamDto })
         team: TeamDto,
     ): Promise<Team> {
         return await this.teamService.create(team);
@@ -24,7 +24,7 @@ export class TeamResolver {
     @Mutation(() => Team, { name: 'updateTeam' })
     async update(
         @Args('id', { type: () => Int }) id: number,
-        @Args('team', { type: () => TeamDto }) team: TeamDto,
+        @Args('teamInput', { type: () => TeamDto }) team: TeamDto,
     ) {
         return await this.teamService.update(id, team);
     }
