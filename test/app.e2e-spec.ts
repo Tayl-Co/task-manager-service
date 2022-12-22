@@ -303,5 +303,59 @@ describe(ENDPOINT, () => {
                     });
             });
         });
+
+        describe('Update', () => {
+            it('updateTeam - Should update a team and return the updated team', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                    mutation{
+                        updateTeam(
+                            id: 1, 
+                            teamInput: {
+                                        name: "Updated Team", 
+                                        managersIds:["f522b8f6-3cf8-46cc-982f-b7017dc2c22c"], 
+                                        membersIds: ["97e321ff-1a8b-4890-9cf2-2b05a5127267"], 
+                                        ownerId:"93a8a626-9938-40b5-9072-273cfc061c10"
+                                        }
+                            ){
+                                id
+                                name
+                                managersIds
+                                membersIds
+                                ownerId
+                                projects {
+                                  id
+                                  name
+                                }
+                          }
+                        }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            updateTeam: {
+                                id: '1',
+                                name: 'Updated Team',
+                                managersIds: [
+                                    'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                                ],
+                                membersIds: [
+                                    '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                                ],
+                                ownerId: '93a8a626-9938-40b5-9072-273cfc061c10',
+                                projects: [
+                                    {
+                                        id: '1',
+                                        name: 'Project 1',
+                                    },
+                                ],
+                            },
+                        },
+                    });
+            });
+        });
     });
 });
