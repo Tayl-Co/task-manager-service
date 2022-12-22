@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsHexColor, IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class LabelDto {
@@ -9,7 +9,7 @@ export class LabelDto {
     name: string;
 
     @IsNotEmpty({ message: 'Required color' })
-    @IsString()
+    @IsHexColor()
     @Field()
     color: string;
 }
