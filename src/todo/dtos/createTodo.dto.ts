@@ -26,7 +26,7 @@ export class CreateToDoDto {
 
     @IsArray()
     @IsString({ each: true })
-    @Field(() => [String], { nullable: true })
+    @Field(() => [String], { nullable: true, defaultValue: [] })
     assigneesIds: Array<string>;
 
     @IsOptional()
@@ -41,6 +41,6 @@ export class CreateToDoDto {
 
     @IsOptional()
     @IsString()
-    @Field({ nullable: true })
+    @Field({ nullable: true, defaultValue: '' })
     parentId: string;
 }

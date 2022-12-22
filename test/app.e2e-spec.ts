@@ -126,6 +126,108 @@ describe(ENDPOINT, () => {
                         },
                     });
             });
+
+            it('createToDo - Should save a ToDo and return created ToDo', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                    
+                     mutation{
+                        createToDo( 
+                            todoInput:{
+                                title:"ToDo 12", 
+                                description:"First ToDo", 
+                                dueDate:"2022-12-27T03:00:00.000Z",
+                                projectId: 1,
+                                type:0
+                            }
+                        ){
+                              title
+                              description
+                              pinned
+                              status
+                              assigneesIds
+                              authorId
+                              dueDate
+                              priority
+                              type
+                              lastUpdateDate
+                              estimatedDueDate
+                              parentId
+                              labels{
+                                name
+                                color
+                              }
+                              project{
+                                id
+                                name
+                                description
+                                active
+                                issues{
+                                  title
+                                }
+                                team{
+                                  id
+                                  name
+                                  managersIds
+                                  membersIds
+                                  ownerId
+                                }
+                              }
+                              activities{
+                                id
+                                authorId
+                                date
+                                newValue
+                                type
+                              }
+                        }
+                    }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            createToDo: {
+                                title: 'ToDo 12',
+                                description: 'First ToDo',
+                                pinned: false,
+                                status: 0,
+                                assigneesIds: [],
+                                authorId: 'username',
+                                dueDate: '2022-12-27T03:00:00.000Z',
+                                priority: 3,
+                                type: 0,
+                                lastUpdateDate: null,
+                                estimatedDueDate: null,
+                                parentId: '',
+                                labels: null,
+                                project: {
+                                    id: '1',
+                                    name: 'Project 1',
+                                    description: 'First Project',
+                                    active: true,
+                                    team: {
+                                        id: '1',
+                                        name: 'Team 1',
+                                        managersIds: [
+                                            'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                                        ],
+                                        membersIds: [
+                                            '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                                            '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
+                                        ],
+                                        ownerId:
+                                            '93a8a626-9938-40b5-9072-273cfc061c10',
+                                    },
+                                    issues: null,
+                                },
+                                activities: null,
+                            },
+                        },
+                    });
+            });
         });
     });
 });

@@ -82,12 +82,12 @@ export class ToDo {
 
     @OneToMany(() => Reference, reference => reference.todo)
     @JoinTable()
-    @Field(() => [Reference])
+    @Field(() => [Reference], { nullable: true })
     references: Array<Reference>;
 
     @OneToMany(() => Activity, activity => activity.todo)
     @JoinTable()
-    @Field(() => [Activity])
+    @Field(() => [Activity], { nullable: true })
     activities: Array<Activity>;
 
     @ManyToMany(() => Label)
