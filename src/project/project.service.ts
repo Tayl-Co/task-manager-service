@@ -62,7 +62,7 @@ export class ProjectService {
 
     async findOne(id: number): Promise<Project> {
         const project = await this.projectRepository.findOne({
-            relations: { team: true },
+            relations: { team: true, issues: true },
             where: { id },
         });
 
