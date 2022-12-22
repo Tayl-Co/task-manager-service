@@ -362,7 +362,7 @@ describe(ENDPOINT, () => {
                     }
                     `,
                         })
-                        .expect(200)
+                        .expect(HttpStatus.OK)
                         .expect({
                             data: {
                                 createToDo: {
@@ -426,7 +426,7 @@ describe(ENDPOINT, () => {
                         }
                     }`,
                         })
-                        .expect(200)
+                        .expect(HttpStatus.OK)
                         .expect({
                             errors: [
                                 {
@@ -437,6 +437,47 @@ describe(ENDPOINT, () => {
                                             statusCode: HttpStatus.BAD_REQUEST,
                                             message: ['Required Title'],
                                             error: 'Bad Request',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
+
+                it("createToDo - Should return a Not Found error if the project doesn't exist", () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                            mutation{
+                            createToDo( 
+                                todoInput:{
+                                    title:"ToDo 1", 
+                                    description:"First ToDo", 
+                                    dueDate:"2022-12-27T03:00:00.000Z",
+                                    projectId: 9,
+                                    type:0
+                                }
+                            ){
+                                  id
+                                  title
+                                  description
+                            }
+                        }
+                        `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Project 9 not found',
+                                    extensions: {
+                                        code: `${HttpStatus.NOT_FOUND}`,
+                                        response: {
+                                            statusCode: HttpStatus.NOT_FOUND,
+                                            message: 'Project 9 not found',
+                                            error: 'Not Found',
                                         },
                                     },
                                 },
