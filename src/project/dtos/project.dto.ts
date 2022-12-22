@@ -16,7 +16,7 @@ export class ProjectDto {
     @IsOptional()
     team: TeamDto;
 
-    @IsNotEmpty({ message: 'Required relation if Team' })
+    @IsNotEmpty({ message: 'Required Team id' })
     @Field(() => Int)
     teamId: number;
 

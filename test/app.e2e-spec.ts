@@ -263,6 +263,46 @@ describe(ENDPOINT, () => {
                             data: null,
                         });
                 });
+
+                it('createProject - Should return a bad Request error if inputs are wrong', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                             mutation{
+                              createProject(projectInput:{
+                                name:"", 
+                                description:"First Project", 
+                                active: true, 
+                                teamId: 1
+                                })
+                                {
+                                    id
+                                    name
+                                    description
+                                    active
+                                }
+                            }      
+                            `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Bad Request Exception',
+                                    extensions: {
+                                        code: 'BAD_USER_INPUT',
+                                        response: {
+                                            statusCode: HttpStatus.BAD_REQUEST,
+                                            message: ['Required Name'],
+                                            error: 'Bad Request',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
             });
 
             it('createToDo - Should save a ToDo and return created ToDo', () => {
