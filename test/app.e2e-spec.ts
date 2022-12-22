@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '@src/app.module';
 import request from 'supertest';
 import { ActivityEnum } from '@src/common/enums/activity.enum';
@@ -19,6 +19,7 @@ describe(ENDPOINT, () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
         httpServer = app.getHttpServer();
     });
@@ -111,6 +112,48 @@ describe(ENDPOINT, () => {
                                             message:
                                                 'The Team 1 Team already exists',
                                             error: 'Conflict',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
+
+                it('createTeam - Should return a bad Request error if inputs are wrong', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                                mutation{
+                                createTeam(teamInput: {
+                                    name:"", 
+                                    managersIds: [], 
+                                    membersIds: [], 
+                                    ownerId:""
+                                    }){
+                                        id
+                                        name
+                                }
+                            }
+                        
+                            `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Bad Request Exception',
+                                    extensions: {
+                                        code: 'BAD_USER_INPUT',
+                                        response: {
+                                            statusCode: HttpStatus.BAD_REQUEST,
+                                            message: [
+                                                'Required Name',
+                                                'Required ownerId',
+                                                'managersIds must contain at least 1 elements',
+                                            ],
+                                            error: 'Bad Request',
                                         },
                                     },
                                 },
