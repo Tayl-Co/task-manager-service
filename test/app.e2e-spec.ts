@@ -136,7 +136,7 @@ describe(ENDPOINT, () => {
                      mutation{
                         createToDo( 
                             todoInput:{
-                                title:"ToDo 12", 
+                                title:"ToDo 1", 
                                 description:"First ToDo", 
                                 dueDate:"2022-12-27T03:00:00.000Z",
                                 projectId: 1,
@@ -190,7 +190,7 @@ describe(ENDPOINT, () => {
                     .expect({
                         data: {
                             createToDo: {
-                                title: 'ToDo 12',
+                                title: 'ToDo 1',
                                 description: 'First ToDo',
                                 pinned: false,
                                 status: 0,
@@ -224,6 +224,49 @@ describe(ENDPOINT, () => {
                                     issues: null,
                                 },
                                 activities: null,
+                            },
+                        },
+                    });
+            });
+
+            it('createReference - Should save a Reference and return created Reference', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                        mutation{
+                           createReference(
+                                referenceInput:{
+                                    type:"Type 1", 
+                                    key: "Key 1", 
+                                    url:"https://github.com/rodrigolimoes",
+                                    todoId: 1
+                                    }
+                                ){
+                                    id
+                                    type
+                                    key
+                                    url
+                                    todo {
+                                      id
+                                      title
+                                    }
+                           }
+                        }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            createReference: {
+                                id: '1',
+                                type: 'Type 1',
+                                key: 'Key 1',
+                                url: 'https://github.com/rodrigolimoes',
+                                todo: {
+                                    id: '1',
+                                    title: 'ToDo 1',
+                                },
                             },
                         },
                     });
