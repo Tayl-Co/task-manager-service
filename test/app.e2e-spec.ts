@@ -143,6 +143,7 @@ describe(ENDPOINT, () => {
                                 type:0
                             }
                         ){
+                              id
                               title
                               description
                               pinned
@@ -164,9 +165,6 @@ describe(ENDPOINT, () => {
                                 name
                                 description
                                 active
-                                issues{
-                                  title
-                                }
                                 team{
                                   id
                                   name
@@ -190,6 +188,7 @@ describe(ENDPOINT, () => {
                     .expect({
                         data: {
                             createToDo: {
+                                id: '1',
                                 title: 'ToDo 1',
                                 description: 'First ToDo',
                                 pinned: false,
@@ -221,7 +220,6 @@ describe(ENDPOINT, () => {
                                         ownerId:
                                             '93a8a626-9938-40b5-9072-273cfc061c10',
                                     },
-                                    issues: null,
                                 },
                                 activities: null,
                             },
@@ -352,6 +350,54 @@ describe(ENDPOINT, () => {
                                         name: 'Project 1',
                                     },
                                 ],
+                            },
+                        },
+                    });
+            });
+
+            it('updateProject - Should update a project and return the updated project', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                        mutation{
+                            updateProject(
+                                id: 1, 
+                                projectInput: {
+                                    name:"Updated Name", 
+                                    description:"Updated description",
+                                    active: true,
+                                    teamId: 1
+                                }){
+                                    id
+                                    name
+                                    description
+                                  active
+                                    issues{
+                                      id
+                                      title
+                                    }
+                                  team{
+                                      id
+                                      name
+                                    }
+                          }
+                        }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            updateProject: {
+                                id: '1',
+                                name: 'Updated Name',
+                                description: 'Updated description',
+                                active: true,
+                                issues: [{ id: '1', title: 'ToDo 1' }],
+                                team: {
+                                    id: '1',
+                                    name: 'Updated Team',
+                                },
                             },
                         },
                     });
