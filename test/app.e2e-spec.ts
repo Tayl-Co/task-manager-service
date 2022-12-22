@@ -491,6 +491,50 @@ describe(ENDPOINT, () => {
                         },
                     });
             });
+
+            it('updateReference - Should update a Reference and return the updated Reference', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                         mutation{
+                           updateReference(
+                                id: 1,
+                                referenceInput:{
+                                    type:"Updated Type", 
+                                    key: "Key 1", 
+                                    url:"https://github.com/rodrigolimoes",
+                                    todoId: 1
+                                    }
+                                ){
+                                    id
+                                    type
+                                    key
+                                    url
+                                    todo {
+                                      id
+                                      title
+                                    }
+                           }
+                        }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            updateReference: {
+                                id: '1',
+                                type: 'Updated Type',
+                                key: 'Key 1',
+                                url: 'https://github.com/rodrigolimoes',
+                                todo: {
+                                    id: '1',
+                                    title: 'Updated Title',
+                                },
+                            },
+                        },
+                    });
+            });
         });
     });
 });
