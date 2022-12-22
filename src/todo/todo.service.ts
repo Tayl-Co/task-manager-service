@@ -153,7 +153,10 @@ export class TodoService {
             priority,
             status,
             pinned,
-            estimatedDueDate,
+            lastUpdateDate: new Date(),
+            estimatedDueDate: estimatedDueDate
+                ? new Date(estimatedDueDate)
+                : null,
             assigneesIds,
             activities: [...todo.activities, ...activities],
         });

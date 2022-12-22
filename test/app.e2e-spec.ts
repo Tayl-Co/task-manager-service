@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '@src/app.module';
 import request from 'supertest';
+import { ActivityEnum } from '@src/common/enums/activity.enum';
+import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
+import { PriorityEnum } from '@src/common/enums/priority.enum';
+import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 
 const ENDPOINT = '/api/manager/task/';
 
@@ -398,6 +402,91 @@ describe(ENDPOINT, () => {
                                     id: '1',
                                     name: 'Updated Team',
                                 },
+                            },
+                        },
+                    });
+            });
+
+            it('updateToDo - Should update a ToDo and return the updated ToDo', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                        mutation{
+                            updateToDo(
+                                id: 1,
+                                todoInput:{
+                                        title:"Updated Title",
+                                        description:"update Description",
+                                        parentId:"",
+                                        dueDate:"2022-12-28T03:00:00.000Z",
+                                        type:${TodoTypeEnum.USER_STORY},
+                                        priority:${PriorityEnum.MEDIUM},
+                                        status:${IssueStatusEnum.REJECTED},
+                                        pinned:true,
+                                        estimatedDueDate:"2022-12-27T03:00:00.000Z",
+                                        assigneesIds:[]
+                              }){
+                                      id
+                                      title
+                                      description
+                                      pinned
+                                      status
+                                      assigneesIds
+                                      authorId
+                                      dueDate
+                                      priority
+                                      type
+                                      estimatedDueDate
+                                      parentId
+                                      labels{
+                                        name
+                                        color
+                                      }
+                                        activities{
+                                        authorId
+                                        newValue
+                                        type
+                                      }
+                                    
+                              }
+                            }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            updateToDo: {
+                                id: '1',
+                                title: 'Updated Title',
+                                description: 'update Description',
+                                pinned: true,
+                                assigneesIds: [],
+                                authorId: 'username',
+                                dueDate: '2022-12-28T03:00:00.000Z',
+                                estimatedDueDate: '2022-12-27T03:00:00.000Z',
+                                type: TodoTypeEnum.USER_STORY,
+                                priority: PriorityEnum.MEDIUM,
+                                status: IssueStatusEnum.REJECTED,
+                                parentId: '',
+                                labels: [],
+                                activities: [
+                                    {
+                                        authorId: 'username',
+                                        newValue: 'Updated Title',
+                                        type: ActivityEnum.TITLE_CHANGED,
+                                    },
+                                    {
+                                        authorId: 'username',
+                                        newValue: '2022-12-28T03:00:00.000Z',
+                                        type: ActivityEnum.DEADLINE_CHANGED,
+                                    },
+                                    {
+                                        authorId: 'username',
+                                        newValue: `${IssueStatusEnum.REJECTED}`,
+                                        type: ActivityEnum.STATUS_CHANGED,
+                                    },
+                                ],
                             },
                         },
                     });
