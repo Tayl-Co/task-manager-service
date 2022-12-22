@@ -271,6 +271,37 @@ describe(ENDPOINT, () => {
                         },
                     });
             });
+
+            it('createLabel - Should save a Label and return created Label', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            createLabel: {
+                                id: '1',
+                                name: 'Label 1',
+                                color: '#FBCA04',
+                            },
+                        },
+                    });
+            });
         });
     });
 });
