@@ -39,5 +39,6 @@ export class Project {
     active: boolean;
 
     @OneToMany(() => ToDo, todo => todo.project)
+    @Field(() => [ToDo], { nullable: true })
     issues: Array<ToDo>;
 }

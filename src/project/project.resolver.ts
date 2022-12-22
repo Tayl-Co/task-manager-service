@@ -10,7 +10,7 @@ export class ProjectResolver {
 
     @Mutation(() => Project, { name: 'createProject' })
     async create(
-        @Args('project', { type: () => ProjectDto }) project: ProjectDto,
+        @Args('projectInput', { type: () => ProjectDto }) project: ProjectDto,
     ) {
         return await this.projectService.create(project);
     }
@@ -23,7 +23,7 @@ export class ProjectResolver {
     @Mutation(() => Project, { name: 'updateProject' })
     async update(
         @Args('id', { type: () => Int }) id: number,
-        @Args('project', { type: () => ProjectDto }) project: ProjectDto,
+        @Args('projectInput', { type: () => ProjectDto }) project: ProjectDto,
     ) {
         return await this.projectService.update(id, project);
     }
