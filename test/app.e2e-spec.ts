@@ -535,6 +535,38 @@ describe(ENDPOINT, () => {
                         },
                     });
             });
+
+            it('updateLabel - Should update a Label and return the updated Label', () => {
+                return request(httpServer)
+                    .post(ENDPOINT)
+                    .send({
+                        query: `
+                           mutation{
+                           updateLabel(
+                                id: 1,
+                                labelInput:{
+                                    name: "updated Label",
+                                    color: "#00FFFF"
+                                    }
+                                ){
+                                  id
+                                  name
+                                  color
+                           }
+                        }
+                        `,
+                    })
+                    .expect(200)
+                    .expect({
+                        data: {
+                            updateLabel: {
+                                id: '1',
+                                name: 'updated Label',
+                                color: '#00FFFF',
+                            },
+                        },
+                    });
+            });
         });
     });
 });
