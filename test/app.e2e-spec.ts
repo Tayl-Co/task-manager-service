@@ -120,7 +120,7 @@ describe(ENDPOINT, () => {
                         });
                 });
 
-                it('createTeam - Should return a bad Request error if inputs are wrong', () => {
+                it('createTeam - Should return a bad Request error if inputs are not valid', () => {
                     return request(httpServer)
                         .post(ENDPOINT)
                         .send({
@@ -264,7 +264,7 @@ describe(ENDPOINT, () => {
                         });
                 });
 
-                it('createProject - Should return a bad Request error if inputs are wrong', () => {
+                it('createProject - Should return a bad Request error if inputs are not valid', () => {
                     return request(httpServer)
                         .post(ENDPOINT)
                         .send({
@@ -568,6 +568,56 @@ describe(ENDPOINT, () => {
                                             statusCode: HttpStatus.NOT_FOUND,
                                             message: 'ToDo 4 not found',
                                             error: 'Not Found',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
+
+                it('createReference - Should return a Bad Request error if inputs are not valid', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                              mutation{
+                           createReference(
+                                referenceInput:{
+                                    type:"", 
+                                    key: "", 
+                                    url:"",
+                                    todoId: 4
+                                    }
+                                ){
+                                    id
+                                    type
+                                    key
+                                    url
+                                    todo {
+                                      id
+                                      title
+                                    }
+                           }
+                        }
+                        `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Bad Request Exception',
+                                    extensions: {
+                                        code: 'BAD_USER_INPUT',
+                                        response: {
+                                            statusCode: HttpStatus.BAD_REQUEST,
+                                            message: [
+                                                'Required Type',
+                                                'Required Key',
+                                                'url must be an URL address',
+                                                'Required Url',
+                                            ],
+                                            error: 'Bad Request',
                                         },
                                     },
                                 },
