@@ -40,12 +40,8 @@ import { Activity } from '@activity/entity/activity.entity';
                     dropSchema: isTest,
                     host: config.get<string>('TYPEORM_HOST'),
                     port: config.get<number>('TYPEORM_PORT'),
-                    username: isTest
-                        ? config.get<string>('TYPEORM_TEST_USERNAME')
-                        : config.get<string>('TYPEORM_USERNAME'),
-                    password: isTest
-                        ? config.get<string>('TYPEORM_TEST_PASSWORD')
-                        : config.get<string>('TYPEORM_PASSWORD'),
+                    username: config.get<string>('TYPEORM_USERNAME'),
+                    password: config.get<string>('TYPEORM_PASSWORD'),
                     database: isTest
                         ? config.get<string>('TYPEORM_TEST_DATABASE')
                         : config.get<string>('TYPEORM_DATABASE'),
