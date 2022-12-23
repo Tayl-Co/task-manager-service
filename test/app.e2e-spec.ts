@@ -796,6 +796,54 @@ describe(ENDPOINT, () => {
                             },
                         });
                 });
+
+                it("updateTeam - Should return a Not Found error if the team doesn't exist", () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                             mutation{
+                        updateTeam(
+                            id: 3, 
+                            teamInput: {
+                                        name: "Updated Team", 
+                                        managersIds:["f522b8f6-3cf8-46cc-982f-b7017dc2c22c"], 
+                                        membersIds: ["97e321ff-1a8b-4890-9cf2-2b05a5127267"], 
+                                        ownerId:"93a8a626-9938-40b5-9072-273cfc061c10"
+                                        }
+                            ){
+                                id
+                                name
+                                managersIds
+                                membersIds
+                                ownerId
+                                projects {
+                                  id
+                                  name
+                                }
+                          }
+                        }
+                        
+                        `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Team 3 not found',
+                                    extensions: {
+                                        code: `${HttpStatus.NOT_FOUND}`,
+                                        response: {
+                                            statusCode: HttpStatus.NOT_FOUND,
+                                            message: 'Team 3 not found',
+                                            error: 'Not Found',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
             });
             describe('Project', () => {
                 it('updateProject - Should update a project and return the updated project', () => {
