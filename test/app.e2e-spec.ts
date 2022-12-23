@@ -487,11 +487,12 @@ describe(ENDPOINT, () => {
                 });
             });
 
-            it('createReference - Should save a Reference and return created Reference', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Reference', () => {
+                it('createReference - Should save a Reference and return created Reference', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                         mutation{
                            createReference(
                                 referenceInput:{
@@ -512,22 +513,68 @@ describe(ENDPOINT, () => {
                            }
                         }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            createReference: {
-                                id: '1',
-                                type: 'Type 1',
-                                key: 'Key 1',
-                                url: 'https://github.com/rodrigolimoes',
-                                todo: {
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                createReference: {
                                     id: '1',
-                                    title: 'ToDo 1',
+                                    type: 'Type 1',
+                                    key: 'Key 1',
+                                    url: 'https://github.com/rodrigolimoes',
+                                    todo: {
+                                        id: '1',
+                                        title: 'ToDo 1',
+                                    },
                                 },
                             },
-                        },
-                    });
+                        });
+                });
+
+                it("createReference - Should return a Not Found error if the ToDo doesn't exist", () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                              mutation{
+                           createReference(
+                                referenceInput:{
+                                    type:"Type 1", 
+                                    key: "Key 1", 
+                                    url:"https://github.com/rodrigolimoes",
+                                    todoId: 4
+                                    }
+                                ){
+                                    id
+                                    type
+                                    key
+                                    url
+                                    todo {
+                                      id
+                                      title
+                                    }
+                           }
+                        }
+                        `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'ToDo 4 not found',
+                                    extensions: {
+                                        code: '404',
+                                        response: {
+                                            statusCode: HttpStatus.NOT_FOUND,
+                                            message: 'ToDo 4 not found',
+                                            error: 'Not Found',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
             });
 
             it('createLabel - Should save a Label and return created Label', () => {
