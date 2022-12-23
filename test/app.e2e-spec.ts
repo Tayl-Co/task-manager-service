@@ -697,15 +697,58 @@ describe(ENDPOINT, () => {
                             data: null,
                         });
                 });
+
+                it('createLabel - Should return a Bad Request error if inputs are not valid', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"", 
+                                    color: ""
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'Bad Request Exception',
+                                    extensions: {
+                                        code: 'BAD_USER_INPUT',
+                                        response: {
+                                            statusCode: HttpStatus.BAD_REQUEST,
+                                            message: [
+                                                'Required name',
+                                                'color must be a hexadecimal color',
+                                                'Required color',
+                                            ],
+                                            error: 'Bad Request',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
             });
         });
 
         describe('Update', () => {
-            it('updateTeam - Should update a team and return the updated team', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Team', () => {
+                it('updateTeam - Should update a team and return the updated team', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                     mutation{
                         updateTeam(
                             id: 1, 
@@ -728,36 +771,38 @@ describe(ENDPOINT, () => {
                           }
                         }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            updateTeam: {
-                                id: '1',
-                                name: 'Updated Team',
-                                managersIds: [
-                                    'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
-                                ],
-                                membersIds: [
-                                    '97e321ff-1a8b-4890-9cf2-2b05a5127267',
-                                ],
-                                ownerId: '93a8a626-9938-40b5-9072-273cfc061c10',
-                                projects: [
-                                    {
-                                        id: '1',
-                                        name: 'Project 1',
-                                    },
-                                ],
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                updateTeam: {
+                                    id: '1',
+                                    name: 'Updated Team',
+                                    managersIds: [
+                                        'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                                    ],
+                                    membersIds: [
+                                        '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                                    ],
+                                    ownerId:
+                                        '93a8a626-9938-40b5-9072-273cfc061c10',
+                                    projects: [
+                                        {
+                                            id: '1',
+                                            name: 'Project 1',
+                                        },
+                                    ],
+                                },
                             },
-                        },
-                    });
+                        });
+                });
             });
-
-            it('updateProject - Should update a project and return the updated project', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Project', () => {
+                it('updateProject - Should update a project and return the updated project', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                         mutation{
                             updateProject(
                                 id: 1, 
@@ -782,30 +827,31 @@ describe(ENDPOINT, () => {
                           }
                         }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            updateProject: {
-                                id: '1',
-                                name: 'Updated Name',
-                                description: 'Updated description',
-                                active: true,
-                                issues: [{ id: '1', title: 'ToDo 1' }],
-                                team: {
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                updateProject: {
                                     id: '1',
-                                    name: 'Updated Team',
+                                    name: 'Updated Name',
+                                    description: 'Updated description',
+                                    active: true,
+                                    issues: [{ id: '1', title: 'ToDo 1' }],
+                                    team: {
+                                        id: '1',
+                                        name: 'Updated Team',
+                                    },
                                 },
                             },
-                        },
-                    });
+                        });
+                });
             });
-
-            it('updateToDo - Should update a ToDo and return the updated ToDo', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('ToDo', () => {
+                it('updateToDo - Should update a ToDo and return the updated ToDo', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                         mutation{
                             updateToDo(
                                 id: 1,
@@ -846,51 +892,54 @@ describe(ENDPOINT, () => {
                               }
                             }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            updateToDo: {
-                                id: '1',
-                                title: 'Updated Title',
-                                description: 'update Description',
-                                pinned: true,
-                                assigneesIds: [],
-                                authorId: 'username',
-                                dueDate: '2022-12-28T03:00:00.000Z',
-                                estimatedDueDate: '2022-12-27T03:00:00.000Z',
-                                type: TodoTypeEnum.USER_STORY,
-                                priority: PriorityEnum.MEDIUM,
-                                status: IssueStatusEnum.REJECTED,
-                                parentId: '',
-                                labels: [],
-                                activities: [
-                                    {
-                                        authorId: 'username',
-                                        newValue: 'Updated Title',
-                                        type: ActivityEnum.TITLE_CHANGED,
-                                    },
-                                    {
-                                        authorId: 'username',
-                                        newValue: '2022-12-28T03:00:00.000Z',
-                                        type: ActivityEnum.DEADLINE_CHANGED,
-                                    },
-                                    {
-                                        authorId: 'username',
-                                        newValue: `${IssueStatusEnum.REJECTED}`,
-                                        type: ActivityEnum.STATUS_CHANGED,
-                                    },
-                                ],
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                updateToDo: {
+                                    id: '1',
+                                    title: 'Updated Title',
+                                    description: 'update Description',
+                                    pinned: true,
+                                    assigneesIds: [],
+                                    authorId: 'username',
+                                    dueDate: '2022-12-28T03:00:00.000Z',
+                                    estimatedDueDate:
+                                        '2022-12-27T03:00:00.000Z',
+                                    type: TodoTypeEnum.USER_STORY,
+                                    priority: PriorityEnum.MEDIUM,
+                                    status: IssueStatusEnum.REJECTED,
+                                    parentId: '',
+                                    labels: [],
+                                    activities: [
+                                        {
+                                            authorId: 'username',
+                                            newValue: 'Updated Title',
+                                            type: ActivityEnum.TITLE_CHANGED,
+                                        },
+                                        {
+                                            authorId: 'username',
+                                            newValue:
+                                                '2022-12-28T03:00:00.000Z',
+                                            type: ActivityEnum.DEADLINE_CHANGED,
+                                        },
+                                        {
+                                            authorId: 'username',
+                                            newValue: `${IssueStatusEnum.REJECTED}`,
+                                            type: ActivityEnum.STATUS_CHANGED,
+                                        },
+                                    ],
+                                },
                             },
-                        },
-                    });
+                        });
+                });
             });
-
-            it('updateReference - Should update a Reference and return the updated Reference', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Reference', () => {
+                it('updateReference - Should update a Reference and return the updated Reference', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                          mutation{
                            updateReference(
                                 id: 1,
@@ -912,29 +961,30 @@ describe(ENDPOINT, () => {
                            }
                         }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            updateReference: {
-                                id: '1',
-                                type: 'Updated Type',
-                                key: 'Key 1',
-                                url: 'https://github.com/rodrigolimoes',
-                                todo: {
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                updateReference: {
                                     id: '1',
-                                    title: 'Updated Title',
+                                    type: 'Updated Type',
+                                    key: 'Key 1',
+                                    url: 'https://github.com/rodrigolimoes',
+                                    todo: {
+                                        id: '1',
+                                        title: 'Updated Title',
+                                    },
                                 },
                             },
-                        },
-                    });
+                        });
+                });
             });
-
-            it('updateLabel - Should update a Label and return the updated Label', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Label', () => {
+                it('updateLabel - Should update a Label and return the updated Label', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                            mutation{
                            updateLabel(
                                 id: 1,
@@ -949,17 +999,18 @@ describe(ENDPOINT, () => {
                            }
                         }
                         `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            updateLabel: {
-                                id: '1',
-                                name: 'updated Label',
-                                color: '#00FFFF',
+                        })
+                        .expect(200)
+                        .expect({
+                            data: {
+                                updateLabel: {
+                                    id: '1',
+                                    name: 'updated Label',
+                                    color: '#00FFFF',
+                                },
                             },
-                        },
-                    });
+                        });
+                });
             });
         });
     });
