@@ -627,11 +627,12 @@ describe(ENDPOINT, () => {
                 });
             });
 
-            it('createLabel - Should save a Label and return created Label', () => {
-                return request(httpServer)
-                    .post(ENDPOINT)
-                    .send({
-                        query: `
+            describe('Label', () => {
+                it('createLabel - Should save a Label and return created Label', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
                         mutation{
                             createLabel(
                                 labelInput:{
@@ -645,17 +646,57 @@ describe(ENDPOINT, () => {
                                 }
                         }
                     `,
-                    })
-                    .expect(200)
-                    .expect({
-                        data: {
-                            createLabel: {
-                                id: '1',
-                                name: 'Label 1',
-                                color: '#FBCA04',
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            data: {
+                                createLabel: {
+                                    id: '1',
+                                    name: 'Label 1',
+                                    color: '#FBCA04',
+                                },
                             },
-                        },
-                    });
+                        });
+                });
+
+                it('createLabel - Should return an error message if the Label already exists', () => {
+                    return request(httpServer)
+                        .post(ENDPOINT)
+                        .send({
+                            query: `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `,
+                        })
+                        .expect(HttpStatus.OK)
+                        .expect({
+                            errors: [
+                                {
+                                    message: 'The Label 1 Label already exists',
+                                    extensions: {
+                                        code: '409',
+                                        response: {
+                                            statusCode: HttpStatus.CONFLICT,
+                                            message:
+                                                'The Label 1 Label already exists',
+                                            error: 'Conflict',
+                                        },
+                                    },
+                                },
+                            ],
+                            data: null,
+                        });
+                });
             });
         });
 

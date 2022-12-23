@@ -20,7 +20,10 @@ export class LabelService {
             where: { name: Equal(labelInput.name) },
         });
 
-        if (label) throw new ConflictException(`${label.name} already exists`);
+        if (label)
+            throw new ConflictException(
+                `The ${label.name} Label already exists`,
+            );
 
         const newLabel = this.labelRepository.create(labelInput);
 
