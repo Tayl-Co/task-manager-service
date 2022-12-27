@@ -21,6 +21,14 @@ export class TeamResolver {
         return await this.teamService.delete(id);
     }
 
+    @Mutation(() => Team, { name: 'addMember' })
+    async addMember(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('memberId', { type: () => String }) memberId: string,
+    ): Promise<Team> {
+        return await this.teamService.addMember(id, memberId);
+    }
+
     @Mutation(() => Team, { name: 'updateTeam' })
     async update(
         @Args('id', { type: () => Int }) id: number,
