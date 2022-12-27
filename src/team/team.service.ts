@@ -48,6 +48,18 @@ export class TeamService {
         return this.teamRepository.save(team);
     }
 
+    async addManager(id: number, managerId: string) {
+        const team = await this.findOne(id);
+        const isIncludedMember = team.managersIds.includes(managerId);
+
+        if (isIncludedMember)
+            throw new ConflictException(`${managerId} already exists`);
+
+        Object.assign(team, { managersIds: [...team.managersIds, managerId] });
+
+        return this.teamRepository.save(team);
+    }
+
     async delete(id: number): Promise<Team> {
         const team = await this.findOne(id);
 
