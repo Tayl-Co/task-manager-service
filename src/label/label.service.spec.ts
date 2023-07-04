@@ -256,5 +256,20 @@ describe('LabelService', () => {
                 skip: pagination.page,
             });
         });
+        it('should search by limit', async () => {
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search({ limit: pagination.limit });
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: {},
+                order: { name: Order.ASC },
+                take: pagination.limit,
+                skip: 0,
+            });
+        });
     });
 });
