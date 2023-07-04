@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { BaseSearchFilterDto } from '@src/common/dtos/baseSearchFilter.dto';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class SearchReferenceDto extends BaseSearchFilterDto {
@@ -23,4 +23,10 @@ export class SearchReferenceDto extends BaseSearchFilterDto {
     @IsNumber({}, { each: true })
     @Field(() => [Int], { nullable: true })
     idsToDo: Array<number>;
+
+    @IsString()
+    @IsIn(['id', 'type', 'key', 'url'])
+    @IsOptional()
+    @Field({ nullable: true })
+    orderBy?: string;
 }

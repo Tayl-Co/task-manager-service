@@ -5,6 +5,7 @@ import { TodoService } from '@todo/todo.service';
 import { SearchReferenceDto } from '@reference/dtos/searchReference.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsOrderValue, In, Like, Repository } from 'typeorm';
+import { Order } from '@src/common/enums/order.enum';
 
 @Injectable()
 export class ReferenceService {
@@ -59,7 +60,16 @@ export class ReferenceService {
     }
 
     search(searchInput: SearchReferenceDto): Promise<Array<Reference>> {
-        const { ids, idsToDo, type, key, order, page, limit } = searchInput;
+        const {
+            ids,
+            idsToDo,
+            type,
+            key,
+            sortOrder = Order.ASC,
+            orderBy,
+            page = 0,
+            limit,
+        } = searchInput;
         let where = {};
 
         if (ids) where = { ...where, id: In(ids) };
@@ -74,7 +84,10 @@ export class ReferenceService {
             where,
             take: limit,
             skip: page * limit,
-            order: { id: order as FindOptionsOrderValue },
+            order:
+                orderBy && sortOrder
+                    ? { [orderBy]: sortOrder as FindOptionsOrderValue }
+                    : undefined,
             relations: { todo: true },
         });
     }
