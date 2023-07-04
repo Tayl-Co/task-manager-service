@@ -4,10 +4,11 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsOrderValue, Like, Repository } from 'typeorm';
+import { Equal, FindOptionsOrderValue, ILike, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { LabelDto } from '@label/dtos/label.dto';
 import { SearchLabelDto } from '@label/dtos/searchLabel.dto';
+import { Order } from '@src/common/enums/order.enum';
 
 @Injectable()
 export class LabelService {
@@ -53,18 +54,25 @@ export class LabelService {
     }
 
     search(searchInput: SearchLabelDto): Promise<Array<Label>> {
-        const { name, color, limit, order, page } = searchInput;
+        const {
+            name,
+            color,
+            limit,
+            sortOrder = Order.ASC,
+            orderBy = 'name',
+            page = 0,
+        } = searchInput;
         let where = {};
 
-        if (name) where = { ...where, name: Like(`%${name}%`) };
+        if (name) where = { ...where, name: ILike(`%${name}%`) };
 
-        if (color) where = { ...where, color: Like(`%${color}%`) };
+        if (color) where = { ...where, color: ILike(`%${color}%`) };
 
         return this.labelRepository.find({
             where,
-            order: { name: order as FindOptionsOrderValue },
-            take: limit,
-            skip: page * limit,
+            order: { [orderBy]: sortOrder as FindOptionsOrderValue },
+            take: limit || undefined,
+            skip: limit ? page * limit : page,
         });
     }
 }

@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LabelService } from './label.service';
-import { Equal, Repository } from 'typeorm';
+import { Equal, ILike, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Order } from '@src/common/enums/order.enum';
 
 describe('LabelService', () => {
     let service: LabelService;
@@ -186,6 +187,25 @@ describe('LabelService', () => {
             expect(labelRepository.save).toHaveBeenCalledTimes(1);
             expect(labelRepository.save).toHaveBeenCalledWith(updatedLabel);
             expect(response).toMatchObject(updatedLabel);
+        });
+    });
+
+    describe('search', () => {
+        it('should search by name', async () => {
+            const name = 'Feature';
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search({ name });
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: { name: ILike(`%${name}%`) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
         });
     });
 });
