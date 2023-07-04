@@ -3,6 +3,7 @@ import { BaseSearchFilterDto } from '@src/common/dtos/baseSearchFilter.dto';
 import {
     IsArray,
     IsBoolean,
+    IsIn,
     IsNumber,
     IsOptional,
     IsString,
@@ -30,4 +31,10 @@ export class SearchProjectDto extends BaseSearchFilterDto {
     @IsBoolean()
     @Field({ nullable: true })
     active?: boolean;
+
+    @IsString()
+    @IsIn(['id', 'name', 'description', 'active'])
+    @IsOptional()
+    @Field({ nullable: true, defaultValue: 'name' })
+    orderBy?: string;
 }

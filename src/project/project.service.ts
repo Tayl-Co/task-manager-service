@@ -9,6 +9,7 @@ import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
 import { TeamService } from '@team/team.service';
 import { SearchProjectDto } from '@project/dtos/searchProject.dto';
+import { Order } from '@src/common/enums/order.enum';
 
 @Injectable()
 export class ProjectService {
@@ -40,8 +41,16 @@ export class ProjectService {
     }
 
     search(searchInput: SearchProjectDto): Promise<Array<Project>> {
-        const { ids, name, description, active, order, page, limit } =
-            searchInput;
+        const {
+            ids,
+            name,
+            description,
+            active,
+            sortOrder = Order.ASC,
+            orderBy = 'name',
+            page = 0,
+            limit,
+        } = searchInput;
         let where = {};
 
         if (ids) where = { ...where, id: In(ids) };
@@ -54,7 +63,7 @@ export class ProjectService {
         return this.projectRepository.find({
             relations: { team: true },
             where: { name: Like(`%${name}%`), ...where },
-            order: { name: order as FindOptionsOrderValue },
+            order: { [orderBy]: sortOrder as FindOptionsOrderValue },
             take: limit,
             skip: page * limit,
         });
