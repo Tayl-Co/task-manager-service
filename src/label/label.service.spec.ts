@@ -127,5 +127,23 @@ describe('LabelService', () => {
             expect(labelRepository.delete).toHaveBeenCalledTimes(0);
             expect(labelRepository.delete).not.toHaveBeenCalled();
         });
+
+        it('should delete the label', async () => {
+            const id = 2;
+            jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
+                Promise.resolve({ id, ...label }),
+            );
+            jest.spyOn(labelRepository, 'delete').mockImplementation(() =>
+                Promise.resolve({ raw: [], affected: 1 }),
+            );
+
+            const response = await service.delete(id);
+
+            expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+            expect(labelRepository.delete).toHaveBeenCalledTimes(1);
+            expect(labelRepository.delete).toHaveBeenCalledWith(id);
+            expect(response).toMatchObject({ id, ...label });
+        });
     });
 });
