@@ -1,18 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LabelResolver } from './label.resolver';
+import { LabelService } from '@label/label.service';
+
+const label = { name: 'Feature', color: '#fff' };
 
 describe('LabelResolver', () => {
-  let resolver: LabelResolver;
+    let resolver: LabelResolver;
+    let service: Partial<LabelService> = {
+        create: jest.fn(),
+        update: jest.fn(),
+        search: jest.fn(),
+        delete: jest.fn(),
+        findOne: jest.fn(),
+    };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [LabelResolver],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                LabelResolver,
+                { provide: LabelService, useValue: service },
+            ],
+        }).compile();
 
-    resolver = module.get<LabelResolver>(LabelResolver);
-  });
+        resolver = module.get<LabelResolver>(LabelResolver);
+    });
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(resolver).toBeDefined();
+    });
+
+    describe('Mutation', () => {
+        it('should create a label', async () => {
+            jest.spyOn(service, 'create').mockImplementation(() =>
+                Promise.resolve({ id: 1, ...label }),
+            );
+
+            await resolver.create({ name: 'Feature', color: '#fff' });
+
+            expect(service.create).toHaveBeenCalledTimes(1);
+            expect(service.create).toHaveBeenCalledWith(label);
+        });
+    });
 });
