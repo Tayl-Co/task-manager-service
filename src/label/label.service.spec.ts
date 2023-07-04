@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LabelService } from './label.service';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -45,6 +45,38 @@ describe('LabelService', () => {
             await expect(service.create(label)).rejects.toThrow(
                 `The Feature Label already exists`,
             );
+
+            expect(labelRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOne).toHaveBeenCalledWith({
+                where: { name: Equal(label.name) },
+            });
+        });
+
+        it('should create a new label', async () => {
+            const newLabel = {
+                id: 1,
+                ...label,
+            };
+            jest.spyOn(labelRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(labelRepository, 'create').mockImplementation(
+                () => newLabel,
+            );
+            jest.spyOn(labelRepository, 'save').mockImplementation(() =>
+                Promise.resolve(newLabel),
+            );
+
+            await service.create(label);
+
+            expect(labelRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOne).toHaveBeenCalledWith({
+                where: { name: Equal(label.name) },
+            });
+            expect(labelRepository.create).toHaveBeenCalledTimes(1);
+            expect(labelRepository.create).toHaveBeenCalledWith(label);
+            expect(labelRepository.save).toHaveBeenCalledTimes(1);
+            expect(labelRepository.save).toHaveBeenCalledWith(newLabel);
         });
     });
 });
