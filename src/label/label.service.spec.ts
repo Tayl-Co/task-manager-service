@@ -191,6 +191,8 @@ describe('LabelService', () => {
     });
 
     describe('search', () => {
+        const pagination = { limit: 10, page: 1 };
+
         it('should search by name', async () => {
             const name = 'Feature';
             jest.spyOn(labelRepository, 'find').mockImplementation(() =>
@@ -223,8 +225,8 @@ describe('LabelService', () => {
                 skip: 0,
             });
         });
+
         it('should search by page and by limit', async () => {
-            const pagination = { limit: 10, page: 1 };
             jest.spyOn(labelRepository, 'find').mockImplementation(() =>
                 Promise.resolve([]),
             );
@@ -237,6 +239,21 @@ describe('LabelService', () => {
                 order: { name: Order.ASC },
                 take: pagination.limit,
                 skip: pagination.page * pagination.limit,
+            });
+        });
+        it('should search by page', async () => {
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search({ page: pagination.page });
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: {},
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: pagination.page,
             });
         });
     });
