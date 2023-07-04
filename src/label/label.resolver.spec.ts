@@ -63,4 +63,17 @@ describe('LabelResolver', () => {
             expect(service.update).toHaveBeenCalledWith(id, updateLabel);
         });
     });
+
+    describe('Query', () => {
+        const id = 2;
+
+        describe('findOneLabel', () => {
+            it('should return a label', async () => {
+                await resolver.findOne(id);
+
+                expect(service.findOne).toHaveBeenCalledTimes(1);
+                expect(service.findOne).toHaveBeenCalledWith(2);
+            });
+        });
+    });
 });
