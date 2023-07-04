@@ -24,16 +24,16 @@ describe('LabelService', () => {
         labelRepository = module.get<Repository<Label>>(labelRepositoryToken);
     });
 
+    const label = {
+        name: 'Feature',
+        color: '#fff',
+    };
+
     it('should be defined', () => {
         expect(service).toBeDefined();
     });
 
     describe('create', () => {
-        const label = {
-            name: 'Feature',
-            color: '#fff',
-        };
-
         it('should return an error message if label already exist', async () => {
             jest.spyOn(labelRepository, 'findOne').mockImplementation(() =>
                 Promise.resolve({
@@ -93,6 +93,18 @@ describe('LabelService', () => {
 
             expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
             expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+        });
+
+        it('should return a label', async () => {
+            const id = 1;
+            jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
+                Promise.resolve({ id, ...label }),
+            );
+            const response = await service.findOne(id);
+
+            expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+            expect(response).toMatchObject({ id, ...label });
         });
     });
 });
