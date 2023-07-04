@@ -148,8 +148,8 @@ describe('LabelService', () => {
     });
 
     describe('update', () => {
+        const id = 2;
         it('should return an error message if label not found', async () => {
-            const id = 2;
             jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
                 Promise.resolve(null),
             );
@@ -165,6 +165,27 @@ describe('LabelService', () => {
             expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
             expect(labelRepository.save).toHaveBeenCalledTimes(0);
             expect(labelRepository.save).not.toHaveBeenCalled();
+        });
+
+        it('should return an updated label', async () => {
+            const updatedLabel = { id, ...label, name: 'Feature 2' };
+            jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
+                Promise.resolve({ id, ...label }),
+            );
+            jest.spyOn(labelRepository, 'save').mockImplementation(() =>
+                Promise.resolve(updatedLabel),
+            );
+
+            const response = await service.update(id, {
+                color: updatedLabel.color,
+                name: updatedLabel.name,
+            });
+
+            expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+            expect(labelRepository.save).toHaveBeenCalledTimes(1);
+            expect(labelRepository.save).toHaveBeenCalledWith(updatedLabel);
+            expect(response).toMatchObject(updatedLabel);
         });
     });
 });
