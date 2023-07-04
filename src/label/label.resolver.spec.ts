@@ -51,5 +51,16 @@ describe('LabelResolver', () => {
             expect(service.delete).toHaveBeenCalledTimes(1);
             expect(service.delete).toHaveBeenCalledWith(id);
         });
+        it('should update a label', async () => {
+            const updateLabel = { ...label, name: 'Feature2' };
+            jest.spyOn(service, 'update').mockImplementation(() =>
+                Promise.resolve({ id, ...updateLabel }),
+            );
+
+            await resolver.update(id, updateLabel);
+
+            expect(service.update).toHaveBeenCalledTimes(1);
+            expect(service.update).toHaveBeenCalledWith(id, updateLabel);
+        });
     });
 });
