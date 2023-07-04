@@ -30,6 +30,7 @@ describe('LabelResolver', () => {
     });
 
     describe('Mutation', () => {
+        const id = 1;
         it('should create a label', async () => {
             jest.spyOn(service, 'create').mockImplementation(() =>
                 Promise.resolve({ id: 1, ...label }),
@@ -39,6 +40,16 @@ describe('LabelResolver', () => {
 
             expect(service.create).toHaveBeenCalledTimes(1);
             expect(service.create).toHaveBeenCalledWith(label);
+        });
+        it('should delete a label', async () => {
+            jest.spyOn(service, 'delete').mockImplementation(() =>
+                Promise.resolve({ id, ...label }),
+            );
+
+            await resolver.delete(id);
+
+            expect(service.delete).toHaveBeenCalledTimes(1);
+            expect(service.delete).toHaveBeenCalledWith(id);
         });
     });
 });
