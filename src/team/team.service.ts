@@ -15,6 +15,7 @@ import {
 import { Team } from '@team/entity/team.entity';
 import { TeamDto } from '@team/dtos/team.dto';
 import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
+import { Order } from '@src/common/enums/order.enum';
 
 @Injectable()
 export class TeamService {
@@ -101,8 +102,9 @@ export class TeamService {
             ownerId,
             membersIds,
             managersIds,
-            page,
-            order,
+            sortOrder = Order.ASC,
+            orderBy = 'name',
+            page = 0,
             limit,
         } = searchInput;
         let where = {};
@@ -122,7 +124,7 @@ export class TeamService {
                 projects: true,
             },
             where: { name: Like(`%${name}%`), ...where },
-            order: { name: order as FindOptionsOrderValue },
+            order: { [orderBy]: sortOrder as FindOptionsOrderValue },
             take: limit,
             skip: page * limit,
         });
