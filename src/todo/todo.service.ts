@@ -26,6 +26,7 @@ import { ActivityEnum } from '@src/common/enums/activity.enum';
 import { UpdateTodoDto } from '@todo/dtos/updateTodo.dto';
 import { Activity } from '@activity/entity/activity.entity';
 import { SearchTodoDto } from '@todo/dtos/searchTodo.dto';
+import { Order } from '@src/common/enums/order.enum';
 
 @Injectable()
 export class TodoService {
@@ -249,9 +250,10 @@ export class TodoService {
             assigneesIds,
             startDate,
             endDate,
-            page,
             limit,
-            order,
+            sortOrder = Order.ASC,
+            orderBy = 'title',
+            page = 0,
         } = searchInput;
         let where = {};
 
@@ -291,7 +293,7 @@ export class TodoService {
                 activities: true,
             },
             where,
-            order: { title: order as FindOptionsOrderValue },
+            order: { [orderBy]: sortOrder as FindOptionsOrderValue },
             take: limit,
             skip: page * limit,
         });

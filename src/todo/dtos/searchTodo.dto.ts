@@ -2,6 +2,7 @@ import { BaseSearchFilterDto } from '@src/common/dtos/baseSearchFilter.dto';
 import {
     IsBoolean,
     IsDateString,
+    IsIn,
     IsNumber,
     IsOptional,
     IsString,
@@ -69,4 +70,10 @@ export class SearchTodoDto extends BaseSearchFilterDto {
     @IsDateString()
     @Field({ nullable: true })
     endDate: string;
+
+    @IsString()
+    @IsIn(['id', 'title'])
+    @IsOptional()
+    @Field({ nullable: true, defaultValue: 'title' })
+    orderBy?: string;
 }
