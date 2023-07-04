@@ -223,5 +223,21 @@ describe('LabelService', () => {
                 skip: 0,
             });
         });
+        it('should search by page and by limit', async () => {
+            const pagination = { limit: 10, page: 1 };
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search(pagination);
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: {},
+                order: { name: Order.ASC },
+                take: pagination.limit,
+                skip: pagination.page * pagination.limit,
+            });
+        });
     });
 });
