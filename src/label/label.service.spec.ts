@@ -271,5 +271,21 @@ describe('LabelService', () => {
                 skip: 0,
             });
         });
+        it('should add order in search', async () => {
+            const order = { orderBy: 'color', sortOrder: 'ASC' };
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search(order);
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: {},
+                order: { [order.orderBy]: order.sortOrder },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
