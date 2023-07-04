@@ -146,4 +146,25 @@ describe('LabelService', () => {
             expect(response).toMatchObject({ id, ...label });
         });
     });
+
+    describe('update', () => {
+        it('should return an error message if label not found', async () => {
+            const id = 2;
+            jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(labelRepository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.update(id, label)).rejects.toThrow(
+                `Label ${id} not found`,
+            );
+
+            expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+            expect(labelRepository.save).toHaveBeenCalledTimes(0);
+            expect(labelRepository.save).not.toHaveBeenCalled();
+        });
+    });
 });
