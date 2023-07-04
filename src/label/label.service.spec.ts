@@ -107,4 +107,25 @@ describe('LabelService', () => {
             expect(response).toMatchObject({ id, ...label });
         });
     });
+
+    describe('delete', () => {
+        it('should return an error message if label not found', async () => {
+            const id = 2;
+            jest.spyOn(labelRepository, 'findOneBy').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(labelRepository, 'delete').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.findOne(id)).rejects.toThrow(
+                `Label ${id} not found`,
+            );
+
+            expect(labelRepository.findOneBy).toHaveBeenCalledTimes(1);
+            expect(labelRepository.findOneBy).toHaveBeenCalledWith({ id });
+            expect(labelRepository.delete).toHaveBeenCalledTimes(0);
+            expect(labelRepository.delete).not.toHaveBeenCalled();
+        });
+    });
 });
