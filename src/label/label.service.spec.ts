@@ -207,5 +207,21 @@ describe('LabelService', () => {
                 skip: 0,
             });
         });
+        it('should search by color', async () => {
+            const color = '#fff';
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search({ color });
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: { color: ILike(`%${color}%`) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
