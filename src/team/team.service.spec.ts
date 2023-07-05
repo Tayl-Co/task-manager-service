@@ -438,13 +438,26 @@ describe('TeamService', () => {
     });
 
     describe('delete Function', () => {
-        it('Should return an error message if the team is not found', async () => {
-            try {
-                await service.delete(50);
-            } catch ({ message }) {
-                expect(message).toBeDefined();
-                expect(message).toEqual(`Team 50 not found`);
-            }
+        const id = 1;
+
+        it('should return an error message if the team is not found', async () => {
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(teamRepository, 'delete').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.delete(id)).rejects.toThrow(
+                `Team ${id} not found`,
+            );
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
+            });
+            expect(teamRepository.delete).not.toHaveBeenCalled();
         });
 
         it('Should return deleted team and remove team within data', async () => {
