@@ -11,6 +11,7 @@ import {
     FindManyOptions,
     Equal,
     In,
+    ILike,
 } from 'typeorm';
 import { Order } from '@src/common/enums/order.enum';
 
@@ -178,33 +179,22 @@ describe('TeamService', () => {
             expect(response.length).toEqual(2);
         });
 
-        it('Should return the team if the name exists', async () => {
-            const teams = [
-                {
-                    id: 1,
-                    name: 'Team 1',
-                    ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
-                    membersIds: [
-                        '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
-                        'acb63589-c2b6-43d8-aa06-1bc722666bf0',
-                    ],
-                    managersIds: ['a192fd6d-67c1-4090-8011-d96f83cf3e9b'],
-                    projects: [
-                        {
-                            id: 1,
-                            name: 'Project 1',
-                            description: 'Description of project 1',
-                            active: true,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-            ];
-            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
-            const response = await service.search({ name: 'Team 1' });
+        it('should return the team if the name exists', async () => {
+            const name = 'Team 1';
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve(data.filter(team => team.name === name)),
+            );
+            const response = await service.search({ name });
 
-            expect(response).toMatchObject(teams);
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { name: ILike(`%${name}%`) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+            expect(response).toMatchObject([data[0]]);
             expect(response.length).toEqual(1);
         });
 
