@@ -394,8 +394,8 @@ describe('TeamService', () => {
     });
 
     describe('update Function', () => {
-        const id = 9;
-        it('Should return an error message if the team is not found', async () => {
+        const id = 1;
+        it('should return an error message if the team is not found', async () => {
             jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
                 Promise.resolve(null),
             );
@@ -415,24 +415,25 @@ describe('TeamService', () => {
             expect(teamRepository.save).not.toHaveBeenCalled();
         });
 
-        it('Should return the updated team', async () => {
-            const response = await service.update(1, team);
+        it('should return the updated team', async () => {
+            const updateTeam = { ...data[0], name: 'Team 1 Updated' };
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data.find(team => team.id === id)),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(updateTeam),
+            );
+            const response = await service.update(1, updateTeam);
 
-            expect(response).toBeDefined();
-            expect(response).toEqual({
-                id: 1,
-                ...team,
-                projects: [
-                    {
-                        id: 1,
-                        name: 'Project 1',
-                        description: 'Description of project 1',
-                        active: true,
-                        team: null,
-                        issues: [],
-                    },
-                ],
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
             });
+            expect(teamRepository.save).toHaveBeenCalledTimes(1);
+            expect(teamRepository.save).toHaveBeenCalledWith(updateTeam);
+            expect(response).toBeDefined();
+            expect(response).toEqual(updateTeam);
         });
     });
 
