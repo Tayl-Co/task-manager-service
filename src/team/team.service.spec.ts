@@ -460,31 +460,25 @@ describe('TeamService', () => {
             expect(teamRepository.delete).not.toHaveBeenCalled();
         });
 
-        it('Should return deleted team and remove team within data', async () => {
-            const response = await service.delete(5);
-            const team = {
-                id: 5,
-                name: 'Team 5',
-                ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
-                membersIds: [
-                    'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
-                    '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
-                ],
-                managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
-                projects: [
-                    {
-                        id: 5,
-                        name: 'Project 5',
-                        description: 'Description of project 5',
-                        active: false,
-                        team: null,
-                        issues: [],
-                    },
-                ],
-            };
+        it('should return deleted team', async () => {
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data.find(team => team.id === id)),
+            );
+            jest.spyOn(teamRepository, 'delete').mockImplementation(() =>
+                Promise.resolve({ raw: [], affected: 1 }),
+            );
 
+            const response = await service.delete(id);
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
+            });
+            expect(teamRepository.delete).toHaveBeenCalledTimes(1);
+            expect(teamRepository.delete).toHaveBeenCalledWith(id);
             expect(response).toBeDefined();
-            expect(response).toEqual(team);
+            expect(response).toEqual(data[0]);
         });
     });
 });
