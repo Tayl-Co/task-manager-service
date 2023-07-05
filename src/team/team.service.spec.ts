@@ -80,7 +80,6 @@ describe('TeamService', () => {
                 {
                     provide: teamRepositoryToken,
                     useClass: Repository,
-                    //useValue: initMockRepository<Team>(data),
                 },
             ],
         }).compile();
@@ -94,12 +93,20 @@ describe('TeamService', () => {
     });
 
     describe('findAll Function', () => {
-        it('Should return all teams', async () => {
+        it('should return all teams', async () => {
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve(data),
+            );
             const response = await service.findAll();
 
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                order: { name: Order.ASC },
+            });
             expect(response).toBeDefined();
             expect(response).toEqual(data);
-            expect(response.length).toEqual(5);
+            expect(response.length).toEqual(data.length);
         });
     });
 
