@@ -11,6 +11,7 @@ import {
     FindManyOptions,
     Equal,
 } from 'typeorm';
+import { Order } from '@src/common/enums/order.enum';
 
 type Jest = typeof jest;
 
@@ -104,6 +105,14 @@ describe('TeamService', () => {
             jest.spyOn(teamRepository, 'find').mockResolvedValue(data);
             const response = await service.search({});
 
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: {},
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
             expect(response).toMatchObject(data);
             expect(response.length).toEqual(5);
         });

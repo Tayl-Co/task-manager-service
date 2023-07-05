@@ -8,8 +8,8 @@ import {
     ArrayContains,
     Equal,
     FindOptionsOrderValue,
+    ILike,
     In,
-    Like,
     Repository,
 } from 'typeorm';
 import { Team } from '@team/entity/team.entity';
@@ -111,6 +111,8 @@ export class TeamService {
 
         if (ids) where = { ...where, id: In(ids) };
 
+        if (name) where = { ...where, name: ILike(`%${name}%`) };
+
         if (ownerId) where = { ...where, ownerId: ownerId };
 
         if (membersIds)
@@ -123,10 +125,10 @@ export class TeamService {
             relations: {
                 projects: true,
             },
-            where: { name: Like(`%${name}%`), ...where },
+            where,
             order: { [orderBy]: sortOrder as FindOptionsOrderValue },
-            take: limit,
-            skip: page * limit,
+            take: limit ? limit : undefined,
+            skip: limit ? page * limit : page,
         });
     }
 }
