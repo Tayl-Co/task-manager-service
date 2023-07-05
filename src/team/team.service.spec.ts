@@ -314,6 +314,7 @@ describe('TeamService', () => {
     });
 
     describe('findOne Function', () => {
+        const id = 1;
         it('Should return team if team exist', async () => {
             const response = await service.findOne(1);
 
@@ -341,11 +342,19 @@ describe('TeamService', () => {
         });
 
         it('Should return an error message if the team is not found', async () => {
-            try {
-                await service.findOne(50);
-            } catch ({ message }) {
-                expect(message).toEqual(`Team 50 not found`);
-            }
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.findOne(id)).rejects.toThrow(
+                `Team ${id} not found`,
+            );
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
+            });
         });
     });
 
