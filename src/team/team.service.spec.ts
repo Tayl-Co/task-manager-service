@@ -350,7 +350,7 @@ describe('TeamService', () => {
     });
 
     describe('create Function', () => {
-        it('Should return the team created if the entries are correct', async () => {
+        it('should return the team created if the entries are correct', async () => {
             const createTeam = {
                 id: 1,
                 ...team,
@@ -378,6 +378,20 @@ describe('TeamService', () => {
             expect(teamRepository.create).toHaveBeenCalledWith(team);
             expect(teamRepository.save).toHaveBeenCalledTimes(1);
             expect(teamRepository.save).toHaveBeenCalledWith(createTeam);
+        });
+        it('should return an error message if team already exist', async () => {
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve({ id: 1, projects: [], ...team }),
+            );
+
+            await expect(service.create(team)).rejects.toThrow(
+                `The ${team.name} Team already exists`,
+            );
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                where: { name: Equal(team.name) },
+            });
         });
     });
 
