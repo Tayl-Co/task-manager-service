@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LabelService } from './label.service';
-import { Equal, ILike, Repository } from 'typeorm';
+import { Equal, ILike, In, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Order } from '@src/common/enums/order.enum';
@@ -193,6 +193,23 @@ describe('LabelService', () => {
     describe('search', () => {
         const pagination = { limit: 10, page: 1 };
 
+        it('should search by ids', async () => {
+            const ids = [1, 2];
+            jest.spyOn(labelRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
+            );
+
+            await service.search({ ids });
+
+            expect(labelRepository.find).toHaveBeenCalledTimes(1);
+            expect(labelRepository.find).toHaveBeenCalledWith({
+                where: { id: In(ids) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+
         it('should search by name', async () => {
             const name = 'Feature';
             jest.spyOn(labelRepository, 'find').mockImplementation(() =>
@@ -209,6 +226,7 @@ describe('LabelService', () => {
                 skip: 0,
             });
         });
+
         it('should search by color', async () => {
             const color = '#fff';
             jest.spyOn(labelRepository, 'find').mockImplementation(() =>

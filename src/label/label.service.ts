@@ -4,7 +4,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsOrderValue, ILike, Repository } from 'typeorm';
+import { Equal, FindOptionsOrderValue, ILike, In, Repository } from 'typeorm';
 import { Label } from '@label/entity/label.entity';
 import { LabelDto } from '@label/dtos/label.dto';
 import { SearchLabelDto } from '@label/dtos/searchLabel.dto';
@@ -55,6 +55,7 @@ export class LabelService {
 
     search(searchInput: SearchLabelDto): Promise<Array<Label>> {
         const {
+            ids,
             name,
             color,
             limit,
@@ -63,6 +64,8 @@ export class LabelService {
             page = 0,
         } = searchInput;
         let where = {};
+
+        if (ids) where = { ...where, id: In(ids) };
 
         if (name) where = { ...where, name: ILike(`%${name}%`) };
 
