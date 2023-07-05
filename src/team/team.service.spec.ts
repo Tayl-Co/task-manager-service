@@ -9,6 +9,7 @@ import {
     FindOneOptions,
     FindOptionsWhere,
     FindManyOptions,
+    Equal,
 } from 'typeorm';
 
 type Jest = typeof jest;
@@ -56,6 +57,13 @@ const mockRepository =
 
 const initMockRepository = mockRepository(jest);
 
+const team = {
+    name: 'Team 6',
+    managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+    membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
+    ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+};
+
 describe('TeamService', () => {
     let service: TeamService;
     let teamRepository: Repository<Team>;
@@ -67,7 +75,8 @@ describe('TeamService', () => {
                 TeamService,
                 {
                     provide: teamRepositoryToken,
-                    useValue: initMockRepository<Team>(data),
+                    useClass: Repository,
+                    //useValue: initMockRepository<Team>(data),
                 },
             ],
         }).compile();
@@ -103,7 +112,8 @@ describe('TeamService', () => {
             jest.spyOn(teamRepository, 'find').mockResolvedValue(
                 data.reverse(),
             );
-            const response = await service.search({ order: 'DESC' });
+            //TODO: Refactor
+            const response = await service.search({});
 
             expect(response).toMatchObject(data.reverse());
             expect(response.length).toEqual(data.length);
@@ -341,15 +351,33 @@ describe('TeamService', () => {
 
     describe('create Function', () => {
         it('Should return the team created if the entries are correct', async () => {
-            const team = {
-                name: 'Team 6',
-                managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-                ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
+            const createTeam = {
+                id: 1,
+                ...team,
+                projects: [],
             };
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(teamRepository, 'create').mockImplementation(
+                () => createTeam,
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(createTeam),
+            );
+
             const response = await service.create(team);
+
             expect(response).toBeDefined();
-            expect(response).toMatchObject({ ...team, projects: [], id: 6 });
+            expect(response).toMatchObject(createTeam);
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                where: { name: Equal(team.name) },
+            });
+            expect(teamRepository.create).toHaveBeenCalledTimes(1);
+            expect(teamRepository.create).toHaveBeenCalledWith(team);
+            expect(teamRepository.save).toHaveBeenCalledTimes(1);
+            expect(teamRepository.save).toHaveBeenCalledWith(createTeam);
         });
     });
 
