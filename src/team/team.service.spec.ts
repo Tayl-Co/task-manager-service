@@ -12,6 +12,7 @@ import {
     Equal,
     In,
     ILike,
+    ArrayContains,
 } from 'typeorm';
 import { Order } from '@src/common/enums/order.enum';
 
@@ -198,35 +199,24 @@ describe('TeamService', () => {
             expect(response.length).toEqual(1);
         });
 
-        it("Should return the teams that contain the managers' IDs", async () => {
-            const teams = [
-                {
-                    id: 3,
-                    name: 'Team 3',
-                    ownerId: 'd18f9873-6707-4df6-9a16-b3bf2d74cbc5',
-                    membersIds: [
-                        'db9ce25e-5de3-41db-80c0-ee637ac3813f',
-                        '745149b6-c4fe-4801-a2ca-d247f94405ac',
-                    ],
-                    managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
-                    projects: [
-                        {
-                            id: 3,
-                            name: 'Project 3',
-                            description: 'Description of project 3',
-                            active: false,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-            ];
-            jest.spyOn(teamRepository, 'find').mockResolvedValue(teams);
+        it("should return the teams that contain the managers' IDs", async () => {
+            const managersIds = ['baef5525-47ac-4356-bc01-11f268e17352'];
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve([data[2]]),
+            );
             const response = await service.search({
-                managersIds: ['baef5525-47ac-4356-bc01-11f268e17352'],
+                managersIds,
             });
 
-            expect(response).toMatchObject(teams);
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { managersIds: ArrayContains(managersIds) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+            expect(response).toMatchObject([data[2]]);
             expect(response.length).toEqual(1);
         });
 
