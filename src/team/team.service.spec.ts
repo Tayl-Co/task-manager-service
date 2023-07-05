@@ -394,19 +394,25 @@ describe('TeamService', () => {
     });
 
     describe('update Function', () => {
-        const team = {
-            name: 'Team 10',
-            managersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-            membersIds: ['96dbafb6-4633-4bdb-8e78-9ae7b4dc4959'],
-            ownerId: '2c7591b9-a582-4819-8aec-d2542cb446e8',
-        };
-
+        const id = 9;
         it('Should return an error message if the team is not found', async () => {
-            try {
-                await service.update(99, team);
-            } catch ({ message }) {
-                expect(message).toEqual(`Team 99 not found`);
-            }
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.update(id, team)).rejects.toThrow(
+                `Team ${id} not found`,
+            );
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
+            });
+            expect(teamRepository.save).not.toHaveBeenCalled();
         });
 
         it('Should return the updated team', async () => {
