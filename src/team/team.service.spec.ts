@@ -240,6 +240,27 @@ describe('TeamService', () => {
             expect(response).toMatchObject([data[2]]);
             expect(response.length).toEqual(1);
         });
+
+        it('should return the teams that contain informed ownerId', async () => {
+            const ownerId = '0cc01959-066e-4d29-9105-61a6c343ad5c';
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve([data[0]]),
+            );
+            const response = await service.search({
+                ownerId,
+            });
+
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { ownerId },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+            expect(response).toMatchObject([data[0]]);
+            expect(response.length).toEqual(1);
+        });
     });
 
     describe('findOne Function', () => {
