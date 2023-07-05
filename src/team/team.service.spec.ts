@@ -118,14 +118,21 @@ describe('TeamService', () => {
         });
 
         it('Should return teams in descending order', async () => {
-            jest.spyOn(teamRepository, 'find').mockResolvedValue(
-                data.reverse(),
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve([]),
             );
-            //TODO: Refactor
-            const response = await service.search({});
 
-            expect(response).toMatchObject(data.reverse());
-            expect(response.length).toEqual(data.length);
+            const response = await service.search({ sortOrder: Order.DESC });
+
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: {},
+                order: { name: Order.DESC },
+                take: undefined,
+                skip: 0,
+            });
+            expect(response.length).toEqual(0);
         });
 
         it('Should return items based on page and limit quantity', async () => {
