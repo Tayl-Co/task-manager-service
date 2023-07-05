@@ -137,6 +137,25 @@ describe('TeamService', () => {
             });
             expect(response.length).toEqual(0);
         });
+        it('should return teams sorted by id', async () => {
+            const sortById = data.sort((a, b) => a.id - b.id);
+            jest.spyOn(teamRepository, 'find').mockImplementation(() =>
+                Promise.resolve(sortById),
+            );
+
+            const response = await service.search({ orderBy: 'id' });
+
+            expect(teamRepository.find).toHaveBeenCalledTimes(1);
+            expect(teamRepository.find).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: {},
+                order: { id: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+            expect(response).toMatchObject(sortById);
+            expect(response.length).toEqual(data.length);
+        });
 
         it('should return items based on page and limit quantity', async () => {
             const teams = [data[2], data[3]];
