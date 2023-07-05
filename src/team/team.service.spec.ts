@@ -316,29 +316,18 @@ describe('TeamService', () => {
     describe('findOne Function', () => {
         const id = 1;
         it('Should return team if team exist', async () => {
-            const response = await service.findOne(1);
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data.find(team => team.id === id)),
+            );
+            const response = await service.findOne(id);
 
-            expect(response).toBeDefined();
-            expect(response).toEqual({
-                id: 1,
-                name: 'Team 1',
-                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
-                membersIds: [
-                    '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
-                    'acb63589-c2b6-43d8-aa06-1bc722666bf0',
-                ],
-                managersIds: ['a192fd6d-67c1-4090-8011-d96f83cf3e9b'],
-                projects: [
-                    {
-                        id: 1,
-                        name: 'Project 1',
-                        description: 'Description of project 1',
-                        active: true,
-                        team: null,
-                        issues: [],
-                    },
-                ],
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id },
             });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(data[0]);
         });
 
         it('Should return an error message if the team is not found', async () => {
