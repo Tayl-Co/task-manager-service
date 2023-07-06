@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamResolver } from '@team/team.resolver';
 import { TeamService } from '@team/team.service';
-import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
-import { TeamDto } from '@team/dtos/team.dto';
-import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
 import { Order } from '@src/common/enums/order.enum';
 
 describe('TeamResolver', () => {
@@ -136,6 +133,51 @@ describe('TeamResolver', () => {
                 expect(fakeService.removeUser).toHaveBeenCalledWith(teamId, {
                     userId,
                     userType: 'member',
+                });
+                expect(response).toBeDefined();
+            });
+        });
+
+        describe('manager', () => {
+            it('should add manager to team', async () => {
+                const userId = 'acb63589-c2b6-43d8-aa06-1bc722666b22';
+                const updateTeam = {
+                    ...data[0],
+                    membersIds: [
+                        '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                        'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+                        userId,
+                    ],
+                };
+                jest.spyOn(fakeService, 'addUser').mockImplementation(() =>
+                    Promise.resolve(updateTeam),
+                );
+
+                const response = await resolver.addManager(
+                    updateTeam.id,
+                    userId,
+                );
+
+                expect(fakeService.addUser).toHaveBeenCalledTimes(1);
+                expect(fakeService.addUser).toHaveBeenCalledWith(
+                    updateTeam.id,
+                    { userId, userType: 'manager' },
+                );
+                expect(response).toBeDefined();
+            });
+            it('should remove team manager', async () => {
+                const teamId = 1;
+                const userId = 'acb63589-c2b6-43d8-aa06-1bc722666b22';
+                jest.spyOn(fakeService, 'removeUser').mockImplementation(() =>
+                    Promise.resolve(null),
+                );
+
+                const response = await resolver.removeManager(teamId, userId);
+
+                expect(fakeService.removeUser).toHaveBeenCalledTimes(1);
+                expect(fakeService.removeUser).toHaveBeenCalledWith(teamId, {
+                    userId,
+                    userType: 'manager',
                 });
                 expect(response).toBeDefined();
             });
