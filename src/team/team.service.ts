@@ -16,6 +16,7 @@ import { Team } from '@team/entity/team.entity';
 import { TeamDto } from '@team/dtos/team.dto';
 import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
 import { Order } from '@src/common/enums/order.enum';
+import { UserInput } from '@team/dtos/userInput';
 
 @Injectable()
 export class TeamService {
@@ -37,13 +38,7 @@ export class TeamService {
         return await this.teamRepository.save(newTeam);
     }
 
-    async addUser(
-        id: number,
-        {
-            userId,
-            userType,
-        }: { userId: string; userType: 'manager' | 'member' },
-    ) {
+    async addUser(id: number, { userId, userType }: UserInput) {
         const team = await this.findOne(id);
         const key = `${userType}sIds`;
         const isIncludedMember = team[key].includes(userId);
@@ -52,6 +47,21 @@ export class TeamService {
             throw new ConflictException(`${userId} already exists`);
 
         Object.assign(team, { [key]: [...team[key], userId] });
+
+        return this.teamRepository.save(team);
+    }
+
+    async removeUser(id: number, { userId, userType }: UserInput) {
+        const team = await this.findOne(id);
+        const key = `${userType}sIds`;
+        const isIncludedMember = team[key].includes(userId);
+
+        if (!isIncludedMember)
+            throw new NotFoundException(`${userId} is not found`);
+
+        Object.assign(team, {
+            [key]: team[key].filter(user => user !== userId),
+        });
 
         return this.teamRepository.save(team);
     }
