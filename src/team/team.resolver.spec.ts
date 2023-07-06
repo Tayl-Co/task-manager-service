@@ -104,31 +104,20 @@ describe('TeamResolver', () => {
 
     describe('update', () => {
         it('Should return updated team', async () => {
-            const response = await resolver.update(1, {
-                name: 'Team',
-                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
-                membersIds: [],
-                managersIds: [],
-            });
+            const updateTeam = { ...data[0], name: 'Team updated' };
+            jest.spyOn(fakeService, 'update').mockImplementation(() =>
+                Promise.resolve(updateTeam),
+            );
 
+            const response = await resolver.update(updateTeam.id, updateTeam);
+
+            expect(fakeService.update).toHaveBeenCalledTimes(1);
+            expect(fakeService.update).toHaveBeenCalledWith(
+                updateTeam.id,
+                updateTeam,
+            );
             expect(response).toBeDefined();
-            expect(response).toMatchObject({
-                id: 1,
-                name: 'Team',
-                ownerId: '0cc01959-066e-4d29-9105-61a6c343ad5c',
-                membersIds: [],
-                managersIds: [],
-                projects: [
-                    {
-                        id: 1,
-                        name: 'Project 1',
-                        description: 'Description of project 1',
-                        active: true,
-                        team: null,
-                        issues: [],
-                    },
-                ],
-            });
+            expect(response).toMatchObject(updateTeam);
         });
     });
 
