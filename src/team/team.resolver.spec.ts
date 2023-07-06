@@ -47,22 +47,25 @@ describe('TeamResolver', () => {
     });
 
     describe('create', () => {
-        it('Should return created team', async () => {
-            const response = await resolver.create({
+        it('should return created team', async () => {
+            const createTeam = {
                 name: 'Team 6',
                 ownerId: '',
                 membersIds: [],
                 managersIds: [],
-            });
+            };
+            jest.spyOn(fakeService, 'create').mockImplementation(() =>
+                Promise.resolve({ id: 1, projects: [], ...createTeam }),
+            );
+            const response = await resolver.create(createTeam);
 
+            expect(fakeService.create).toHaveBeenCalledTimes(1);
+            expect(fakeService.create).toHaveBeenCalledWith(createTeam);
             expect(response).toBeDefined();
             expect(response).toMatchObject({
-                id: 6,
-                name: 'Team 6',
-                ownerId: '',
-                membersIds: [],
-                managersIds: [],
+                id: 1,
                 projects: [],
+                ...createTeam,
             });
         });
     });
