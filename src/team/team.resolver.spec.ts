@@ -5,6 +5,7 @@ import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
 import { TeamDto } from '@team/dtos/team.dto';
 import { SearchFilterDto } from '@team/dtos/searchTeam.dto';
+import { Order } from '@src/common/enums/order.enum';
 
 describe('TeamResolver', () => {
     let resolver: TeamResolver;
@@ -18,6 +19,7 @@ describe('TeamResolver', () => {
             create: jest.fn(),
             update: jest.fn(),
             search: jest.fn(),
+            addUser: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -33,198 +35,205 @@ describe('TeamResolver', () => {
         expect(resolver).toBeDefined();
     });
 
-    describe('findAll', () => {
-        it('should return all teams', async () => {
-            jest.spyOn(fakeService, 'findAll').mockImplementation(() =>
-                Promise.resolve(data),
-            );
-            const response = await resolver.findAll();
+    describe('mutation', () => {
+        describe('create', () => {
+            it('should return created team', async () => {
+                const createTeam = {
+                    name: 'Team 6',
+                    ownerId: '',
+                    membersIds: [],
+                    managersIds: [],
+                };
+                jest.spyOn(fakeService, 'create').mockImplementation(() =>
+                    Promise.resolve({ id: 1, projects: [], ...createTeam }),
+                );
+                const response = await resolver.create(createTeam);
 
-            expect(fakeService.findAll).toHaveBeenCalledTimes(1);
-            expect(response).toBeDefined();
-            expect(response.length).toEqual(5);
+                expect(fakeService.create).toHaveBeenCalledTimes(1);
+                expect(fakeService.create).toHaveBeenCalledWith(createTeam);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject({
+                    id: 1,
+                    projects: [],
+                    ...createTeam,
+                });
+            });
         });
-    });
+        describe('update', () => {
+            it('Should return updated team', async () => {
+                const updateTeam = { ...data[0], name: 'Team updated' };
+                jest.spyOn(fakeService, 'update').mockImplementation(() =>
+                    Promise.resolve(updateTeam),
+                );
 
-    describe('create', () => {
-        it('should return created team', async () => {
-            const createTeam = {
-                name: 'Team 6',
-                ownerId: '',
-                membersIds: [],
-                managersIds: [],
-            };
-            jest.spyOn(fakeService, 'create').mockImplementation(() =>
-                Promise.resolve({ id: 1, projects: [], ...createTeam }),
-            );
-            const response = await resolver.create(createTeam);
+                const response = await resolver.update(
+                    updateTeam.id,
+                    updateTeam,
+                );
 
-            expect(fakeService.create).toHaveBeenCalledTimes(1);
-            expect(fakeService.create).toHaveBeenCalledWith(createTeam);
-            expect(response).toBeDefined();
-            expect(response).toMatchObject({
-                id: 1,
-                projects: [],
-                ...createTeam,
+                expect(fakeService.update).toHaveBeenCalledTimes(1);
+                expect(fakeService.update).toHaveBeenCalledWith(
+                    updateTeam.id,
+                    updateTeam,
+                );
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(updateTeam);
+            });
+        });
+        describe('delete', () => {
+            it('should return deleted team', async () => {
+                const id = 1;
+                const team = data.find(team => team.id === id);
+                jest.spyOn(fakeService, 'delete').mockImplementation(() =>
+                    Promise.resolve(team),
+                );
+                const response = await resolver.delete(1);
+
+                expect(fakeService.delete).toHaveBeenCalledTimes(1);
+                expect(fakeService.delete).toHaveBeenCalledWith(id);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(team);
+            });
+        });
+        describe('member', () => {
+            it('should add member to team', async () => {
+                const userId = 'acb63589-c2b6-43d8-aa06-1bc722666b22';
+                const updateTeam = {
+                    ...data[0],
+                    membersIds: [
+                        '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                        'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+                        userId,
+                    ],
+                };
+                jest.spyOn(fakeService, 'addUser').mockImplementation(() =>
+                    Promise.resolve(updateTeam),
+                );
+
+                const response = await resolver.addMember(
+                    updateTeam.id,
+                    userId,
+                );
+
+                expect(fakeService.addUser).toHaveBeenCalledTimes(1);
+                expect(fakeService.addUser).toHaveBeenCalledWith(
+                    updateTeam.id,
+                    { userId, userType: 'member' },
+                );
+                expect(response).toBeDefined();
             });
         });
     });
 
-    describe('findOne', () => {
-        it('Should return a team', async () => {
-            const id = 1;
-            const team = data.find(team => team.id === id);
-            jest.spyOn(fakeService, 'findOne').mockImplementation(() =>
-                Promise.resolve(team),
-            );
-            const response = await resolver.findOne(id);
+    describe('query', () => {
+        describe('findOne', () => {
+            it('Should return a team', async () => {
+                const id = 1;
+                const team = data.find(team => team.id === id);
+                jest.spyOn(fakeService, 'findOne').mockImplementation(() =>
+                    Promise.resolve(team),
+                );
+                const response = await resolver.findOne(id);
 
-            expect(fakeService.findOne).toHaveBeenCalledTimes(1);
-            expect(fakeService.findOne).toHaveBeenCalledWith(id);
-            expect(response).toBeDefined();
-            expect(response).toMatchObject(team);
-        });
-    });
-
-    describe('delete', () => {
-        it('should return deleted team', async () => {
-            const id = 1;
-            const team = data.find(team => team.id === id);
-            jest.spyOn(fakeService, 'delete').mockImplementation(() =>
-                Promise.resolve(team),
-            );
-            const response = await resolver.delete(1);
-
-            expect(fakeService.delete).toHaveBeenCalledTimes(1);
-            expect(fakeService.delete).toHaveBeenCalledWith(id);
-            expect(response).toBeDefined();
-            expect(response).toMatchObject(team);
-        });
-    });
-
-    describe('update', () => {
-        it('Should return updated team', async () => {
-            const updateTeam = { ...data[0], name: 'Team updated' };
-            jest.spyOn(fakeService, 'update').mockImplementation(() =>
-                Promise.resolve(updateTeam),
-            );
-
-            const response = await resolver.update(updateTeam.id, updateTeam);
-
-            expect(fakeService.update).toHaveBeenCalledTimes(1);
-            expect(fakeService.update).toHaveBeenCalledWith(
-                updateTeam.id,
-                updateTeam,
-            );
-            expect(response).toBeDefined();
-            expect(response).toMatchObject(updateTeam);
-        });
-    });
-
-    describe('search', () => {
-        it('Should return the teams referring to the ids informed', async () => {
-            const response = await resolver.search({ ids: [2, 5] });
-
-            expect(response).toBeDefined();
-            expect(response).toMatchObject([
-                {
-                    id: 2,
-                    name: 'Team 2',
-                    ownerId: '566fa276-7293-4d55-b832-2e1160fd67f2',
-                    membersIds: [
-                        'eca80c07-1486-4568-9b1a-3923d0e01d21',
-                        '5cc8904a-d849-4fee-8ef9-4999a360611d',
-                    ],
-                    managersIds: ['fc0282ea-5660-4b9f-a47f-c3d499ae185a'],
-                    projects: [
-                        {
-                            id: 2,
-                            name: 'Project 2',
-                            description: 'Description of project 2',
-                            active: true,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-                {
-                    id: 5,
-                    name: 'Team 5',
-                    ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
-                    membersIds: [
-                        'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
-                        '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
-                    ],
-                    managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
-                    projects: [
-                        {
-                            id: 5,
-                            name: 'Project 5',
-                            description: 'Description of project 5',
-                            active: false,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-            ]);
-            expect(response.length).toEqual(2);
+                expect(fakeService.findOne).toHaveBeenCalledTimes(1);
+                expect(fakeService.findOne).toHaveBeenCalledWith(id);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(team);
+            });
         });
 
-        it('Should return a maximum of 50 teams if it does not contain filters', async () => {
-            const response = await resolver.search({});
+        describe('findAll', () => {
+            it('should return all teams', async () => {
+                jest.spyOn(fakeService, 'findAll').mockImplementation(() =>
+                    Promise.resolve(data),
+                );
+                const response = await resolver.findAll();
 
-            expect(response).toBeDefined();
-            expect(response).toMatchObject(data);
+                expect(fakeService.findAll).toHaveBeenCalledTimes(1);
+                expect(response).toBeDefined();
+                expect(response.length).toEqual(5);
+            });
         });
 
-        it('Should return two teams in DESC order', async () => {
-            const response = await resolver.search({ limit: 2 });
+        describe('search', () => {
+            it('should search teams', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const response = await resolver.search({});
 
-            expect(response).toBeDefined();
-            expect(response.length).toEqual(2);
-            expect(response).toMatchObject([
-                {
-                    id: 5,
-                    name: 'Team 5',
-                    ownerId: '2296e799-b730-4879-bfe0-26ecabca3ee0',
-                    membersIds: [
-                        'a1f35180-c5f4-4f1d-a84c-e6c7b0202144',
-                        '6f3e32de-b2ae-414e-b24c-f02cbac5f443',
-                    ],
-                    managersIds: ['98cefbee-7b8e-4878-b213-895f84b5259b'],
-                    projects: [
-                        {
-                            id: 5,
-                            name: 'Project 5',
-                            description: 'Description of project 5',
-                            active: false,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-                {
-                    id: 4,
-                    name: 'Team 4',
-                    ownerId: '93a8a626-9938-40b5-9072-273cfc061c10',
-                    membersIds: [
-                        '97e321ff-1a8b-4890-9cf2-2b05a5127267',
-                        '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
-                    ],
-                    managersIds: ['f522b8f6-3cf8-46cc-982f-b7017dc2c22c'],
-                    projects: [
-                        {
-                            id: 4,
-                            name: 'Project 4',
-                            description: 'Description of project 4',
-                            active: true,
-                            team: null,
-                            issues: [],
-                        },
-                    ],
-                },
-            ]);
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith({});
+                expect(response).toBeDefined();
+            });
+            it('should search by ids', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const ids = [1, 2];
+                const response = await resolver.search({ ids });
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith({ ids });
+                expect(response).toBeDefined();
+            });
+            it('should search by page and by limit', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const pagination = { limit: 2, page: 2 };
+                const response = await resolver.search(pagination);
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith(pagination);
+                expect(response).toBeDefined();
+            });
+            it('should search by members', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const membersIds = ['member1'];
+                const response = await resolver.search({ membersIds });
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith({ membersIds });
+                expect(response).toBeDefined();
+            });
+            it('should search by managers', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const managersIds = ['manager1'];
+                const response = await resolver.search({ managersIds });
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith({
+                    managersIds,
+                });
+                expect(response).toBeDefined();
+            });
+            it('should search by owner', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const ownerId = 'owner1';
+                const response = await resolver.search({ ownerId });
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith({ ownerId });
+                expect(response).toBeDefined();
+            });
+            it('should add order in search', async () => {
+                jest.spyOn(fakeService, 'search').mockImplementation(() =>
+                    Promise.resolve([]),
+                );
+                const order = { orderBy: 'id', sortOrder: Order.DESC };
+                const response = await resolver.search(order);
+
+                expect(fakeService.search).toHaveBeenCalledTimes(1);
+                expect(fakeService.search).toHaveBeenCalledWith(order);
+                expect(response).toBeDefined();
+            });
         });
     });
 });
