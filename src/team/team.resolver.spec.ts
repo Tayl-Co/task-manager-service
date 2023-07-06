@@ -20,6 +20,7 @@ describe('TeamResolver', () => {
             update: jest.fn(),
             search: jest.fn(),
             addUser: jest.fn(),
+            removeUser: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -120,6 +121,22 @@ describe('TeamResolver', () => {
                     updateTeam.id,
                     { userId, userType: 'member' },
                 );
+                expect(response).toBeDefined();
+            });
+            it('should remove team member', async () => {
+                const teamId = 1;
+                const userId = 'acb63589-c2b6-43d8-aa06-1bc722666b22';
+                jest.spyOn(fakeService, 'removeUser').mockImplementation(() =>
+                    Promise.resolve(null),
+                );
+
+                const response = await resolver.removeMember(teamId, userId);
+
+                expect(fakeService.removeUser).toHaveBeenCalledTimes(1);
+                expect(fakeService.removeUser).toHaveBeenCalledWith(teamId, {
+                    userId,
+                    userType: 'member',
+                });
                 expect(response).toBeDefined();
             });
         });
