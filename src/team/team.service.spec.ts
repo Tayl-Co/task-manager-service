@@ -3,63 +3,8 @@ import { TeamService } from '@team/team.service';
 import { Team } from '@team/entity/team.entity';
 import { default as data } from '../../test/data/team.json';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-    Repository,
-    DeepPartial,
-    FindOneOptions,
-    FindOptionsWhere,
-    FindManyOptions,
-    Equal,
-    In,
-    ILike,
-    ArrayContains,
-} from 'typeorm';
+import { Repository, Equal, In, ILike, ArrayContains } from 'typeorm';
 import { Order } from '@src/common/enums/order.enum';
-
-type Jest = typeof jest;
-
-const mockRepository =
-    (jest: Jest) =>
-    <T>(data: any) => ({
-        create: jest.fn().mockImplementation((entity: DeepPartial<T>) => {
-            let lastId = data[data.length - 1]?.id;
-            return Promise.resolve({ ...entity, projects: [], id: lastId + 1 });
-        }),
-        save: jest
-            .fn()
-            .mockImplementation((entity: DeepPartial<T>) =>
-                Promise.resolve(entity),
-            ),
-        find: jest
-            .fn()
-            .mockImplementation(
-                (options: FindManyOptions<T>): DeepPartial<T> => {
-                    const { where } = options;
-                    if (!where) return data;
-                },
-            ),
-        findOne: jest
-            .fn()
-            .mockImplementation(({ where }: FindOneOptions<T>) => {
-                const { id }: FindOptionsWhere<Team> =
-                    where as FindOptionsWhere<T>;
-                const item = data.find(e => e.id === id);
-
-                return Promise.resolve(item);
-            }),
-        delete: jest
-            .fn()
-            .mockImplementation((entity: DeepPartial<T>) =>
-                Promise.resolve(entity),
-            ),
-        remove: jest
-            .fn()
-            .mockImplementation((entity: DeepPartial<T>) =>
-                Promise.resolve(entity),
-            ),
-    });
-
-const initMockRepository = mockRepository(jest);
 
 const team = {
     name: 'Team 6',
@@ -90,6 +35,41 @@ describe('TeamService', () => {
 
     it('should be defined', () => {
         expect(service).toBeDefined();
+    });
+
+    describe('addUser', () => {
+        it('should add member to team', async () => {
+            const updateTeam = {
+                ...data[0],
+                membersIds: [
+                    '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                    'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+                    'acb63589-c2b6-43d8-aa06-1bc722666b22',
+                ],
+            };
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data[0]),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(updateTeam),
+            );
+
+            await service.addUser(updateTeam.id, {
+                userId: 'acb63589-c2b6-43d8-aa06-1bc722666b22',
+                userType: 'member',
+            });
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id: updateTeam.id },
+            });
+            expect(teamRepository.save).toHaveBeenCalledTimes(1);
+            expect(teamRepository.save).toHaveBeenCalledWith({
+                ...data[0],
+                membersIds: expect.arrayContaining(updateTeam.membersIds),
+            });
+        });
     });
 
     describe('findAll Function', () => {
