@@ -155,6 +155,35 @@ describe('TeamService', () => {
                 membersIds: expect.not.arrayContaining([memberId]),
             });
         });
+        it('should remove manager to team', async () => {
+            const managerId = 'a192fd6d-67c1-4090-8011-d96f83cf3e9b';
+            const updateTeam = {
+                ...data[0],
+                managersIds: [],
+            };
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data[0]),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(updateTeam),
+            );
+
+            await service.removeUser(updateTeam.id, {
+                userId: managerId,
+                userType: 'manager',
+            });
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id: updateTeam.id },
+            });
+            expect(teamRepository.save).toHaveBeenCalledTimes(1);
+            expect(teamRepository.save).toHaveBeenCalledWith({
+                ...data[0],
+                managersIds: expect.not.arrayContaining([managerId]),
+            });
+        });
     });
 
     describe('findAll Function', () => {
