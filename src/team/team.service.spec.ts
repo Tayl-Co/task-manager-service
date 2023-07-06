@@ -101,7 +101,7 @@ describe('TeamService', () => {
                 managersIds: expect.arrayContaining(updateTeam.managersIds),
             });
         });
-        it('should return an error message if member already exists', async () => {
+        it('should return an error message if member/manager already exists', async () => {
             const memberId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
             jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
                 Promise.resolve(data[0]),
@@ -122,6 +122,7 @@ describe('TeamService', () => {
                 relations: { projects: true },
                 where: { id: data[0].id },
             });
+            expect(teamRepository.save).not.toHaveBeenCalled();
         });
     });
 
@@ -183,6 +184,29 @@ describe('TeamService', () => {
                 ...data[0],
                 managersIds: expect.not.arrayContaining([managerId]),
             });
+        });
+        it('should return an error message if member/manager is not found', async () => {
+            const memberId = '08b8b93a-9aa7-4fc1-8201-539e2cb33999';
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data[0]),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(
+                service.removeUser(data[0].id, {
+                    userId: memberId,
+                    userType: 'member',
+                }),
+            ).rejects.toThrow(`${memberId} is not found`);
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id: data[0].id },
+            });
+            expect(teamRepository.save).not.toHaveBeenCalled();
         });
     });
 
