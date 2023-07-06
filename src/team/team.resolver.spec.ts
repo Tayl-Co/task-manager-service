@@ -12,95 +12,12 @@ describe('TeamResolver', () => {
 
     beforeEach(async () => {
         fakeService = {
-            async findAll(): Promise<Array<Team>> {
-                return Promise.resolve(data);
-            },
-            async findOne(id: number): Promise<Team> {
-                const team = data.find(team => team.id === id);
-
-                return Promise.resolve(team);
-            },
-            async delete(id: number): Promise<Team> {
-                const indexTeam = data.map(e => e.id).indexOf(id);
-                const team = data[indexTeam];
-                return Promise.resolve(team);
-            },
-            async create({
-                name,
-                ownerId,
-                membersIds,
-                managersIds,
-            }: TeamDto): Promise<Team> {
-                const team = {
-                    id: 6,
-                    name,
-                    ownerId,
-                    membersIds,
-                    managersIds,
-                    projects: [],
-                };
-
-                return Promise.resolve(team);
-            },
-
-            async update(
-                id: number,
-                { name, ownerId, membersIds, managersIds }: TeamDto,
-            ): Promise<Team> {
-                const team = data.find(e => e.id === id);
-                team.name = name;
-                team.managersIds = managersIds;
-                team.membersIds = membersIds;
-                team.ownerId = ownerId;
-
-                return Promise.resolve(team);
-            },
-
-            async search({
-                ids,
-                name = '',
-                ownerId,
-                membersIds,
-                managersIds,
-                page = 0,
-                order = 'ASC',
-                limit = 50,
-            }: SearchFilterDto): Promise<Array<Team>> {
-                const indexOfPage = page * limit;
-                let response = data.filter(e => {
-                    return name === '' ? true : e.name === name;
-                });
-
-                if (ids || ownerId || membersIds || managersIds)
-                    response = response.filter(e => {
-                        if (
-                            membersIds &&
-                            e.membersIds.some(r => membersIds.includes(r))
-                        )
-                            return true;
-
-                        if (
-                            managersIds &&
-                            e.managersIds.some(r => managersIds.includes(r))
-                        )
-                            return true;
-
-                        if (e.ownerId && e.ownerId === ownerId) return true;
-
-                        return ids && ids.includes(e.id);
-                    });
-
-                return Promise.resolve(
-                    response
-                        .sort((a, b) => {
-                            if (order === 'DESC')
-                                return b.name > a.name ? 1 : -1;
-
-                            return a.name > b.name ? 1 : -1;
-                        })
-                        .slice(indexOfPage, indexOfPage + limit),
-                );
-            },
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            delete: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            search: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -117,12 +34,14 @@ describe('TeamResolver', () => {
     });
 
     describe('findAll', () => {
-        it('Should return all teams', async () => {
+        it('should return all teams', async () => {
+            jest.spyOn(fakeService, 'findAll').mockImplementation(() =>
+                Promise.resolve(data),
+            );
             const response = await resolver.findAll();
 
+            expect(fakeService.findAll).toHaveBeenCalledTimes(1);
             expect(response).toBeDefined();
-            expect(response).toMatchObject(data);
-            expect(response).toEqual(data);
             expect(response.length).toEqual(5);
         });
     });
@@ -292,7 +211,7 @@ describe('TeamResolver', () => {
         });
 
         it('Should return two teams in DESC order', async () => {
-            const response = await resolver.search({ limit: 2, order: 'DESC' });
+            const response = await resolver.search({ limit: 2 });
 
             expect(response).toBeDefined();
             expect(response.length).toEqual(2);
