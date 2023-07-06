@@ -21,20 +21,48 @@ export class TeamResolver {
         return await this.teamService.delete(id);
     }
 
-    @Mutation(() => Team, { name: 'addMember' })
+    @Mutation(() => Team, { name: 'addMemberToTeam' })
     async addMember(
         @Args('id', { type: () => Int }) id: number,
         @Args('memberId', { type: () => String }) memberId: string,
     ): Promise<Team> {
-        return await this.teamService.addMember(id, memberId);
+        return await this.teamService.addUser(id, {
+            userId: memberId,
+            userType: 'member',
+        });
     }
 
-    @Mutation(() => Team, { name: 'addManager' })
+    @Mutation(() => Team, { name: 'removeTeamMember' })
+    async removeMember(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('memberId', { type: () => String }) memberId: string,
+    ): Promise<Team> {
+        return await this.teamService.removeUser(id, {
+            userId: memberId,
+            userType: 'member',
+        });
+    }
+
+    @Mutation(() => Team, { name: 'addManagerToTeam' })
     async addManager(
         @Args('id', { type: () => Int }) id: number,
         @Args('managerId', { type: () => String }) managerId: string,
     ): Promise<Team> {
-        return await this.teamService.addManager(id, managerId);
+        return await this.teamService.addUser(id, {
+            userId: managerId,
+            userType: 'manager',
+        });
+    }
+
+    @Mutation(() => Team, { name: 'removeTeamManager' })
+    async removeManager(
+        @Args('id', { type: () => Int }) id: number,
+        @Args('managerId', { type: () => String }) managerId: string,
+    ): Promise<Team> {
+        return await this.teamService.removeUser(id, {
+            userId: managerId,
+            userType: 'manager',
+        });
     }
 
     @Mutation(() => Team, { name: 'updateTeam' })
