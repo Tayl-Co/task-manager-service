@@ -70,6 +70,37 @@ describe('TeamService', () => {
                 membersIds: expect.arrayContaining(updateTeam.membersIds),
             });
         });
+        it('should add manager to team', async () => {
+            const updateTeam = {
+                ...data[0],
+                managersIds: [
+                    'a192fd6d-67c1-4090-8011-d96f83cf3e9b',
+                    'a432fd6d-67c1-4090-8011-d96f83cf3e45',
+                ],
+            };
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data[0]),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(updateTeam),
+            );
+
+            await service.addUser(updateTeam.id, {
+                userId: 'a432fd6d-67c1-4090-8011-d96f83cf3e45',
+                userType: 'manager',
+            });
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id: updateTeam.id },
+            });
+            expect(teamRepository.save).toHaveBeenCalledTimes(1);
+            expect(teamRepository.save).toHaveBeenCalledWith({
+                ...data[0],
+                managersIds: expect.arrayContaining(updateTeam.managersIds),
+            });
+        });
     });
 
     describe('findAll Function', () => {
