@@ -101,6 +101,28 @@ describe('TeamService', () => {
                 managersIds: expect.arrayContaining(updateTeam.managersIds),
             });
         });
+        it('should return an error message if member already exists', async () => {
+            const memberId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
+            jest.spyOn(teamRepository, 'findOne').mockImplementation(() =>
+                Promise.resolve(data[0]),
+            );
+            jest.spyOn(teamRepository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(
+                service.addUser(data[0].id, {
+                    userId: memberId,
+                    userType: 'member',
+                }),
+            ).rejects.toThrow(`${memberId} already exists`);
+
+            expect(teamRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(teamRepository.findOne).toHaveBeenCalledWith({
+                relations: { projects: true },
+                where: { id: data[0].id },
+            });
+        });
     });
 
     describe('findAll Function', () => {
