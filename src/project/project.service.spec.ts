@@ -5,6 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Project } from '@project/entity/project.entity';
 import { TeamService } from '@team/team.service';
 import { default as data } from '../../test/data/team.json';
+import { default as projects } from '../../test/data/project.json';
 
 describe('ProjectService', () => {
     let service: ProjectService;
@@ -23,6 +24,8 @@ describe('ProjectService', () => {
 
         service = module.get<ProjectService>(ProjectService);
         repository = module.get<Repository<Project>>(repositoryToken);
+
+        jest.clearAllMocks();
     });
 
     it('should be defined', () => {
@@ -103,7 +106,17 @@ describe('ProjectService', () => {
 
     describe('findOne', () => {
         const id = 1;
+        it('should return a project', async () => {
+            const project = projects.find(project => project.id === id);
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(project),
+            );
 
+            const response = await service.findOne(id);
+
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(project);
+        });
         it('should return an error message if project is not found', async () => {
             jest.spyOn(repository, 'findOne').mockImplementation(() =>
                 Promise.resolve(null),
