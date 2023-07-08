@@ -147,10 +147,34 @@ describe('ProjectService', () => {
 
             const response = await service.delete(id);
 
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
             expect(repository.delete).toHaveBeenCalledTimes(1);
             expect(repository.delete).toHaveBeenCalledWith(id);
             expect(response).toBeDefined();
             expect(response).toMatchObject(project);
+        });
+        it('should return an error message if product is not found', async () => {
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'delete').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.delete(id)).rejects.toThrow(
+                `Project ${id} not found`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
+            expect(repository.delete).not.toHaveBeenCalled();
         });
     });
 });
