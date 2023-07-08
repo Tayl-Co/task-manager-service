@@ -19,6 +19,11 @@ export class ProjectService {
         private teamService: TeamService,
     ) {}
 
+    /**
+     * Create a project
+     * @param { ProjectDto } projectInput Project Data
+     * @return Project created
+     */
     async create(projectInput: ProjectDto): Promise<Project> {
         const { name, teamId } = projectInput;
         const project = await this.projectRepository.findOne({
