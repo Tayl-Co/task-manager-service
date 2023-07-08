@@ -103,6 +103,16 @@ export class ProjectService {
         return project;
     }
 
+    /**
+     * Update project data
+     * @param id Project identification
+     * @param project Project Data
+     * @param project.name Project name
+     * @param project.description Project description
+     * @param project.active Status to identify if the project is active or not
+     * @param project.teamId Project team identifier
+     * @return Project
+     */
     async update(
         id: number,
         { name, description, active, teamId }: ProjectDto,

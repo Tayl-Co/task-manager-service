@@ -177,4 +177,37 @@ describe('ProjectService', () => {
             expect(repository.delete).not.toHaveBeenCalled();
         });
     });
+
+    describe('update', () => {
+        const id = 1;
+        it('should return an updated project', async () => {
+            const project = projects.find(project => project.id === id);
+            const updateProject = { name: 'updated Project name', ...project };
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(project),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(() =>
+                Promise.resolve(updateProject),
+            );
+            jest.spyOn(teamService, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            const response = await service.update(id, {
+                ...updateProject,
+                teamId: updateProject.team.id,
+            });
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
+            expect(teamService.findOne).not.toHaveBeenCalled();
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith(updateProject);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(updateProject);
+        });
+    });
 });
