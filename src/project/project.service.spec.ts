@@ -35,15 +35,15 @@ describe('ProjectService', () => {
             description: '',
             teamId: 1,
         };
+        const team = data.find(team => team.id === newProject.teamId);
+        const createdProject = {
+            ...newProject,
+            id: 1,
+            team,
+            active: true,
+            issues: [],
+        };
         it('should create a project', async () => {
-            const team = data.find(team => team.id === newProject.teamId);
-            const createdProject = {
-                ...newProject,
-                id: 1,
-                team,
-                active: true,
-                issues: [],
-            };
             jest.spyOn(teamService, 'findOne').mockImplementation(() =>
                 Promise.resolve(team),
             );
@@ -74,6 +74,30 @@ describe('ProjectService', () => {
             expect(repository.save).toHaveBeenCalledWith(createdProject);
             expect(response).toBeDefined();
             expect(response).toMatchObject(createdProject);
+        });
+        it('should return an error message if project already exists', async () => {
+            jest.spyOn(teamService, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(createdProject),
+            );
+            jest.spyOn(repository, 'create').mockImplementation(() => null);
+            jest.spyOn(repository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.create(newProject)).rejects.toThrow(
+                `The ${newProject.name} Project already exists`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { name: Equal(newProject.name) },
+            });
+            expect(teamService.findOne).not.toHaveBeenCalled();
+            expect(repository.create).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
         });
     });
 });
