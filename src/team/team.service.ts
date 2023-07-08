@@ -89,6 +89,11 @@ export class TeamService {
         });
     }
 
+    /**
+     * Find a Team
+     * @param id Team identification
+     * @return Team
+     */
     async findOne(id: number): Promise<Team> {
         const team = await this.teamRepository.findOne({
             relations: { projects: true },
