@@ -90,10 +90,13 @@ export class ProjectService {
         return project;
     }
 
+    /**
+     * Delete a project
+     * @param id Project identification
+     * @return Project
+     */
     async delete(id: number) {
         const project = await this.findOne(id);
-
-        if (!project) throw new NotFoundException(`Project ${id} not found`);
 
         await this.projectRepository.delete(id);
 

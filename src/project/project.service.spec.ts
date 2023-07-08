@@ -133,4 +133,24 @@ describe('ProjectService', () => {
             });
         });
     });
+
+    describe('delete', () => {
+        const id = 1;
+        it('should return a deleted project', async () => {
+            const project = projects.find(project => project.id === id);
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(project),
+            );
+            jest.spyOn(repository, 'delete').mockImplementation(() =>
+                Promise.resolve({ raw: [], affected: 1 }),
+            );
+
+            const response = await service.delete(id);
+
+            expect(repository.delete).toHaveBeenCalledTimes(1);
+            expect(repository.delete).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(project);
+        });
+    });
 });
