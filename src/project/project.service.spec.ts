@@ -100,4 +100,24 @@ describe('ProjectService', () => {
             expect(repository.save).not.toHaveBeenCalled();
         });
     });
+
+    describe('findOne', () => {
+        const id = 1;
+
+        it('should return an error message if project is not found', async () => {
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.findOne(id)).rejects.toThrow(
+                `Project ${id} not found`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
+        });
+    });
 });

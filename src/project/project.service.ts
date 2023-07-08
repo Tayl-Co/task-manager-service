@@ -74,6 +74,11 @@ export class ProjectService {
         });
     }
 
+    /**
+     * Find a Project
+     * @param id Project identification
+     * @return Project
+     */
     async findOne(id: number): Promise<Project> {
         const project = await this.projectRepository.findOne({
             relations: { team: true, issues: true },
