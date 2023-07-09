@@ -430,5 +430,19 @@ describe('ProjectService', () => {
             expect(response).toBeDefined();
             expect(response).toMatchObject(inactiveProject);
         });
+        it('should return an error message if project is not found', async () => {
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(service.disable(id)).rejects.toThrow(
+                `Project ${id} not found`,
+            );
+
+            expect(repository.save).not.toHaveBeenCalled();
+        });
     });
 });
