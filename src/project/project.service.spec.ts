@@ -327,7 +327,23 @@ describe('ProjectService', () => {
             });
         });
         it('should search active projects', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
             const active = true;
+            await service.search({ active });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: { active },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search inactive projects', async () => {
+            const active = false;
             jest.spyOn(repository, 'find').mockResolvedValue(
                 Promise.resolve([]),
             );
