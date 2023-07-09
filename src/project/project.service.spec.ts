@@ -209,5 +209,42 @@ describe('ProjectService', () => {
             expect(response).toBeDefined();
             expect(response).toMatchObject(updateProject);
         });
+        it('should move project to another team', async () => {
+            const teamId = 2;
+            const project = projects.find(project => project.id === id);
+            const team = data.find(team => team.id === teamId);
+            const updateProject = {
+                name: 'updated Project name',
+                ...project,
+                team,
+            };
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(project),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(() =>
+                Promise.resolve(updateProject),
+            );
+            jest.spyOn(teamService, 'findOne').mockImplementation(
+                (id: number) =>
+                    Promise.resolve(data.find(team => team.id === id)),
+            );
+
+            const response = await service.update(id, {
+                ...updateProject,
+                teamId,
+            });
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
+            expect(teamService.findOne).toHaveBeenCalledTimes(1);
+            expect(teamService.findOne).toHaveBeenCalledWith(teamId);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith(updateProject);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(updateProject);
+        });
     });
 });
