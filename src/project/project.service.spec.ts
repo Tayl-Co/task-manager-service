@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectService } from './project.service';
-import { Equal, In, Repository } from 'typeorm';
+import { Equal, ILike, In, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Project } from '@project/entity/project.entity';
 import { TeamService } from '@team/team.service';
@@ -289,6 +289,22 @@ describe('ProjectService', () => {
             expect(repository.find).toHaveBeenCalledWith({
                 relations: { team: true },
                 where: { id: In(ids) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search project by name', async () => {
+            const name = 'Project 1';
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            await service.search({ name });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: { name: ILike(`%${name}%`) },
                 order: { name: Order.ASC },
                 take: undefined,
                 skip: 0,
