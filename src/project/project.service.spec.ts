@@ -246,5 +246,33 @@ describe('ProjectService', () => {
             expect(response).toBeDefined();
             expect(response).toMatchObject(updateProject);
         });
+        it('should return an error message if project is not found', async () => {
+            jest.spyOn(repository, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+            jest.spyOn(teamService, 'findOne').mockImplementation(() =>
+                Promise.resolve(null),
+            );
+
+            await expect(
+                service.update(id, {
+                    name: 'Project 1',
+                    description: '',
+                    teamId: 1,
+                    active: true,
+                }),
+            ).rejects.toThrow(`Project ${id} not found`);
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: { team: true, issues: true },
+                where: { id },
+            });
+            expect(teamService.findOne).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
+        });
     });
 });
