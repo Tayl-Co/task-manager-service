@@ -374,6 +374,22 @@ describe('ProjectService', () => {
                 skip: 0,
             });
         });
+        it('should sort project search by id', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const orderBy = 'id';
+            await service.search({ orderBy });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: {},
+                order: { [orderBy]: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
         it('should return projects based on page and limit quantity', async () => {
             jest.spyOn(repository, 'find').mockResolvedValue(
                 Promise.resolve([]),
