@@ -326,5 +326,21 @@ describe('ProjectService', () => {
                 skip: 0,
             });
         });
+        it('should search active projects', async () => {
+            const active = true;
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            await service.search({ active });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: { active },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
