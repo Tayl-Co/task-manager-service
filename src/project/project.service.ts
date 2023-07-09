@@ -20,7 +20,7 @@ export class ProjectService {
     ) {}
 
     /**
-     * Create a project
+     * Creates a project and returns the created project
      * @param { ProjectDto } projectInput Project Data
      * @return Project created
      */

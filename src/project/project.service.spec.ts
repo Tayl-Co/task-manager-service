@@ -358,5 +358,21 @@ describe('ProjectService', () => {
                 skip: 0,
             });
         });
+        it('should return projects in descending order', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            await service.search({ sortOrder: Order.DESC });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: {},
+                order: { name: Order.DESC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
