@@ -142,6 +142,11 @@ export class ProjectService {
         return await this.projectRepository.save(project);
     }
 
+    /**
+     * Deactivate a project and return the inactive project
+     * @param id Project identification
+     * @return Project
+     */
     async disable(id: number): Promise<Project> {
         const project = await this.findOne(id);
 

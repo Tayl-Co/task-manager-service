@@ -408,4 +408,27 @@ describe('ProjectService', () => {
             });
         });
     });
+
+    describe('disable', () => {
+        const id = 1;
+        it('should deactivate project', async () => {
+            const project = projects.find(project => project.id === id);
+            const inactiveProject = { ...project, active: false };
+            jest.spyOn(service, 'findOne').mockResolvedValue(
+                Promise.resolve(project),
+            );
+            jest.spyOn(repository, 'save').mockResolvedValue(
+                Promise.resolve(inactiveProject),
+            );
+
+            const response = await service.disable(id);
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith(inactiveProject);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(inactiveProject);
+        });
+    });
 });
