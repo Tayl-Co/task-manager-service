@@ -4,7 +4,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsOrderValue, In, Like, Repository } from 'typeorm';
+import { Equal, FindOptionsOrderValue, ILike, In, Repository } from 'typeorm';
 import { Project } from '@project/entity/project.entity';
 import { ProjectDto } from '@project/dtos/project.dto';
 import { TeamService } from '@team/team.service';
@@ -45,6 +45,18 @@ export class ProjectService {
         return this.projectRepository.save(newProject);
     }
 
+    /**
+     * Returns projects found based on search input
+     * @param searchInput
+     * @param searchInput.ids List of Project IDs you want to find
+     * @param searchInput.name Name of the project you want to find
+     * @param searchInput.description Description of the project you want to find
+     * @param searchInput.active Search for active or non-active products
+     * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.page = 0] Current search page
+     * @param searchInput.limit Limit of returned projects
+     * @return Array<Project>
+     */
     search(searchInput: SearchProjectDto): Promise<Array<Project>> {
         const {
             ids,
@@ -58,24 +70,26 @@ export class ProjectService {
         } = searchInput;
         let where = {};
 
+        if (name) where = { ...where, name: ILike(`%${name}%`) };
+
         if (ids) where = { ...where, id: In(ids) };
 
         if (description)
-            where = { ...where, description: Like(`%${description}%`) };
+            where = { ...where, description: ILike(`%${description}%`) };
 
         if (active !== undefined) where = { ...where, active };
 
         return this.projectRepository.find({
             relations: { team: true },
-            where: { name: Like(`%${name}%`), ...where },
+            where,
             order: { [orderBy]: sortOrder as FindOptionsOrderValue },
-            take: limit,
-            skip: page * limit,
+            take: limit || undefined,
+            skip: limit ? page * limit : page,
         });
     }
 
     /**
-     * Find a Project
+     * Returns project based on id
      * @param id Project identification
      * @return Project
      */
@@ -91,7 +105,7 @@ export class ProjectService {
     }
 
     /**
-     * Delete a project
+     * Delete project based on id
      * @param id Project identification
      * @return Project
      */
@@ -104,7 +118,7 @@ export class ProjectService {
     }
 
     /**
-     * Update project data
+     * Update the project and return the updated project
      * @param id Project identification
      * @param project Project Data
      * @param project.name Project name

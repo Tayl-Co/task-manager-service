@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectService } from './project.service';
-import { Equal, Repository } from 'typeorm';
+import { Equal, In, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Project } from '@project/entity/project.entity';
 import { TeamService } from '@team/team.service';
 import { default as data } from '../../test/data/team.json';
 import { default as projects } from '../../test/data/project.json';
+import { Order } from '@src/common/enums/order.enum';
 
 describe('ProjectService', () => {
     let service: ProjectService;
@@ -273,6 +274,25 @@ describe('ProjectService', () => {
             });
             expect(teamService.findOne).not.toHaveBeenCalled();
             expect(repository.save).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('search', () => {
+        it('should search project by ids', async () => {
+            const ids = [1, 2, 3];
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            await service.search({ ids });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: { id: In(ids) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
         });
     });
 });
