@@ -310,5 +310,21 @@ describe('ProjectService', () => {
                 skip: 0,
             });
         });
+        it('should search project by description', async () => {
+            const description = 'Project 1';
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            await service.search({ description });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: { team: true },
+                where: { description: ILike(`%${description}%`) },
+                order: { name: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
