@@ -95,4 +95,22 @@ describe('ProjectResolver', () => {
             expect(response).toMatchObject(projects[0]);
         });
     });
+    describe('search', () => {
+        it('should search projects', async () => {
+            jest.spyOn(service, 'search').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const searchInput = {
+                name: 'project',
+                limit: 10,
+                page: 2,
+            };
+
+            const response = await resolver.search(searchInput);
+
+            expect(service.search).toHaveBeenCalledTimes(1);
+            expect(service.search).toHaveBeenCalledWith(searchInput);
+            expect(response).toBeDefined();
+        });
+    });
 });
