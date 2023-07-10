@@ -37,6 +37,11 @@ export class TodoService {
         private activityService: ActivityService,
     ) {}
 
+    /**
+     * Creates a ToDo and returns the created ToDo
+     * @param todoInput ToDo data
+     * @return ToDo
+     */
     async create(todoInput: CreateToDoDto): Promise<ToDo> {
         const {
             title,
