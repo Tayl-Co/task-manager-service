@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectResolver } from './project.resolver';
 import { ProjectService } from '@project/project.service';
+import { default as projects } from '../../test/data/project.json';
 
 describe('ProjectResolver', () => {
     let resolver: ProjectResolver;
@@ -46,6 +47,22 @@ describe('ProjectResolver', () => {
             expect(service.create).toHaveBeenCalledWith(newProject);
             expect(response).toBeDefined();
             expect(response).toMatchObject({ id: 2, ...newProject });
+        });
+    });
+
+    describe('delete', () => {
+        it('should delete a project', async () => {
+            const id = 1;
+            jest.spyOn(service, 'delete').mockImplementation((id: number) =>
+                projects.find(project => project.id === id),
+            );
+
+            const response = await resolver.delete(id);
+
+            expect(service.delete).toHaveBeenCalledTimes(1);
+            expect(service.delete).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(projects[0]);
         });
     });
 });
