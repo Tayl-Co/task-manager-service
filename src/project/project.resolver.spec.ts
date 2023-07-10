@@ -65,4 +65,19 @@ describe('ProjectResolver', () => {
             expect(response).toMatchObject(projects[0]);
         });
     });
+    describe('findOne', () => {
+        it('should return a project', async () => {
+            const id = 1;
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                projects.find(project => project.id === id),
+            );
+
+            const response = await resolver.findOne(id);
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(projects[0]);
+        });
+    });
 });
