@@ -113,4 +113,28 @@ describe('ProjectResolver', () => {
             expect(response).toBeDefined();
         });
     });
+    describe('update', () => {
+        it('should update a project', async () => {
+            const updatedProject = {
+                ...projects[0],
+                name: 'updated project',
+                teamId: 1,
+            };
+            jest.spyOn(service, 'update').mockResolvedValue(
+                Promise.resolve(updatedProject),
+            );
+
+            const response = await resolver.update(
+                updatedProject.id,
+                updatedProject,
+            );
+
+            expect(service.update).toHaveBeenCalledTimes(1);
+            expect(service.update).toHaveBeenCalledWith(
+                updatedProject.id,
+                updatedProject,
+            );
+            expect(response).toBeDefined();
+        });
+    });
 });
