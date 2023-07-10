@@ -80,4 +80,19 @@ describe('ProjectResolver', () => {
             expect(response).toMatchObject(projects[0]);
         });
     });
+    describe('disable', () => {
+        it('should deactivate project', async () => {
+            const id = 1;
+            jest.spyOn(service, 'disable').mockImplementation((id: number) =>
+                projects.find(project => project.id === id),
+            );
+
+            const response = await resolver.disable(id);
+
+            expect(service.disable).toHaveBeenCalledTimes(1);
+            expect(service.disable).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(projects[0]);
+        });
+    });
 });
