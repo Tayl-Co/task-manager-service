@@ -182,4 +182,25 @@ describe('TodoService', () => {
             expect(response).toMatchObject(todos);
         });
     });
+    describe('remove', () => {
+        it('should return removed ToDo', async () => {
+            const id = 1;
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(service, 'findOne').mockResolvedValue(
+                Promise.resolve(todo),
+            );
+            jest.spyOn(repository, 'remove').mockResolvedValue(
+                Promise.resolve(todo),
+            );
+
+            const response = await service.remove(id);
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(repository.remove).toHaveBeenCalledTimes(1);
+            expect(repository.remove).toHaveBeenCalledWith(todo);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(todo);
+        });
+    });
 });

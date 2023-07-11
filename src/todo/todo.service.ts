@@ -74,10 +74,18 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
+    /**
+     * Returns all ToDo
+     */
     async findAll(): Promise<Array<ToDo>> {
         return await this.todoRepository.find();
     }
 
+    /**
+     * Returns ToDo based on id
+     * @param id ToDo identification
+     * @return ToDo
+     */
     async findOne(id: number): Promise<ToDo> {
         const todo = await this.todoRepository.findOne({
             relations: {
@@ -94,6 +102,11 @@ export class TodoService {
         return todo;
     }
 
+    /**
+     * Remove ToDo based on id
+     * @param id ToDo identification
+     * @return ToDo
+     */
     async remove(id: number): Promise<ToDo> {
         const todo = await this.findOne(id);
 
