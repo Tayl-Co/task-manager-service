@@ -11,6 +11,7 @@ import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { default as data } from '../../test/data/todo.json';
+import { ActivityEnum } from '@src/common/enums/activity.enum';
 
 const todos = data.map(todo => ({
     ...todo,
@@ -201,6 +202,61 @@ describe('TodoService', () => {
             expect(repository.remove).toHaveBeenCalledWith(todo);
             expect(response).toBeDefined();
             expect(response).toMatchObject(todo);
+        });
+    });
+    describe('addLabel', () => {
+        const labels = [
+            {
+                id: 1,
+                name: 'Label 1',
+                color: '#fff',
+            },
+            {
+                id: 2,
+                name: 'Label 1',
+                color: '#fff',
+            },
+        ];
+        it('should add a label in ToDo', async () => {
+            const id = 1;
+            const labelId = 1;
+            const todo = todos.find(todo => todo.id === id);
+            const activity = {
+                authorId: 'username',
+                type: ActivityEnum.LABEL_ADDED,
+                newValue: `${labelId}`,
+                todo,
+                date: new Date(),
+            };
+            jest.spyOn(labelService, 'findOne').mockImplementation(
+                (id: number) => labels.find(label => label.id === id),
+            );
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockResolvedValue(
+                Promise.resolve(activity),
+            );
+            jest.spyOn(repository, 'save').mockImplementation((todo: any) =>
+                Promise.resolve(todo),
+            );
+
+            const response = await service.addLabel(id, labelId);
+
+            const { date, ...activityInput } = activity;
+
+            expect(labelService.findOne).toHaveBeenCalledTimes(1);
+            expect(labelService.findOne).toHaveBeenCalledWith(labelId);
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).toHaveBeenCalledTimes(1);
+            expect(activityService.create).toHaveBeenCalledWith(activityInput);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                labels: labels.filter(label => label.id === labelId),
+                activities: [activity],
+            });
         });
     });
 });

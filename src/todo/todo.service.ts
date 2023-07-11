@@ -183,13 +183,19 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
-    async addLabel(id: number, idLabel: number): Promise<ToDo> {
-        const label = await this.labelService.findOne(idLabel);
+    /**
+     * Add label to ToDo and return updated ToDo
+     * @param id ToDo identification
+     * @param labelId Label identification
+     * @return ToDo
+     */
+    async addLabel(id: number, labelId: number): Promise<ToDo> {
+        const label = await this.labelService.findOne(labelId);
         const todo = await this.findOne(id);
         const activity = await this.activityService.create({
             authorId: 'username',
             type: ActivityEnum.LABEL_ADDED,
-            newValue: `${idLabel}`,
+            newValue: `${labelId}`,
             todo,
         });
 
