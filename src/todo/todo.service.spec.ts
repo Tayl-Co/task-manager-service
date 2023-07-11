@@ -10,6 +10,17 @@ import { default as projects } from '../../test/data/project.json';
 import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
+import { default as data } from '../../test/data/todo.json';
+
+const todos = data.map(todo => ({
+    ...todo,
+    creationDate: new Date(todo.creationDate),
+    lastUpdateDate: todo.lastUpdateDate ? new Date(todo.lastUpdateDate) : null,
+    estimatedDueDate: todo.estimatedDueDate
+        ? new Date(todo.estimatedDueDate)
+        : null,
+    dueDate: todo.dueDate ? new Date(todo.dueDate) : null,
+}));
 
 describe('TodoService', () => {
     let service: TodoService;
@@ -111,6 +122,31 @@ describe('TodoService', () => {
             expect(repository.save).toHaveBeenCalledWith(newToDo);
             expect(response).toBeDefined();
             expect(response).toMatchObject(newToDo);
+        });
+    });
+
+    describe('findOne', () => {
+        it('should return a toDo', async () => {
+            const id = 1;
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(todo),
+            );
+
+            const response = await service.findOne(id);
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { id },
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(todo);
         });
     });
 });
