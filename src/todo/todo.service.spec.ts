@@ -148,5 +148,26 @@ describe('TodoService', () => {
             expect(response).toBeDefined();
             expect(response).toMatchObject(todo);
         });
+        it('should return an error message if todo is not found', async () => {
+            const id = 1;
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(null),
+            );
+
+            await expect(service.findOne(id)).rejects.toThrow(
+                `ToDo ${id} not found`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { id },
+            });
+        });
     });
 });
