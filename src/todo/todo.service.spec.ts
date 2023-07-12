@@ -256,6 +256,12 @@ describe('TodoService', () => {
             expect(service.findOne).toHaveBeenCalledWith(id);
             expect(activityService.create).toHaveBeenCalledTimes(1);
             expect(activityService.create).toHaveBeenCalledWith(activityInput);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...todo,
+                labels: labels.filter(label => label.id === labelId),
+                activities: [activity],
+            });
             expect(response).toBeDefined();
             expect(response).toMatchObject({
                 ...todo,
@@ -329,6 +335,29 @@ describe('TodoService', () => {
                 ]),
                 labels: [],
             });
+        });
+        it('should return an error message if todo is not found', async () => {
+            const id = -1;
+            const labelId = 2;
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(null),
+            );
+            jest.spyOn(service, 'findOne').getMockImplementation();
+            jest.spyOn(activityService, 'create').mockResolvedValue(
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'save').mockImplementation((todo: any) =>
+                Promise.resolve(todo),
+            );
+
+            await expect(service.removeLabel(id, labelId)).rejects.toThrow(
+                `ToDo ${id} not found`,
+            );
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
         });
     });
 });
