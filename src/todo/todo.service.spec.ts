@@ -100,7 +100,9 @@ describe('TodoService', () => {
                 Promise.resolve(project),
             );
             jest.spyOn(repository, 'create').mockImplementation(() => newToDo);
-            jest.spyOn(repository, 'save').mockResolvedValue(newToDo);
+            jest.spyOn(repository, 'save').mockImplementation(
+                (todo: any) => todo,
+            );
 
             const response = await service.create(toDoInput);
 
@@ -190,8 +192,8 @@ describe('TodoService', () => {
             jest.spyOn(service, 'findOne').mockResolvedValue(
                 Promise.resolve(todo),
             );
-            jest.spyOn(repository, 'remove').mockResolvedValue(
-                Promise.resolve(todo),
+            jest.spyOn(repository, 'remove').mockImplementation(
+                (todo: any) => todo,
             );
 
             const response = await service.remove(id);
