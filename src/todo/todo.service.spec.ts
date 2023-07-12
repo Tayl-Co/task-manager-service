@@ -23,6 +23,19 @@ const todos = data.map(todo => ({
     dueDate: todo.dueDate ? new Date(todo.dueDate) : null,
 }));
 
+const labels = [
+    {
+        id: 1,
+        name: 'Label 1',
+        color: '#fff',
+    },
+    {
+        id: 2,
+        name: 'Label 1',
+        color: '#fff',
+    },
+];
+
 describe('TodoService', () => {
     let service: TodoService;
     const repositoryToken = getRepositoryToken(ToDo);
@@ -59,6 +72,8 @@ describe('TodoService', () => {
 
         service = module.get<TodoService>(TodoService);
         repository = module.get<Repository<ToDo>>(repositoryToken);
+
+        jest.clearAllMocks();
     });
 
     it('should be defined', () => {
@@ -207,18 +222,6 @@ describe('TodoService', () => {
         });
     });
     describe('addLabel', () => {
-        const labels = [
-            {
-                id: 1,
-                name: 'Label 1',
-                color: '#fff',
-            },
-            {
-                id: 2,
-                name: 'Label 1',
-                color: '#fff',
-            },
-        ];
         it('should add a label in ToDo', async () => {
             const id = 1;
             const labelId = 1;
@@ -259,6 +262,27 @@ describe('TodoService', () => {
                 labels: labels.filter(label => label.id === labelId),
                 activities: [activity],
             });
+        });
+        it('should return an error message if todo is not found', async () => {
+            const id = 2;
+            jest.spyOn(labelService, 'findOne').mockResolvedValue(null);
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(null),
+            );
+            jest.spyOn(activityService, 'create').mockResolvedValue(
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'save').mockImplementation((todo: any) =>
+                Promise.resolve(todo),
+            );
+
+            await expect(service.addLabel(id, 2)).rejects.toThrow(
+                `ToDo ${id} not found`,
+            );
+
+            expect(labelService.findOne).not.toHaveBeenCalled();
+            expect(activityService.create).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
         });
     });
 });

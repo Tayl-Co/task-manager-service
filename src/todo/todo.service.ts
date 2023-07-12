@@ -190,8 +190,8 @@ export class TodoService {
      * @return ToDo
      */
     async addLabel(id: number, labelId: number): Promise<ToDo> {
-        const label = await this.labelService.findOne(labelId);
         const todo = await this.findOne(id);
+        const label = await this.labelService.findOne(labelId);
         const activity = await this.activityService.create({
             authorId: 'username',
             type: ActivityEnum.LABEL_ADDED,
@@ -205,16 +205,21 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
-    async removeLabel(id: number, idLabel: number): Promise<ToDo> {
+    /**
+     * Remove label to ToDo and return removed ToDo
+     * @param id ToDo identification
+     * @param labelId Label identification
+     */
+    async removeLabel(id: number, labelId: number): Promise<ToDo> {
         const todo = await this.findOne(id);
         const activity = await this.activityService.create({
             authorId: 'username',
             type: ActivityEnum.LABEL_REMOVED,
-            newValue: `${idLabel}`,
+            newValue: `${labelId}`,
             todo,
         });
 
-        todo.labels = todo.labels.filter(label => idLabel !== label.id);
+        todo.labels = todo.labels.filter(label => labelId !== label.id);
         todo.activities = [...todo.activities, activity];
 
         return this.todoRepository.save(todo);
