@@ -206,9 +206,10 @@ export class TodoService {
     }
 
     /**
-     * Remove label to ToDo and return removed ToDo
+     * Remove label from ToDo and return updated ToDo
      * @param id ToDo identification
      * @param labelId Label identification
+     * @return ToDo
      */
     async removeLabel(id: number, labelId: number): Promise<ToDo> {
         const todo = await this.findOne(id);

@@ -285,4 +285,50 @@ describe('TodoService', () => {
             expect(repository.save).not.toHaveBeenCalled();
         });
     });
+
+    describe('removeLabel', () => {
+        it('should remove label from todo', async () => {
+            const id = 2;
+            const labelId = 4;
+            const todo = todos.find(todo => todo.id === id);
+            const activity = {
+                authorId: 'username',
+                type: ActivityEnum.LABEL_REMOVED,
+                newValue: `${labelId}`,
+                todo,
+            };
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockImplementation(
+                (activity: any) => Promise.resolve(activity),
+            );
+            jest.spyOn(repository, 'save').mockImplementation((todo: any) =>
+                Promise.resolve(todo),
+            );
+
+            const response = await service.removeLabel(id, labelId);
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).toHaveBeenCalledTimes(1);
+            expect(activityService.create).toHaveBeenCalledWith(activity);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...todo,
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+                labels: [],
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+                labels: [],
+            });
+        });
+    });
 });
