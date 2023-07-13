@@ -405,5 +405,21 @@ describe('TodoService', () => {
                 ]),
             });
         });
+        it('should return an error message if assignee already exists', async () => {
+            const id = 2;
+            const assigneeId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockResolvedValue(null);
+            jest.spyOn(repository, 'save').mockResolvedValue(null);
+
+            await expect(service.addAssignee(id, assigneeId)).rejects.toThrow(
+                `${assigneeId} already exists`,
+            );
+
+            expect(activityService.create).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
+        });
     });
 });
