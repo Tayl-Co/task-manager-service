@@ -199,8 +199,11 @@ export class TodoService {
             todo,
         });
 
-        todo.labels = [...todo.labels, label];
-        todo.activities = [...todo.activities, activity];
+        Object.assign(todo, {
+            labels: [...todo.labels, label],
+            activities: [...todo.activities, activity],
+            lastUpdateDate: new Date(),
+        });
 
         return this.todoRepository.save(todo);
     }
@@ -220,8 +223,11 @@ export class TodoService {
             todo,
         });
 
-        todo.labels = todo.labels.filter(label => labelId !== label.id);
-        todo.activities = [...todo.activities, activity];
+        Object.assign(todo, {
+            labels: todo.labels.filter(label => labelId !== label.id),
+            activities: [...todo.activities, activity],
+            lastUpdateDate: new Date(),
+        });
 
         return this.todoRepository.save(todo);
     }
@@ -230,6 +236,7 @@ export class TodoService {
      * Add assignee to ToDo and return updated ToDo
      * @param id ToDo identification
      * @param assigneeId assignee identification
+     * @return ToDo
      */
     async addAssignee(id: number, assigneeId: string): Promise<ToDo> {
         const todo = await this.findOne(id);
@@ -254,6 +261,12 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
+    /**
+     * Remove assignee from ToDo and return updated ToDo
+     * @param id ToDo identification
+     * @param assigneeId assignee identification
+     * @return ToDo
+     */
     async removeAssignee(id: number, assigneeId: string): Promise<ToDo> {
         const todo = await this.findOne(id);
         const isIncluded = todo.assigneesIds.includes(assigneeId);
@@ -268,8 +281,11 @@ export class TodoService {
             todo,
         });
 
-        todo.assigneesIds = todo.assigneesIds.filter(id => assigneeId !== id);
-        todo.activities = [...todo.activities, activity];
+        Object.assign(todo, {
+            assigneesIds: todo.assigneesIds.filter(id => assigneeId !== id),
+            activities: [...todo.activities, activity],
+            lastUpdateDate: new Date(),
+        });
 
         return this.todoRepository.save(todo);
     }

@@ -422,4 +422,49 @@ describe('TodoService', () => {
             expect(repository.save).not.toHaveBeenCalled();
         });
     });
+    describe('removeAssignee', () => {
+        it('should remove assignee from todo', async () => {
+            const id = 2;
+            const assigneeId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
+            const todo = todos.find(todo => todo.id === id);
+            const activity = {
+                authorId: 'username',
+                type: ActivityEnum.ASSIGNEE_REMOVED,
+                newValue: assigneeId,
+                todo,
+            };
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockImplementation(
+                (activity: any) => Promise.resolve(activity),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(
+                (todo: any) => todo,
+            );
+
+            const response = await service.removeAssignee(id, assigneeId);
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).toHaveBeenCalledTimes(1);
+            expect(activityService.create).toHaveBeenCalledWith(activity);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...todo,
+                assigneesIds: todo.assigneesIds.filter(id => assigneeId !== id),
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                assigneesIds: todo.assigneesIds.filter(id => assigneeId !== id),
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+            });
+        });
+    });
 });
