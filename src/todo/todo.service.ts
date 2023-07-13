@@ -226,6 +226,11 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
+    /**
+     * Add assignee to ToDo and return updated ToDo
+     * @param id ToDo identification
+     * @param assigneeId assignee identification
+     */
     async addAssignee(id: number, assigneeId: string): Promise<ToDo> {
         const todo = await this.findOne(id);
         const isIncluded = todo.assigneesIds.includes(assigneeId);
@@ -240,8 +245,11 @@ export class TodoService {
             todo,
         });
 
-        todo.assigneesIds = [...todo.assigneesIds, assigneeId];
-        todo.activities = [...todo.activities, activity];
+        Object.assign(todo, {
+            assigneesIds: [...todo.assigneesIds, assigneeId],
+            activities: [...todo.activities, activity],
+            lastUpdateDate: new Date(),
+        });
 
         return this.todoRepository.save(todo);
     }
