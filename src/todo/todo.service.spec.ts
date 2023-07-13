@@ -466,5 +466,21 @@ describe('TodoService', () => {
                 ]),
             });
         });
+        it('should return an error message if assignee does not exist', async () => {
+            const id = 2;
+            const assigneeId = '08b8b93a-9aa7-4fc1-8201-539e2cb35432';
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockResolvedValue(null);
+            jest.spyOn(repository, 'save').mockResolvedValue(null);
+
+            await expect(
+                service.removeAssignee(id, assigneeId),
+            ).rejects.toThrow(`${assigneeId} does not exist`);
+
+            expect(activityService.create).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
+        });
     });
 });
