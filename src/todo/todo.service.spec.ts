@@ -969,5 +969,27 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
+        it('should return todo based on page and limit quantity', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const pagination = { limit: 10, page: 2 };
+
+            await service.search(pagination);
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: {},
+                order: { title: Order.ASC },
+                take: pagination.limit,
+                skip: pagination.limit * pagination.page,
+            });
+        });
     });
 });
