@@ -6,6 +6,7 @@ import {
     Equal,
     ILike,
     In,
+    LessThanOrEqual,
     MoreThanOrEqual,
     Repository,
 } from 'typeorm';
@@ -875,6 +876,27 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { creationDate: MoreThanOrEqual(startDate) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by end date creation', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const endDate = '2023-07-14';
+            await service.search({ endDate });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { creationDate: LessThanOrEqual(endDate) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,
