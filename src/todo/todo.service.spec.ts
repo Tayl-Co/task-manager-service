@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ILike, In, Repository } from 'typeorm';
+import { Equal, ILike, In, Repository } from 'typeorm';
 import { ToDo } from '@todo/entity/todo.entity';
 import { ProjectService } from '@project/project.service';
 import { LabelService } from '@label/label.service';
@@ -697,6 +697,27 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { description: ILike(`%${description}%`) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by type', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const type = TodoTypeEnum.EPIC;
+            await service.search({ type });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { type: Equal(type) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,
