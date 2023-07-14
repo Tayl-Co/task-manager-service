@@ -723,5 +723,26 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
+        it('should search todo by status', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const status = IssueStatusEnum.REJECTED;
+            await service.search({ status });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { status: Equal(status) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
