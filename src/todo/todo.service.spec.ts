@@ -991,5 +991,26 @@ describe('TodoService', () => {
                 skip: pagination.limit * pagination.page,
             });
         });
+        it('should choose order by property', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const orderBy = 'id';
+            await service.search({ orderBy });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: {},
+                order: { [orderBy]: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
