@@ -927,5 +927,26 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
+        it('should return projects in descending order', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            await service.search({ sortOrder: Order.DESC });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: {},
+                order: { title: Order.DESC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
