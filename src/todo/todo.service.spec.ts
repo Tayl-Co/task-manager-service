@@ -765,5 +765,26 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
+        it('should search todo by pinned', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const pinned = true;
+            await service.search({ pinned });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { pinned: Equal(pinned) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
