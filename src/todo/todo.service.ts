@@ -39,8 +39,8 @@ export class TodoService {
     ) {}
 
     /**
-     * Creates a ToDo and returns the created ToDo
-     * @param todoInput ToDo data
+     * Creates a To-Do and returns the created ToDo
+     * @param todoInput To-Do data
      * @return ToDo
      */
     async create(todoInput: CreateToDoDto): Promise<ToDo> {
@@ -76,15 +76,15 @@ export class TodoService {
     }
 
     /**
-     * Returns all ToDo
+     * Returns all To-Do
      */
     async findAll(): Promise<Array<ToDo>> {
         return await this.todoRepository.find();
     }
 
     /**
-     * Returns ToDo based on id
-     * @param id ToDo identification
+     * Returns To-Do based on id
+     * @param id To-Do identification
      * @return ToDo
      */
     async findOne(id: number): Promise<ToDo> {
@@ -104,8 +104,8 @@ export class TodoService {
     }
 
     /**
-     * Remove ToDo based on id
-     * @param id ToDo identification
+     * Remove To-Do based on id
+     * @param id To-Do identification
      * @return ToDo
      */
     async remove(id: number): Promise<ToDo> {
@@ -115,9 +115,9 @@ export class TodoService {
     }
 
     /**
-     * Update the ToDo and return the updated ToDo
-     * @param id  ToDo identification
-     * @param todoInput ToDo data
+     * Update the To-Do and return the updated ToDo
+     * @param id  To-Do identification
+     * @param todoInput To-Do data
      * @return ToDo
      */
     async update(id: number, todoInput: UpdateTodoDto): Promise<ToDo> {
@@ -191,8 +191,8 @@ export class TodoService {
     }
 
     /**
-     * Add label to ToDo and return updated ToDo
-     * @param id ToDo identification
+     * Add label to To-Do and return updated ToDo
+     * @param id To-Do identification
      * @param labelId Label identification
      * @return ToDo
      */
@@ -216,8 +216,8 @@ export class TodoService {
     }
 
     /**
-     * Remove label from ToDo and return updated ToDo
-     * @param id ToDo identification
+     * Remove label from To-Do and return updated ToDo
+     * @param id To-Do identification
      * @param labelId Label identification
      * @return ToDo
      */
@@ -240,8 +240,8 @@ export class TodoService {
     }
 
     /**
-     * Add assignee to ToDo and return updated ToDo
-     * @param id ToDo identification
+     * Add assignee to To-Do and return updated ToDo
+     * @param id To-Do identification
      * @param assigneeId assignee identification
      * @return ToDo
      */
@@ -269,8 +269,8 @@ export class TodoService {
     }
 
     /**
-     * Remove assignee from ToDo and return updated ToDo
-     * @param id ToDo identification
+     * Remove assignee from To-Do and return updated To-Do
+     * @param id To-Do identification
      * @param assigneeId assignee identification
      * @return ToDo
      */
@@ -300,9 +300,16 @@ export class TodoService {
     /**
      * Returns ToDos found based on search input
      * @param searchInput
-     * @param searchInput.ids List of ToDo IDs you want to find
-     * @param searchInput.title Title of the ToDo you want to find
-     * @param searchInput.description Description of the ToDo you want to find
+     * @param searchInput.ids List of To-Do IDs you want to find
+     * @param searchInput.title To-Do Title
+     * @param searchInput.description To-Do Description
+     * @param searchInput.type To-Do Type
+     * @param searchInput.status To-Do Status
+     * @param searchInput.priority To-Do Priority
+     * @param searchInput.authorId To-Do author
+     * @param searchInput.assigneesIds To-Do assignees
+     * @param searchInput.startDate Search by the start date of creation of the To-Do
+     * @param searchInput.endDate Search by the end date of creation of the To-Do
      * @param [searchInput.sortOrder = "ASC"] Search sort order
      * @param [searchInput.page = 0] Current search page
      * @param searchInput.limit Limit of returned projects
