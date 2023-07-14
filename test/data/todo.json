@@ -16,7 +16,7 @@
     "labels": [],
     "pinned": false,
     "type": 10,
-    "parentId": "",
+    "parentId": null,
     "project": {
       "id": 1,
       "name": "Project 1",
@@ -54,7 +54,7 @@
     }],
     "pinned": false,
     "type": 10,
-    "parentId": "",
+    "parentId": null,
     "project": {
       "id": 1,
       "name": "Project 1",

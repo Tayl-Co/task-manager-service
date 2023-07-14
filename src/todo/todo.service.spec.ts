@@ -499,7 +499,7 @@ describe('TodoService', () => {
             estimatedDueDate: null,
             pinned: false,
             type: 10,
-            parentId: '',
+            parentId: null,
             projectId: 1,
         };
         it('should update title and save activity', async () => {
@@ -802,6 +802,27 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { authorId: Equal(authorId) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by parentIds', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const parentIds = [1, 2, 3];
+            await service.search({ parentIds });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { parentId: In(parentIds) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,

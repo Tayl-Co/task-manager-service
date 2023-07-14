@@ -18,7 +18,7 @@ describe('ActivityService', () => {
         description: '',
         status: 1,
         priority: 0,
-        parentId: '',
+        parentId: null,
         authorId: 'username',
         assigneesIds: [],
         creationDate: new Date('2022-12-18T17:22:37.344Z'),

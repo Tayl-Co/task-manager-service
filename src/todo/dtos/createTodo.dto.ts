@@ -40,7 +40,7 @@ export class CreateToDoDto {
     dueDate: string;
 
     @IsOptional()
-    @IsString()
-    @Field({ nullable: true, defaultValue: '' })
-    parentId: string;
+    @IsNumber()
+    @Field(() => Int, { nullable: true })
+    parentId: number;
 }

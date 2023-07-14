@@ -42,7 +42,7 @@ export class ToDo {
 
     @Column()
     @Field({ nullable: true })
-    parentId: string;
+    parentId: number;
 
     @Column()
     @Field()

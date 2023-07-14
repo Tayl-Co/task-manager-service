@@ -45,8 +45,8 @@ export class SearchTodoDto extends BaseSearchFilterDto {
 
     @IsOptional()
     @IsString({ each: true })
-    @Field(() => [String], { nullable: true })
-    parentIds?: Array<string>;
+    @Field(() => [Int], { nullable: true })
+    parentIds?: Array<number>;
 
     @IsOptional()
     @IsString()
