@@ -12,9 +12,9 @@ import {
     ArrayContains,
     Equal,
     FindOptionsOrderValue,
+    ILike,
     In,
     LessThanOrEqual,
-    Like,
     MoreThanOrEqual,
     Repository,
 } from 'typeorm';
@@ -330,10 +330,10 @@ export class TodoService {
 
         if (ids) where = { ...where, id: In(ids) };
 
-        if (title) where = { ...where, title: Like(`%${title}%`) };
+        if (title) where = { ...where, title: ILike(`%${title}%`) };
 
         if (description)
-            where = { ...where, description: Like(`%${description}%`) };
+            where = { ...where, description: ILike(`%${description}%`) };
 
         if (type) where = { ...where, type: Equal(type) };
 

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FindOptionsOrderValue, In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { ToDo } from '@todo/entity/todo.entity';
 import { ProjectService } from '@project/project.service';
 import { LabelService } from '@label/label.service';
@@ -655,6 +655,27 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { id: In(ids) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by title', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const title = 'todo 5';
+            await service.search({ title });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { title: ILike(`%${title}%`) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,
