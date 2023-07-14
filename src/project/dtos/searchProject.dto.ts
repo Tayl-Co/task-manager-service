@@ -19,7 +19,7 @@ export class SearchProjectDto extends BaseSearchFilterDto {
 
     @IsOptional()
     @IsString()
-    @Field({ nullable: true, defaultValue: '' })
+    @Field({ nullable: true })
     name?: string;
 
     @IsOptional()
