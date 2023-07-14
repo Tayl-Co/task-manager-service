@@ -3,6 +3,7 @@ import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
     ArrayContains,
+    Between,
     Equal,
     ILike,
     In,
@@ -860,7 +861,7 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
-        it('should search todo by start date creation', async () => {
+        it('should search todo by creation start date', async () => {
             jest.spyOn(repository, 'find').mockResolvedValue(
                 Promise.resolve([]),
             );
@@ -881,7 +882,7 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
-        it('should search todo by end date creation', async () => {
+        it('should search todo by creation end date', async () => {
             jest.spyOn(repository, 'find').mockResolvedValue(
                 Promise.resolve([]),
             );
@@ -897,6 +898,30 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { creationDate: LessThanOrEqual(endDate) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by creation date', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const startDate = '2023-07-10';
+            const endDate = '2023-07-14';
+            await service.search({ endDate, startDate });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: {
+                    creationDate: Between(startDate, endDate),
+                },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,

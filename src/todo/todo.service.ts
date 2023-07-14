@@ -10,6 +10,7 @@ import { Project } from '@project/entity/project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
     ArrayContains,
+    Between,
     Equal,
     FindOptionsOrderValue,
     ILike,
@@ -350,11 +351,13 @@ export class TodoService {
         if (assigneesIds)
             where = { ...where, assigneesIds: ArrayContains(assigneesIds) };
 
-        if (startDate)
+        if (startDate && endDate) {
+            where = { ...where, creationDate: Between(startDate, endDate) };
+        } else if (startDate) {
             where = { ...where, creationDate: MoreThanOrEqual(startDate) };
-
-        if (endDate)
+        } else if (endDate) {
             where = { ...where, creationDate: LessThanOrEqual(endDate) };
+        }
 
         return this.todoRepository.find({
             relations: {
