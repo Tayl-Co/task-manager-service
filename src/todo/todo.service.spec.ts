@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Equal, ILike, In, Repository } from 'typeorm';
+import { ArrayContains, Equal, ILike, In, Repository } from 'typeorm';
 import { ToDo } from '@todo/entity/todo.entity';
 import { ProjectService } from '@project/project.service';
 import { LabelService } from '@label/label.service';
@@ -823,6 +823,30 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { parentId: In(parentIds) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by assigneesIds', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const assigneesIds = [
+                '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                'acb63589-c2b6-43d8-aa06-1bc722666bf0',
+            ];
+            await service.search({ assigneesIds });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { assigneesIds: ArrayContains(assigneesIds) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,
