@@ -786,5 +786,26 @@ describe('TodoService', () => {
                 skip: 0,
             });
         });
+        it('should search todo by authorId', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const authorId = '0cc01959-066e-4d29-9105-61a6c343ad5c';
+            await service.search({ authorId });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { authorId: Equal(authorId) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
     });
 });
