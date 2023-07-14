@@ -40,7 +40,7 @@ export class ToDo {
     @Field()
     priority: number;
 
-    @Column()
+    @Column({ nullable: true })
     @Field({ nullable: true })
     parentId: number;
 

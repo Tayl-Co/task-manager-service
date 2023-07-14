@@ -1,7 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ArrayContains, Equal, ILike, In, Repository } from 'typeorm';
+import {
+    ArrayContains,
+    Equal,
+    ILike,
+    In,
+    MoreThanOrEqual,
+    Repository,
+} from 'typeorm';
 import { ToDo } from '@todo/entity/todo.entity';
 import { ProjectService } from '@project/project.service';
 import { LabelService } from '@label/label.service';
@@ -847,6 +854,27 @@ describe('TodoService', () => {
                     activities: true,
                 },
                 where: { assigneesIds: ArrayContains(assigneesIds) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
+        });
+        it('should search todo by start date creation', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const startDate = '2023-07-14';
+            await service.search({ startDate });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { creationDate: MoreThanOrEqual(startDate) },
                 order: { title: Order.ASC },
                 take: undefined,
                 skip: 0,
