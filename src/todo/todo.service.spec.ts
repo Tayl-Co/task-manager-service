@@ -589,5 +589,51 @@ describe('TodoService', () => {
                 }),
             );
         });
+        it('should update status and save activity', async () => {
+            const status = IssueStatusEnum.BLOCKED;
+            const activity = {
+                todo: todos.find(todo => todo.id === id),
+                newValue: `${status}`,
+                type: ActivityEnum.STATUS_CHANGED,
+                authorId: 'username',
+            };
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockImplementation(activity =>
+                Promise.resolve(activity),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(
+                (todo: any) => todo,
+            );
+
+            const response = await service.update(id, {
+                ...todoInput,
+                status,
+            });
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).toHaveBeenCalledTimes(1);
+            expect(activityService.create).toHaveBeenCalledWith(activity);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...activity.todo,
+                status,
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(
+                expect.objectContaining({
+                    ...activity.todo,
+                    status,
+                    activities: expect.arrayContaining([
+                        expect.objectContaining(activity),
+                    ]),
+                }),
+            );
+        });
     });
 });
