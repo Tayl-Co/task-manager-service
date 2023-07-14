@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoService } from './todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsOrderValue, In, Repository } from 'typeorm';
 import { ToDo } from '@todo/entity/todo.entity';
 import { ProjectService } from '@project/project.service';
 import { LabelService } from '@label/label.service';
@@ -12,29 +12,7 @@ import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
 import { default as data } from '../../test/data/todo.json';
 import { ActivityEnum } from '@src/common/enums/activity.enum';
-
-const todos = data.map(todo => ({
-    ...todo,
-    creationDate: new Date(todo.creationDate),
-    lastUpdateDate: todo.lastUpdateDate ? new Date(todo.lastUpdateDate) : null,
-    estimatedDueDate: todo.estimatedDueDate
-        ? new Date(todo.estimatedDueDate)
-        : null,
-    dueDate: todo.dueDate ? new Date(todo.dueDate) : null,
-}));
-
-const labels = [
-    {
-        id: 1,
-        name: 'Label 1',
-        color: '#fff',
-    },
-    {
-        id: 2,
-        name: 'Label 1',
-        color: '#fff',
-    },
-];
+import { Order } from '@src/common/enums/order.enum';
 
 describe('TodoService', () => {
     let service: TodoService;
@@ -49,6 +27,19 @@ describe('TodoService', () => {
         create: jest.fn(),
     };
     let repository: Repository<ToDo>;
+    let todos = [];
+    const labels = [
+        {
+            id: 1,
+            name: 'Label 1',
+            color: '#fff',
+        },
+        {
+            id: 2,
+            name: 'Label 1',
+            color: '#fff',
+        },
+    ];
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -70,10 +61,21 @@ describe('TodoService', () => {
             ],
         }).compile();
 
+        jest.clearAllMocks();
         service = module.get<TodoService>(TodoService);
         repository = module.get<Repository<ToDo>>(repositoryToken);
 
-        jest.clearAllMocks();
+        todos = data.map(todo => ({
+            ...todo,
+            creationDate: new Date(todo.creationDate),
+            lastUpdateDate: todo.lastUpdateDate
+                ? new Date(todo.lastUpdateDate)
+                : null,
+            estimatedDueDate: todo.estimatedDueDate
+                ? new Date(todo.estimatedDueDate)
+                : null,
+            dueDate: todo.dueDate ? new Date(todo.dueDate) : null,
+        }));
     });
 
     it('should be defined', () => {
@@ -634,6 +636,29 @@ describe('TodoService', () => {
                     ]),
                 }),
             );
+        });
+    });
+    describe('search', () => {
+        it('should search todo by ids', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const ids = [3, 4];
+            await service.search({ ids });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                relations: {
+                    project: true,
+                    references: true,
+                    labels: true,
+                    activities: true,
+                },
+                where: { id: In(ids) },
+                order: { title: Order.ASC },
+                take: undefined,
+                skip: 0,
+            });
         });
     });
 });

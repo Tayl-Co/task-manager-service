@@ -296,7 +296,18 @@ export class TodoService {
         return this.todoRepository.save(todo);
     }
 
-    search(searchInput: SearchTodoDto): Promise<Array<ToDo>> {
+    /**
+     * Returns ToDos found based on search input
+     * @param searchInput
+     * @param searchInput.ids List of ToDo IDs you want to find
+     * @param searchInput.title Title of the ToDo you want to find
+     * @param searchInput.description Description of the ToDo you want to find
+     * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.page = 0] Current search page
+     * @param searchInput.limit Limit of returned projects
+     * @return Array<ToDo>
+     */
+    async search(searchInput: SearchTodoDto): Promise<Array<ToDo>> {
         const {
             ids,
             title,
@@ -354,8 +365,8 @@ export class TodoService {
             },
             where,
             order: { [orderBy]: sortOrder as FindOptionsOrderValue },
-            take: limit,
-            skip: page * limit,
+            take: limit || undefined,
+            skip: limit ? page * limit : page,
         });
     }
 }
