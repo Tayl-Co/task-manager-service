@@ -113,6 +113,12 @@ export class TodoService {
         return await this.todoRepository.remove(todo);
     }
 
+    /**
+     * Update the ToDo and return the updated ToDo
+     * @param id  ToDo identification
+     * @param todoInput ToDo data
+     * @return ToDo
+     */
     async update(id: number, todoInput: UpdateTodoDto): Promise<ToDo> {
         const {
             title,

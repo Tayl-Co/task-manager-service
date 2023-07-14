@@ -483,4 +483,65 @@ describe('TodoService', () => {
             expect(repository.save).not.toHaveBeenCalled();
         });
     });
+    describe('update', () => {
+        let id = 1;
+        let todoInput = {
+            title: 'ToDo 1',
+            description: '',
+            status: 10,
+            priority: 10,
+            authorId: '',
+            assigneesIds: [],
+            creationDate: '1998-09-21',
+            dueDate: '',
+            estimatedDueDate: null,
+            pinned: false,
+            type: 10,
+            parentId: '',
+            projectId: 1,
+        };
+        it('should update title and save activity', async () => {
+            const title = 'ToDo 1 updated';
+            const activity = {
+                todo: todos.find(todo => todo.id === id),
+                newValue: title,
+                type: ActivityEnum.TITLE_CHANGED,
+                authorId: 'username',
+            };
+            jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
+                Promise.resolve(todos.find(todo => todo.id === id)),
+            );
+            jest.spyOn(activityService, 'create').mockImplementation(activity =>
+                Promise.resolve(activity),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(
+                (todo: any) => todo,
+            );
+
+            const response = await service.update(id, { ...todoInput, title });
+
+            expect(service.findOne).toHaveBeenCalledTimes(1);
+            expect(service.findOne).toHaveBeenCalledWith(id);
+            expect(activityService.create).toHaveBeenCalledTimes(1);
+            expect(activityService.create).toHaveBeenCalledWith(activity);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...activity.todo,
+                title,
+                activities: expect.arrayContaining([
+                    expect.objectContaining(activity),
+                ]),
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(
+                expect.objectContaining({
+                    ...activity.todo,
+                    title,
+                    activities: expect.arrayContaining([
+                        expect.objectContaining(activity),
+                    ]),
+                }),
+            );
+        });
+    });
 });
