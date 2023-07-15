@@ -181,6 +181,29 @@ describe('TodoResolver', () => {
             });
         });
     });
+    describe('addAssignee', () => {
+        it('should add assignee to To-Do', async () => {
+            const id = 1;
+            const assignee = 'a192fd6d-67c1-4090-8011-d96f83cf3e9b';
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(todoService, 'addAssignee').mockResolvedValue(
+                Promise.resolve({
+                    ...todo,
+                    assigneesIds: [...todo.assigneesIds, assignee],
+                }),
+            );
+
+            const response = await resolver.addAssignee(id, assignee);
+
+            expect(todoService.addAssignee).toHaveBeenCalledTimes(1);
+            expect(todoService.addAssignee).toHaveBeenCalledWith(id, assignee);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                assigneesIds: [...todo.assigneesIds, assignee],
+            });
+        });
+    });
     describe('findAll', () => {
         it('should return all To-Dos', async () => {
             jest.spyOn(todoService, 'findAll').mockResolvedValue(
