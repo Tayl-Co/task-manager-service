@@ -210,4 +210,18 @@ describe('TodoResolver', () => {
             expect(response).toMatchObject(todo);
         });
     });
+    describe('search', () => {
+        it('should search To-Dos', async () => {
+            jest.spyOn(todoService, 'search').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            const response = await resolver.search({});
+
+            expect(todoService.search).toHaveBeenCalledTimes(1);
+            expect(todoService.search).toHaveBeenCalledWith({});
+            expect(response).toBeDefined();
+            expect(response).toMatchObject([]);
+        });
+    });
 });
