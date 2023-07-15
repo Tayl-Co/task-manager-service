@@ -107,4 +107,21 @@ describe('TodoResolver', () => {
             expect(response).toMatchObject(todo);
         });
     });
+
+    describe('remove', () => {
+        it('should remove a To-Do', async () => {
+            const id = 1;
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(todoService, 'remove').mockResolvedValue(
+                Promise.resolve(todo),
+            );
+
+            const response = await resolver.remove(id);
+
+            expect(todoService.remove).toHaveBeenCalledTimes(1);
+            expect(todoService.remove).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(todo);
+        });
+    });
 });
