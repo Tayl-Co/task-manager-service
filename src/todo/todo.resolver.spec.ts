@@ -181,4 +181,17 @@ describe('TodoResolver', () => {
             });
         });
     });
+    describe('findAll', () => {
+        it('should return all To-Dos', async () => {
+            jest.spyOn(todoService, 'findAll').mockResolvedValue(
+                Promise.resolve(todos),
+            );
+
+            const response = await resolver.findAll();
+
+            expect(todoService.findAll).toHaveBeenCalledTimes(1);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(todos);
+        });
+    });
 });
