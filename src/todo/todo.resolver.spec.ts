@@ -19,6 +19,18 @@ describe('TodoResolver', () => {
         findOne: jest.fn(),
         search: jest.fn(),
     };
+    const labels = [
+        {
+            id: 1,
+            name: 'Label 1',
+            color: '#fff',
+        },
+        {
+            id: 2,
+            name: 'Label 1',
+            color: '#fff',
+        },
+    ];
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -122,6 +134,28 @@ describe('TodoResolver', () => {
             expect(todoService.remove).toHaveBeenCalledWith(id);
             expect(response).toBeDefined();
             expect(response).toMatchObject(todo);
+        });
+    });
+
+    describe('addLabel', () => {
+        it('should add label to To-Do', async () => {
+            const id = 1;
+            const labelId = 3;
+            const todo = todos.find(todo => todo.id === id);
+            const label = labels.find(label => label.id === labelId);
+            jest.spyOn(todoService, 'addLabel').mockResolvedValue(
+                Promise.resolve({ ...todo, labels: [...todo.labels, label] }),
+            );
+
+            const response = await resolver.addLabel(id, labelId);
+
+            expect(todoService.addLabel).toHaveBeenCalledTimes(1);
+            expect(todoService.addLabel).toHaveBeenCalledWith(id, labelId);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                labels: [...todo.labels, label],
+            });
         });
     });
 });
