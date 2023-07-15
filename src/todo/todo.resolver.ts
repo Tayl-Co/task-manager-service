@@ -34,17 +34,17 @@ export class TodoResolver {
     @Mutation(() => ToDo, { name: 'addLabel' })
     async addLabel(
         @Args('id', { type: () => Int }) id: number,
-        @Args('idLabel', { type: () => Int }) idLabel: number,
+        @Args('labelId', { type: () => Int }) labelId: number,
     ): Promise<ToDo> {
-        return await this.todoService.addLabel(id, idLabel);
+        return await this.todoService.addLabel(id, labelId);
     }
 
     @Mutation(() => ToDo, { name: 'removeLabel' })
     async removeLabel(
         @Args('id', { type: () => Int }) id: number,
-        @Args('idLabel', { type: () => Int }) idLabel: number,
+        @Args('labelId', { type: () => Int }) labelId: number,
     ): Promise<ToDo> {
-        return await this.todoService.removeLabel(id, idLabel);
+        return await this.todoService.removeLabel(id, labelId);
     }
 
     @Mutation(() => ToDo, { name: 'addAssignee' })

@@ -158,4 +158,27 @@ describe('TodoResolver', () => {
             });
         });
     });
+    describe('removeLabel', () => {
+        it('should remove label from To-Do', async () => {
+            const id = 2;
+            const labelId = 3;
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(todoService, 'removeLabel').mockResolvedValue(
+                Promise.resolve({
+                    ...todo,
+                    labels: todo.labels.filter(label => label.id !== labelId),
+                }),
+            );
+
+            const response = await resolver.removeLabel(id, labelId);
+
+            expect(todoService.removeLabel).toHaveBeenCalledTimes(1);
+            expect(todoService.removeLabel).toHaveBeenCalledWith(id, labelId);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                labels: todo.labels.filter(label => label.id !== labelId),
+            });
+        });
+    });
 });
