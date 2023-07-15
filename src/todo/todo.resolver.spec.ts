@@ -194,4 +194,20 @@ describe('TodoResolver', () => {
             expect(response).toMatchObject(todos);
         });
     });
+    describe('findOne', () => {
+        it('should return a To-Do', async () => {
+            const id = 1;
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(todoService, 'findOne').mockResolvedValue(
+                Promise.resolve(todo),
+            );
+
+            const response = await resolver.findOne(id);
+
+            expect(todoService.findOne).toHaveBeenCalledTimes(1);
+            expect(todoService.findOne).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(todo);
+        });
+    });
 });
