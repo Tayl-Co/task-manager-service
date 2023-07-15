@@ -204,6 +204,34 @@ describe('TodoResolver', () => {
             });
         });
     });
+    describe('removeAssignee', () => {
+        it('should remove assignee from To-Do', async () => {
+            const id = 1;
+            const assignee = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
+            const todo = todos.find(todo => todo.id === id);
+            jest.spyOn(todoService, 'removeAssignee').mockResolvedValue(
+                Promise.resolve({
+                    ...todo,
+                    assigneesIds: todo.assigneesIds.filter(
+                        assigneeId => assigneeId !== assignee,
+                    ),
+                }),
+            );
+
+            const response = await resolver.removeAssignee(id, assignee);
+
+            expect(todoService.removeAssignee).toHaveBeenCalledTimes(1);
+            expect(todoService.removeAssignee).toHaveBeenCalledWith(
+                id,
+                assignee,
+            );
+            expect(response).toBeDefined();
+            expect(response).toMatchObject({
+                ...todo,
+                assigneesIds: [],
+            });
+        });
+    });
     describe('findAll', () => {
         it('should return all To-Dos', async () => {
             jest.spyOn(todoService, 'findAll').mockResolvedValue(
