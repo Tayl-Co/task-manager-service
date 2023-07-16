@@ -153,6 +153,9 @@ describe('ReferenceService', () => {
             jest.spyOn(repository, 'findOne').mockResolvedValue(
                 Promise.resolve(null),
             );
+            jest.spyOn(repository, 'delete').mockResolvedValue(
+                Promise.resolve(null),
+            );
 
             await expect(service.delete(id)).rejects.toThrow(
                 `Reference ${id} not found`,

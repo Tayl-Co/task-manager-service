@@ -88,6 +88,19 @@ export class ReferenceService {
         return this.referenceRepository.save(reference);
     }
 
+    /**
+     * Returns references found based on search input
+     * @param searchInput
+     * @param searchInput.ids List of References IDs you want to find
+     * @param searchInput.toDoIds List of To-Do IDs
+     * @param searchInput.type Reference type
+     * @param searchInput.key Reference key
+     * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.orderBy = "id"] Set property to sort references
+     * @param [searchInput.page = 0] Current search page
+     * @param searchInput.limit Limit of returned projects
+     * @return Array<Reference>
+     */
     search(searchInput: SearchReferenceDto): Promise<Array<Reference>> {
         const {
             ids,

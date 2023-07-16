@@ -311,6 +311,7 @@ export class TodoService {
      * @param searchInput.startDate Search by the start date of creation of the To-Do
      * @param searchInput.endDate Search by the end date of creation of the To-Do
      * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.orderBy = "title"] Set property to sort To-Dos
      * @param [searchInput.page = 0] Current search page
      * @param searchInput.limit Limit of returned projects
      * @return Array<ToDo>
