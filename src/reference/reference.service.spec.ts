@@ -4,8 +4,9 @@ import { TodoService } from '@todo/todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Reference } from '@reference/entity/reference.entity';
 import { Repository } from 'typeorm';
-import { default as data } from '../../test/data/todo.json';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
+import { default as data } from '../../test/data/todo.json';
+import { default as referencesData } from '../../test/data/references.json';
 
 const toDos = data.map(todo => ({
     ...todo,
@@ -19,6 +20,7 @@ const toDos = data.map(todo => ({
 
 describe('ReferenceService', () => {
     let service: ReferenceService;
+    let references: Array<Reference> = [];
     const repositoryToken = getRepositoryToken(Reference);
     let repository: Repository<Reference>;
     let todoService = {
@@ -37,6 +39,11 @@ describe('ReferenceService', () => {
         jest.clearAllMocks();
         service = module.get<ReferenceService>(ReferenceService);
         repository = module.get<Repository<Reference>>(repositoryToken);
+
+        references = referencesData.map(referencesData => ({
+            ...referencesData,
+            todo: toDos.find(todo => todo.id === referencesData.todo.id),
+        }));
     });
 
     it('should be defined', () => {
@@ -80,6 +87,26 @@ describe('ReferenceService', () => {
                     todo,
                 }),
             );
+        });
+    });
+
+    describe('findOne', () => {
+        it('should return a reference', async () => {
+            const id = 1;
+            const reference = references.find(reference => reference.id === id);
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(reference),
+            );
+
+            const response = await service.findOne(id);
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { id },
+                relations: { todo: true },
+            });
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(reference);
         });
     });
 });
