@@ -39,7 +39,7 @@ export class TodoService {
     ) {}
 
     /**
-     * Creates a To-Do and returns the created ToDo
+     * Creates a To-Do and returns the created To-Do
      * @param todoInput To-Do data
      * @return ToDo
      */

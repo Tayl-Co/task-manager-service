@@ -15,6 +15,15 @@ export class ReferenceService {
         private todoService: TodoService,
     ) {}
 
+    /**
+     * Creates a Reference and returns the created Reference
+     * @param reference Reference Data
+     * @param reference.type Reference type
+     * @param reference.url Reference URL
+     * @param reference.key Reference Key
+     * @param reference.todoId To-Do identification
+     * @return Reference
+     */
     async create({ type, url, key, todoId }: ReferenceDto): Promise<Reference> {
         const todo = await this.todoService.findOne(todoId);
 
