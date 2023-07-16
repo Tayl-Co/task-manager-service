@@ -50,13 +50,13 @@ describe('ReferenceService', () => {
         expect(service).toBeDefined();
     });
 
+    const referenceInput: ReferenceDto = {
+        type: '',
+        url: 'www.google.com',
+        key: '',
+        todoId: 1,
+    };
     describe('create', () => {
-        const referenceInput: ReferenceDto = {
-            type: '',
-            url: 'www.google.com',
-            key: '',
-            todoId: 1,
-        };
         it('should create a reference', async () => {
             jest.spyOn(repository, 'create').mockImplementation(
                 (reference: Reference) => ({ id: 1, ...reference }),
@@ -163,6 +163,58 @@ describe('ReferenceService', () => {
                 relations: { todo: true },
             });
             expect(repository.delete).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('update', () => {
+        it('should update reference', async () => {
+            const id = 1;
+            const reference = references.find(reference => reference.id === id);
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(reference),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(
+                (reference: Reference) => Promise.resolve(reference),
+            );
+
+            const response = await service.update(id, referenceInput);
+
+            const { todoId, ...referenceData } = referenceInput;
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { id },
+                relations: { todo: true },
+            });
+            expect(todoService.findOne).toHaveBeenCalledTimes(1);
+            expect(todoService.findOne).toHaveBeenCalledWith(todoId);
+            expect(repository.save).toHaveBeenCalledTimes(1);
+            expect(repository.save).toHaveBeenCalledWith({
+                ...reference,
+                ...referenceData,
+            });
+            expect(response).toBeDefined();
+        });
+        it('should return an error message if Reference is not found', async () => {
+            const id = -1;
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(null),
+            );
+            jest.spyOn(repository, 'save').mockImplementation(
+                (reference: Reference) => Promise.resolve(reference),
+            );
+
+            await expect(service.update(id, referenceInput)).rejects.toThrow(
+                `Reference ${id} not found`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { id },
+                relations: { todo: true },
+            });
+            expect(todoService.findOne).not.toHaveBeenCalled();
+            expect(repository.save).not.toHaveBeenCalled();
         });
     });
 });

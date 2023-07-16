@@ -115,7 +115,7 @@ export class TodoService {
     }
 
     /**
-     * Update the To-Do and return the updated ToDo
+     * Update the To-Do and return the updated To-Do
      * @param id  To-Do identification
      * @param todoInput To-Do data
      * @return ToDo

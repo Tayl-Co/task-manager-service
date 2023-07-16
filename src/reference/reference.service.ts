@@ -66,6 +66,16 @@ export class ReferenceService {
         return reference;
     }
 
+    /**
+     * Update the Reference and return the updated Reference
+     * @param id Reference identification
+     * @param reference Reference Data
+     * @param reference.type Reference type
+     * @param reference.url Reference URL
+     * @param reference.key Reference Key
+     * @param reference.todoId To-Do identification
+     * @return Reference
+     */
     async update(
         id: number,
         { url, key, type, todoId }: ReferenceDto,
