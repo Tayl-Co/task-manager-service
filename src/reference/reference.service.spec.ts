@@ -3,7 +3,7 @@ import { ReferenceService } from './reference.service';
 import { TodoService } from '@todo/todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Reference } from '@reference/entity/reference.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { default as data } from '../../test/data/todo.json';
 import { default as referencesData } from '../../test/data/references.json';
@@ -251,6 +251,25 @@ describe('ReferenceService', () => {
             expect(repository.find).toHaveBeenCalledTimes(1);
             expect(repository.find).toHaveBeenCalledWith({
                 where: { todo: In(toDoIds) },
+                take: undefined,
+                skip: 0,
+                order: { id: Order.ASC },
+                relations: { todo: true },
+            });
+            expect(response).toBeDefined();
+        });
+        it('should search by type', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            const type = 'type 1';
+
+            const response = await service.search({ type });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: { type: ILike(`%${type}%`) },
                 take: undefined,
                 skip: 0,
                 order: { id: Order.ASC },
