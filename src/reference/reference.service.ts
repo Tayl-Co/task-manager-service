@@ -54,6 +54,11 @@ export class ReferenceService {
         return reference;
     }
 
+    /**
+     * Delete Reference based on id
+     * @param id Reference identification
+     * @return Reference
+     */
     async delete(id: number): Promise<Reference> {
         const reference = await this.findOne(id);
         await this.referenceRepository.delete(id);
