@@ -312,5 +312,22 @@ describe('ReferenceService', () => {
                 relations: { todo: true },
             });
         });
+        it('should return references based on page and limit quantity', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const pagination = { limit: 10, page: 2 };
+
+            await service.search(pagination);
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                take: pagination.limit,
+                skip: pagination.limit * pagination.page,
+                order: { id: Order.ASC },
+                relations: { todo: true },
+                where: {},
+            });
+        });
     });
 });
