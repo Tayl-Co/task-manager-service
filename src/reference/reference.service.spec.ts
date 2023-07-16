@@ -296,5 +296,21 @@ describe('ReferenceService', () => {
             });
             expect(response).toBeDefined();
         });
+        it('should choose order by property', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+            const orderBy = 'type';
+            await service.search({ orderBy });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: {},
+                take: undefined,
+                skip: 0,
+                order: { [orderBy]: Order.ASC },
+                relations: { todo: true },
+            });
+        });
     });
 });
