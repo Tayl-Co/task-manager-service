@@ -37,6 +37,11 @@ export class ReferenceService {
         return this.referenceRepository.save(reference);
     }
 
+    /**
+     * Returns Reference based on id
+     * @param id Reference identification
+     * @return Reference
+     */
     async findOne(id: number): Promise<Reference> {
         const reference = await this.referenceRepository.findOne({
             where: { id },

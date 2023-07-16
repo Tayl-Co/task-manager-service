@@ -123,4 +123,29 @@ describe('ReferenceService', () => {
             });
         });
     });
+
+    describe('delete', () => {
+        it('should delete a reference', async () => {
+            const id = 1;
+            const reference = references.find(reference => reference.id === id);
+            jest.spyOn(repository, 'findOne').mockResolvedValue(
+                Promise.resolve(reference),
+            );
+            jest.spyOn(repository, 'delete').mockResolvedValue(
+                Promise.resolve({ raw: [], affected: 1 }),
+            );
+
+            const response = await service.delete(id);
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { id },
+                relations: { todo: true },
+            });
+            expect(repository.delete).toHaveBeenCalledTimes(1);
+            expect(repository.delete).toHaveBeenCalledWith(id);
+            expect(response).toBeDefined();
+            expect(response).toMatchObject(reference);
+        });
+    });
 });
