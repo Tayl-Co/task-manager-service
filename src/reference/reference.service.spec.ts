@@ -239,5 +239,24 @@ describe('ReferenceService', () => {
             });
             expect(response).toBeDefined();
         });
+        it('should search by TodoIds', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            const toDoIds = [4, 5];
+
+            const response = await service.search({ toDoIds });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: { todo: In(toDoIds) },
+                take: undefined,
+                skip: 0,
+                order: { id: Order.ASC },
+                relations: { todo: true },
+            });
+            expect(response).toBeDefined();
+        });
     });
 });

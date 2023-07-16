@@ -22,7 +22,7 @@ export class SearchReferenceDto extends BaseSearchFilterDto {
     @IsOptional()
     @IsNumber({}, { each: true })
     @Field(() => [Int], { nullable: true })
-    idsToDo?: Array<number>;
+    toDoIds?: Array<number>;
 
     @IsString()
     @IsIn(['id', 'type', 'key', 'url'])

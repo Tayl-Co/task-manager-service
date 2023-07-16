@@ -91,7 +91,7 @@ export class ReferenceService {
     search(searchInput: SearchReferenceDto): Promise<Array<Reference>> {
         const {
             ids,
-            idsToDo,
+            toDoIds,
             type,
             key,
             sortOrder = Order.ASC,
@@ -103,7 +103,7 @@ export class ReferenceService {
 
         if (ids) where = { ...where, id: In(ids) };
 
-        if (idsToDo) where = { ...where, todo: In(idsToDo) };
+        if (toDoIds) where = { ...where, todo: In(toDoIds) };
 
         if (type) where = { ...where, type: ILike(`%${type}%`) };
 
