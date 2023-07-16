@@ -3,10 +3,11 @@ import { ReferenceService } from './reference.service';
 import { TodoService } from '@todo/todo.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Reference } from '@reference/entity/reference.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ReferenceDto } from '@reference/dtos/reference.dto';
 import { default as data } from '../../test/data/todo.json';
 import { default as referencesData } from '../../test/data/references.json';
+import { Order } from '@src/common/enums/order.enum';
 
 const toDos = data.map(todo => ({
     ...todo,
@@ -215,6 +216,28 @@ describe('ReferenceService', () => {
             });
             expect(todoService.findOne).not.toHaveBeenCalled();
             expect(repository.save).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('search', () => {
+        it('should search by Ids', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            const ids = [4, 5];
+
+            const response = await service.search({ ids });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: { id: In(ids) },
+                take: undefined,
+                skip: 0,
+                order: { id: Order.ASC },
+                relations: { todo: true },
+            });
+            expect(response).toBeDefined();
         });
     });
 });

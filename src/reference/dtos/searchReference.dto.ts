@@ -7,22 +7,22 @@ export class SearchReferenceDto extends BaseSearchFilterDto {
     @IsOptional()
     @IsNumber({}, { each: true })
     @Field(() => [Int], { nullable: true })
-    ids: Array<number>;
+    ids?: Array<number>;
 
     @IsOptional()
     @IsString()
     @Field({ nullable: true })
-    type: string;
+    type?: string;
 
     @IsOptional()
     @IsString()
     @Field({ nullable: true })
-    key: string;
+    key?: string;
 
     @IsOptional()
     @IsNumber({}, { each: true })
     @Field(() => [Int], { nullable: true })
-    idsToDo: Array<number>;
+    idsToDo?: Array<number>;
 
     @IsString()
     @IsIn(['id', 'type', 'key', 'url'])
