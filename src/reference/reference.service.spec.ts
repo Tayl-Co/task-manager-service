@@ -108,5 +108,19 @@ describe('ReferenceService', () => {
             expect(response).toBeDefined();
             expect(response).toMatchObject(reference);
         });
+        it('should return an error message error if reference is not found', async () => {
+            jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+            const id = -1;
+
+            await expect(service.findOne(id)).rejects.toThrow(
+                `Reference ${id} not found`,
+            );
+
+            expect(repository.findOne).toHaveBeenCalledTimes(1);
+            expect(repository.findOne).toHaveBeenCalledWith({
+                where: { id },
+                relations: { todo: true },
+            });
+        });
     });
 });
