@@ -277,5 +277,24 @@ describe('ReferenceService', () => {
             });
             expect(response).toBeDefined();
         });
+        it('should search by key', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            const key = 'key 1';
+
+            const response = await service.search({ key });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: { key: ILike(`%${key}%`) },
+                take: undefined,
+                skip: 0,
+                order: { id: Order.ASC },
+                relations: { todo: true },
+            });
+            expect(response).toBeDefined();
+        });
     });
 });
