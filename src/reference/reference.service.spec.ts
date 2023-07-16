@@ -345,5 +345,21 @@ describe('ReferenceService', () => {
                 relations: { todo: true },
             });
         });
+        it('should return references in descending order', async () => {
+            jest.spyOn(repository, 'find').mockResolvedValue(
+                Promise.resolve([]),
+            );
+
+            await service.search({ sortOrder: Order.DESC });
+
+            expect(repository.find).toHaveBeenCalledTimes(1);
+            expect(repository.find).toHaveBeenCalledWith({
+                where: {},
+                take: undefined,
+                skip: 0,
+                order: { id: Order.DESC },
+                relations: { todo: true },
+            });
+        });
     });
 });
