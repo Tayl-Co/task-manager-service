@@ -103,5 +103,18 @@ describe('ReferenceResolver', () => {
                 expect(response).toMatchObject(references[0]);
             });
         });
+        describe('search', () => {
+            it('should search references', async () => {
+                jest.spyOn(service, 'search').mockResolvedValue(
+                    Promise.resolve([]),
+                );
+                const searchInput = { page: 0, limit: 10 };
+                const response = await resolver.search(searchInput);
+
+                expect(service.search).toHaveBeenCalledTimes(1);
+                expect(service.search).toHaveBeenCalledWith(searchInput);
+                expect(response).toBeDefined();
+            });
+        });
     });
 });
