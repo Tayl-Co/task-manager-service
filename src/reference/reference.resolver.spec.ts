@@ -87,5 +87,21 @@ describe('ReferenceResolver', () => {
                 expect(response).toMatchObject(references[0]);
             });
         });
+        describe('delete', () => {
+            it('should delete a reference', async () => {
+                jest.spyOn(service, 'delete').mockImplementation((id: number) =>
+                    Promise.resolve(
+                        references.find(reference => reference.id === id),
+                    ),
+                );
+                const id = 1;
+                const response = await resolver.delete(id);
+
+                expect(service.delete).toHaveBeenCalledTimes(1);
+                expect(service.delete).toHaveBeenCalledWith(id);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(references[0]);
+            });
+        });
     });
 });
