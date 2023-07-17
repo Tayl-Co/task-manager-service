@@ -45,13 +45,13 @@ describe('ReferenceResolver', () => {
     });
 
     describe('mutation', () => {
+        const referenceInput: ReferenceDto = {
+            type: '',
+            url: 'www.google.com',
+            key: '',
+            todoId: 1,
+        };
         describe('create', () => {
-            const referenceInput: ReferenceDto = {
-                type: '',
-                url: 'www.google.com',
-                key: '',
-                todoId: 1,
-            };
             it('should create a reference', async () => {
                 jest.spyOn(service, 'create').mockImplementation(
                     referenceInput =>
@@ -66,6 +66,47 @@ describe('ReferenceResolver', () => {
                 expect(response).toMatchObject(
                     expect.objectContaining(referenceInput),
                 );
+            });
+        });
+        describe('update', () => {
+            it('should update a reference', async () => {
+                const id = 1;
+                jest.spyOn(service, 'update').mockImplementation(
+                    (id: number, referenceInput) => {
+                        const reference = references.find(
+                            reference => reference.id === id,
+                        );
+                        return Promise.resolve({
+                            ...reference,
+                            ...referenceInput,
+                        });
+                    },
+                );
+
+                const response = await resolver.update(id, referenceInput);
+
+                expect(service.update).toHaveBeenCalledTimes(1);
+                expect(service.update).toHaveBeenCalledWith(id, referenceInput);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(
+                    expect.objectContaining(referenceInput),
+                );
+            });
+        });
+        describe('delete', () => {
+            it('should delete a reference', async () => {
+                jest.spyOn(service, 'delete').mockImplementation((id: number) =>
+                    Promise.resolve(
+                        references.find(reference => reference.id === id),
+                    ),
+                );
+                const id = 1;
+                const response = await resolver.delete(id);
+
+                expect(service.delete).toHaveBeenCalledTimes(1);
+                expect(service.delete).toHaveBeenCalledWith(id);
+                expect(response).toBeDefined();
+                expect(response).toMatchObject(references[0]);
             });
         });
     });
@@ -83,22 +124,6 @@ describe('ReferenceResolver', () => {
 
                 expect(service.findOne).toHaveBeenCalledTimes(1);
                 expect(service.findOne).toHaveBeenCalledWith(id);
-                expect(response).toBeDefined();
-                expect(response).toMatchObject(references[0]);
-            });
-        });
-        describe('delete', () => {
-            it('should delete a reference', async () => {
-                jest.spyOn(service, 'delete').mockImplementation((id: number) =>
-                    Promise.resolve(
-                        references.find(reference => reference.id === id),
-                    ),
-                );
-                const id = 1;
-                const response = await resolver.delete(id);
-
-                expect(service.delete).toHaveBeenCalledTimes(1);
-                expect(service.delete).toHaveBeenCalledWith(id);
                 expect(response).toBeDefined();
                 expect(response).toMatchObject(references[0]);
             });
