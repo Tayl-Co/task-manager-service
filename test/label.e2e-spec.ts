@@ -9,7 +9,7 @@ describe('Label e2e Test', () => {
     let app: INestApplication;
     let httpServer: any;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
@@ -20,7 +20,7 @@ describe('Label e2e Test', () => {
         httpServer = app.getHttpServer();
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         await app.close();
     });
 
@@ -69,6 +69,82 @@ describe('Label e2e Test', () => {
             .expect(HttpStatus.OK)
             .expect({
                 data: { findOneLabel: { name: 'Label 1', color: '#FBCA04' } },
+            });
+    });
+
+    it('should delete a label', async () => {
+        const {
+            body: { data },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }`,
+            })
+            .expect(HttpStatus.OK);
+
+        const {
+            body: {
+                data: {
+                    deleteLabel: { id, name, color },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `mutation{
+                    deleteLabel(id:${data.createLabel.id}){
+                        id
+                        name
+                        color
+                    }
+                }`,
+            })
+            .expect(HttpStatus.OK);
+
+        expect({ id, name, color }).toMatchObject({
+            id: '1',
+            name: 'Label 1',
+            color: '#FBCA04',
+        });
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `query{
+                    findOneLabel(id:${id}){
+                        id
+                        name
+                        color
+                    }
+                }`,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Label ${id} not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Label ${id} not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
             });
     });
 });
