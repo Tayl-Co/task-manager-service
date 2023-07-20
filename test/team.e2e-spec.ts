@@ -238,6 +238,42 @@ describe('Team (e2e)', () => {
             });
     });
 
+    it('should remove member from Team', async () => {
+        // Adding Team in database
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    removeTeamMember(id:${team.id}, memberId:"94e2b8ec-fdf3-4bb5-a6cc-cac47775b782"){
+                        id
+                        membersIds
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    removeTeamMember: {
+                        id: '1',
+                        membersIds: ['97e321ff-1a8b-4890-9cf2-2b05a5127267'],
+                    },
+                },
+            });
+    });
+
     it('should add manager to Team', async () => {
         // Adding Team in database
         const {
