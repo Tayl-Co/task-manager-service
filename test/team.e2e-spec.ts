@@ -168,4 +168,27 @@ describe('Team (e2e)', () => {
                 },
             });
     });
+
+    it('should find all Teams', async () => {
+        const {
+            body: {
+                data: { findAllTeams },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    findAllTeams {
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK);
+
+        expect(findAllTeams).toBeDefined();
+        expect(findAllTeams.length).toEqual(0);
+    });
 });
