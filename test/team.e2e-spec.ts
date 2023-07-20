@@ -198,6 +198,46 @@ describe('Team (e2e)', () => {
             });
     });
 
+    it('should add member to Team', async () => {
+        // Adding Team in database
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addMemberToTeam(id:${team.id}, memberId:"f522b8f6-3cf8-46cc-982f-b7017dc2c22c"){
+                        id
+                        membersIds
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    addMemberToTeam: {
+                        id: '1',
+                        membersIds: [
+                            '97e321ff-1a8b-4890-9cf2-2b05a5127267',
+                            '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
+                            'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                        ],
+                    },
+                },
+            });
+    });
+
     it('should find the Team', async () => {
         // Adding Team in database
         await request(httpServer)
