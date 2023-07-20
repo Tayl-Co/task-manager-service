@@ -237,4 +237,48 @@ describe('Label e2e Test', () => {
                 },
             });
     });
+
+    it('should search labels', async () => {
+        for (let i = 0; i < 2; i++) {
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label ${i + 1}", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }`,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+            query{
+                searchLabel(searchInput:{name:"Label", page: 0, limit: 2}){
+                    name
+                    color
+                }
+            }
+        `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    searchLabel: [
+                        { name: 'Label 1', color: '#FBCA04' },
+                        { name: 'Label 2', color: '#FBCA04' },
+                    ],
+                },
+            });
+    });
 });
