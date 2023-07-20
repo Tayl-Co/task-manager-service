@@ -150,6 +150,54 @@ describe('Team (e2e)', () => {
             });
     });
 
+    it('should update a Team', async () => {
+        // Adding Team in database
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    updateTeam(id: ${team.id}, teamInput:{
+                                    name:"Update Team 1", 
+                                    managersIds:["f522b8f6-3cf8-46cc-982f-b7017dc2c22c","94e2b8ec-fdf3-4bb5-a6cc-cac47775b782"], 
+                                    membersIds: ["97e321ff-1a8b-4890-9cf2-2b05a5127267"], 
+                                    ownerId:"93a8a626-9938-40b5-9072-273cfc061c10"
+                                    }) {
+                        id
+                        name
+                        managersIds
+                        membersIds
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    updateTeam: {
+                        id: '1',
+                        name: 'Update Team 1',
+                        managersIds: [
+                            'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                            '94e2b8ec-fdf3-4bb5-a6cc-cac47775b782',
+                        ],
+                        membersIds: ['97e321ff-1a8b-4890-9cf2-2b05a5127267'],
+                    },
+                },
+            });
+    });
+
     it('should find the Team', async () => {
         // Adding Team in database
         await request(httpServer)
