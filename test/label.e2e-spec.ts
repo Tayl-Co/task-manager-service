@@ -24,6 +24,39 @@ describe('Label e2e Test', () => {
         await app.close();
     });
 
+    it('should return an error message if label not found', async () => {
+        const id = 1;
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `query{
+                    findOneLabel(id:${id}){
+                        id
+                        name
+                        color
+                    }
+                }`,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Label ${id} not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Label ${id} not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should create a new label', async () => {
         const {
             body: { data },
