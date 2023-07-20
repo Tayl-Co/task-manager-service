@@ -80,7 +80,7 @@ export class TeamResolver {
 
     @Query(() => [Team], { name: 'searchTeams' })
     async search(
-        @Args('search', { type: () => SearchFilterDto })
+        @Args('searchInput', { type: () => SearchFilterDto })
         search: SearchFilterDto,
     ) {
         return await this.teamService.search(search);

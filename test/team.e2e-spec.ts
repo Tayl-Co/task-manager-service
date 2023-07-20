@@ -92,6 +92,7 @@ describe('Team (e2e)', () => {
     });
 
     it('should delete a Team', async () => {
+        // Adding Team in database
         const {
             body: {
                 data: {
@@ -150,6 +151,7 @@ describe('Team (e2e)', () => {
     });
 
     it('should find the Team', async () => {
+        // Adding Team in database
         await request(httpServer)
             .post(ENDPOINT)
             .send({ query: createTeamMutation })
@@ -190,5 +192,50 @@ describe('Team (e2e)', () => {
 
         expect(findAllTeams).toBeDefined();
         expect(findAllTeams.length).toEqual(0);
+    });
+
+    it('should search teams', async () => {
+        // Adding Teams in database
+        for (let i = 0; i < 2; i++) {
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `mutation{
+                                createTeam(teamInput: {
+                                    name:"Team ${i + 1}", 
+                                    managersIds:["f522b8f6-3cf8-46cc-982f-b7017dc2c22c"], 
+                                    membersIds: ["97e321ff-1a8b-4890-9cf2-2b05a5127267", "94e2b8ec-fdf3-4bb5-a6cc-cac47775b782"], 
+                                    ownerId:"93a8a626-9938-40b5-9072-273cfc061c10"
+                                    }){
+                                        id
+                                    
+                                }
+                            }`,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        const {
+            body: {
+                data: { searchTeams },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `query {
+                searchTeams(searchInput: {name:"Team", page:0, limit: 2}){
+                    id
+                    name
+                }
+            }`,
+            })
+            .expect(HttpStatus.OK);
+
+        expect(searchTeams).toBeDefined();
+        expect(searchTeams.length).toEqual(2);
+        expect(searchTeams).toMatchObject([
+            { id: '1', name: 'Team 1' },
+            { id: '2', name: 'Team 2' },
+        ]);
     });
 });
