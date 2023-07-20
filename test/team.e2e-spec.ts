@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '@src/app.module';
+
+const ENDPOINT = '/api/manager/task/';
 
 const createTeamMutation = `
                             mutation{
@@ -34,6 +36,7 @@ const findOneTeamQuery = `
 
 describe('Team (e2e)', () => {
     let app: INestApplication;
+    let httpServer: any;
 
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -41,7 +44,9 @@ describe('Team (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
+        httpServer = app.getHttpServer();
     });
 
     afterEach(async () => {
@@ -55,8 +60,8 @@ describe('Team (e2e)', () => {
                     createTeam: { ...team },
                 },
             },
-        } = await request(app.getHttpServer())
-            .post('/api/manager/task/')
+        } = await request(httpServer)
+            .post(ENDPOINT)
             .send({ query: createTeamMutation })
             .expect(HttpStatus.OK);
 
@@ -72,8 +77,8 @@ describe('Team (e2e)', () => {
             projects: null,
         });
 
-        return request(app.getHttpServer())
-            .post('/api/manager/task/')
+        return request(httpServer)
+            .post(ENDPOINT)
             .send({ query: findOneTeamQuery })
             .expect(HttpStatus.OK)
             .expect({
@@ -83,6 +88,64 @@ describe('Team (e2e)', () => {
                         name: 'Team 1',
                     },
                 },
+            });
+    });
+
+    it('should delete a Team', async () => {
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        // delete a team
+        const {
+            body: {
+                data: {
+                    deleteTeam: { ...deletedTeam },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+            mutation {
+                deleteTeam(id:${team.id}){
+                    id
+                    name
+                }
+            }
+        `,
+            })
+            .expect(HttpStatus.OK);
+
+        expect(deletedTeam).toMatchObject({ id: '1', name: 'Team 1' });
+
+        // checks if the team has been deleted
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneTeamQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Team ${team.id} not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Team ${team.id} not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: { findOneTeam: null },
             });
     });
 });
