@@ -53,7 +53,7 @@ describe('Team (e2e)', () => {
         await app.close();
     });
 
-    it('Should create a new Team', async () => {
+    it('should create a new Team', async () => {
         const {
             body: {
                 data: {
@@ -146,6 +146,26 @@ describe('Team (e2e)', () => {
                     },
                 ],
                 data: { findOneTeam: null },
+            });
+    });
+
+    it('should find the Team', async () => {
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneTeamQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    findOneTeam: {
+                        id: '1',
+                        name: 'Team 1',
+                    },
+                },
             });
     });
 });
