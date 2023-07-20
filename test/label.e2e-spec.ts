@@ -187,4 +187,54 @@ describe('Label e2e Test', () => {
             .expect(HttpStatus.OK)
             .expect({ data: { findOneLabel: label } });
     });
+
+    it('should update the label', async () => {
+        const {
+            body: {
+                data: {
+                    createLabel: { ...label },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }`,
+            })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                    mutation{
+                       updateLabel(id:${label.id},labelInput:{name:"Update Label 1", color:"#FFF"}){
+                        id,
+                        name,
+                        color
+                       } 
+                    }
+                `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    updateLabel: {
+                        id: label.id,
+                        color: '#FFF',
+                        name: 'Update Label 1',
+                    },
+                },
+            });
+    });
 });
