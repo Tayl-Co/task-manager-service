@@ -57,6 +57,65 @@ describe('Label e2e Test', () => {
             });
     });
 
+    it('should return an error message if name Label already exists', async () => {
+        // Adding Label in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `,
+            })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `The Label 1 Label already exists`,
+                        extensions: {
+                            code: `${HttpStatus.CONFLICT}`,
+                            response: {
+                                statusCode: HttpStatus.CONFLICT,
+                                message: `The Label 1 Label already exists`,
+                                error: 'Conflict',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should create a new label', async () => {
         const {
             body: { data },
