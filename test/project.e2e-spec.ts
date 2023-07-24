@@ -111,4 +111,26 @@ describe('Project (e2e)', () => {
                 data: null,
             });
     });
+    it('should return an error message if Team is not found', async () => {
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Team 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Team 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
