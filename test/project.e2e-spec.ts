@@ -133,7 +133,6 @@ describe('Project (e2e)', () => {
                 data: null,
             });
     });
-
     it('should delete a Project', async () => {
         // Adding Team in database
         await request(httpServer)
@@ -163,6 +162,40 @@ describe('Project (e2e)', () => {
             .expect({
                 data: {
                     deleteProject: {
+                        id: '1',
+                        name: 'Project 1',
+                    },
+                },
+            });
+    });
+    it('should find a Project', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Adding Project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    findOneProject(id: 1){
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    findOneProject: {
                         id: '1',
                         name: 'Project 1',
                     },
