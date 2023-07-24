@@ -387,6 +387,51 @@ describe('Team (e2e)', () => {
             });
     });
 
+    it('should return an error if manager already exists', async () => {
+        // Adding Team in database
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        const managerId = 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c';
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addManagerToTeam(id:${team.id}, managerId:"f522b8f6-3cf8-46cc-982f-b7017dc2c22c"){
+                        id
+                        managersIds
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `${managerId} already exists`,
+                        extensions: {
+                            code: `${HttpStatus.CONFLICT}`,
+                            response: {
+                                statusCode: HttpStatus.CONFLICT,
+                                message: `${managerId} already exists`,
+                                error: 'Conflict',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should remove manager from Team', async () => {
         // Adding Team in database
         const {
