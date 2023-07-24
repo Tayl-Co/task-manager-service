@@ -513,6 +513,51 @@ describe('Team (e2e)', () => {
             });
     });
 
+    it('should return an error message if manager is not found', async () => {
+        // Adding Team in database
+        const {
+            body: {
+                data: {
+                    createTeam: { ...team },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        const managerId = '94e2b8ec-fdf3-4bb5-a6cc-cac47775hhh6';
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    removeTeamManager(id:${team.id}, managerId:"${managerId}"){
+                        id
+                         managersIds
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `${managerId} is not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `${managerId} is not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should find the Team', async () => {
         // Adding Team in database
         await request(httpServer)
