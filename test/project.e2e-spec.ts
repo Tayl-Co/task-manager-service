@@ -76,4 +76,39 @@ describe('Project (e2e)', () => {
                 },
             });
     });
+
+    it('should return an error message if project already exists', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        // Adding Project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `The Project 1 Project already exists`,
+                        extensions: {
+                            code: `${HttpStatus.CONFLICT}`,
+                            response: {
+                                statusCode: HttpStatus.CONFLICT,
+                                message: `The Project 1 Project already exists`,
+                                error: 'Conflict',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
