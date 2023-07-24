@@ -202,4 +202,35 @@ describe('Project (e2e)', () => {
                 },
             });
     });
+    it('should return an error message if Project is not found', async () => {
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    findOneProject(id: 1){
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Project 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Project 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
