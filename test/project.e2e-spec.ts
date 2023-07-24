@@ -133,4 +133,40 @@ describe('Project (e2e)', () => {
                 data: null,
             });
     });
+
+    it('should delete a Project', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Adding Project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+
+        const id = 1;
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    deleteProject(id: ${id}){
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    deleteProject: {
+                        id: '1',
+                        name: 'Project 1',
+                    },
+                },
+            });
+    });
 });
