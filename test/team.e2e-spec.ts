@@ -53,6 +53,35 @@ describe('Team (e2e)', () => {
         await app.close();
     });
 
+    it('should return an error message if Team already exists', async () => {
+        // adding team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `The Team 1 Team already exists`,
+                        extensions: {
+                            code: `${HttpStatus.CONFLICT}`,
+                            response: {
+                                statusCode: HttpStatus.CONFLICT,
+                                message: `The Team 1 Team already exists`,
+                                error: 'Conflict',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should create a new Team', async () => {
         const {
             body: {
