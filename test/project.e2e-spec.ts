@@ -76,6 +76,39 @@ describe('Project (e2e)', () => {
                 },
             });
     });
+    it('should update Project', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Adding Project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    updateProject(id: 1, projectInput:{
+                    name: "Updated Project",
+                    description: "Project",
+                    teamId: 1 
+                    }){
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: { updateProject: { id: '1', name: 'Updated Project' } },
+            });
+    });
     it('should return an error message if project already exists', async () => {
         // Adding Team in database
         await request(httpServer)
