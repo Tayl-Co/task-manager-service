@@ -76,7 +76,6 @@ describe('Project (e2e)', () => {
                 },
             });
     });
-
     it('should return an error message if project already exists', async () => {
         // Adding Team in database
         await request(httpServer)
@@ -232,5 +231,41 @@ describe('Project (e2e)', () => {
                 ],
                 data: null,
             });
+    });
+    it('should disable Project', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        // Adding Project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+
+        const {
+            body: {
+                data: {
+                    disableProject: { id, active },
+                },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation{
+                    disableProject(id: 1){
+                        id
+                        active
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK);
+
+        expect(id).toEqual('1');
+        expect(active).toEqual(false);
     });
 });
