@@ -268,4 +268,55 @@ describe('Project (e2e)', () => {
         expect(id).toEqual('1');
         expect(active).toEqual(false);
     });
+    it('should search Projects', async () => {
+        // Adding Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+
+        // Adding Projects in database
+        for (let i = 0; i < 2; i++) {
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `mutation {
+        createProject(projectInput:{
+            name: "Project ${i + 1}",
+            description: "Project",
+            teamId: 1,
+        }){
+            id
+            name
+            team {
+                id
+            }
+        }
+    }`,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    searchProject(searchInput: {name:"Project",page: 0, limit: 2}){
+                        id
+                        name
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    searchProject: [
+                        { id: '1', name: 'Project 1' },
+                        { id: '2', name: 'Project 2' },
+                    ],
+                },
+            });
+    });
 });

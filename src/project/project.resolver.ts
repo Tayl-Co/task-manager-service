@@ -40,7 +40,7 @@ export class ProjectResolver {
 
     @Query(() => [Project], { name: 'searchProject' })
     async search(
-        @Args('search', { type: () => SearchProjectDto })
+        @Args('searchInput', { type: () => SearchProjectDto })
         search: SearchProjectDto,
     ): Promise<Array<Project>> {
         return await this.projectService.search(search);
