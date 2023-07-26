@@ -177,4 +177,32 @@ describe('Reference (e2e)', () => {
                 data: null,
             });
     });
+
+    it('should find a reference', async () => {
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+        // Add reference in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createReferenceMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneReferenceQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    findOneReference: {
+                        id: '1',
+                        key: 'some key',
+                        type: 'some type',
+                        url: 'www.google.com',
+                    },
+                },
+            });
+    });
 });
