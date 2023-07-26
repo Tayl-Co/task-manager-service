@@ -16,6 +16,7 @@ export class CreateToDoDto {
     title: string;
 
     @IsString()
+    @IsOptional()
     @Field({ nullable: true, defaultValue: '' })
     description: string;
 
@@ -25,6 +26,7 @@ export class CreateToDoDto {
     type: number;
 
     @IsArray()
+    @IsOptional()
     @IsString({ each: true })
     @Field(() => [String], { nullable: true, defaultValue: [] })
     assigneesIds: Array<string>;
