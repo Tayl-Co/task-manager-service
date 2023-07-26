@@ -282,4 +282,39 @@ describe('Reference (e2e)', () => {
                 },
             });
     });
+
+    it('should update a reference', async () => {
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+        // Add reference in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createReferenceMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    updateReference(id:1, referenceInput:{
+                         type: "updated type",
+                         key: "some key",
+                         url: "www.google.com",
+                         todoId: 1
+                    }){
+                        id
+                        type
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: { updateReference: { id: '1', type: 'updated type' } },
+            });
+    });
 });
