@@ -117,4 +117,64 @@ describe('Reference (e2e)', () => {
                 data: null,
             });
     });
+
+    it('should delete a reference', async () => {
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+        // Add reference in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createReferenceMutation })
+            .expect(HttpStatus.OK);
+
+        // delete reference
+        const {
+            body: {
+                data: { deleteReference },
+            },
+        } = await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    deleteReference(id:1){
+                        id
+                        type
+                        key
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK);
+
+        expect(deleteReference).toMatchObject({
+            id: '1',
+            type: 'some type',
+            key: 'some key',
+        });
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneReferenceQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Reference 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Reference 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
