@@ -228,4 +228,58 @@ describe('Reference (e2e)', () => {
                 data: null,
             });
     });
+
+    it('should search references', async () => {
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+        // Add references in database
+        for (let i = 0; i < 2; i++) {
+            const itemNumber = i + 1;
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `
+                mutation {
+                createReference(referenceInput:{
+                    type: "type ${itemNumber}",
+                        key: "key ${itemNumber}",
+                        url: "www.google.com",
+                        todoId: 1
+                }){
+                    id
+                    type
+                    key
+                }
+            }
+                `,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    searchReference(searchInput:{
+                        type: "type 2",
+                        page:0,
+                        limit: 2
+                    }){
+                        id
+                        type
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    searchReference: [{ id: '2', type: 'type 2' }],
+                },
+            });
+    });
 });
