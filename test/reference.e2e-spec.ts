@@ -205,4 +205,27 @@ describe('Reference (e2e)', () => {
                 },
             });
     });
+
+    it('should return an error if reference is not found', async () => {
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneReferenceQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `Reference 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `Reference 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
