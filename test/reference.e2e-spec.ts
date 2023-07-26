@@ -94,4 +94,27 @@ describe('Reference (e2e)', () => {
             .expect(HttpStatus.OK)
             .expect({ data: { findOneReference: createReference } });
     });
+
+    it('should return an error message if todoId is not found', async () => {
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createReferenceMutation })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `ToDo 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `ToDo 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
