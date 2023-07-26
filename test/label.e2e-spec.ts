@@ -2,8 +2,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@src/app.module';
 import request from 'supertest';
-
-const ENDPOINT = '/api/manager/task/';
+import { ENDPOINT } from './common/constant/endpoint.constant';
 
 describe('Label e2e Test', () => {
     let app: INestApplication;

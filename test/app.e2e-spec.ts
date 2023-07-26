@@ -13,7 +13,7 @@ describe(ENDPOINT, () => {
     let app: INestApplication;
     let httpServer: any;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
@@ -24,7 +24,7 @@ describe(ENDPOINT, () => {
         httpServer = app.getHttpServer();
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         await app.close();
     });
 
