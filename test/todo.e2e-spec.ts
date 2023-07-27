@@ -520,6 +520,7 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+
     it('should add assignee on To-Do', async () => {
         // Add Team in database
         await request(httpServer)
@@ -574,6 +575,68 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+
+    it('should return an error message if assigneeId is already exists', async () => {
+        const assigneeId = 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c';
+        const addAssigneeMutation = ` mutation {
+                    addToDoAssignee(id: 1, assigneeId: "${assigneeId}" ){
+                       id
+                       assigneesIds
+                       activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        } 
+                    }
+                }`;
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: addAssigneeMutation,
+            })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: addAssigneeMutation,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `${assigneeId} already exists`,
+                        extensions: {
+                            code: `${HttpStatus.CONFLICT}`,
+                            response: {
+                                statusCode: HttpStatus.CONFLICT,
+                                message: `${assigneeId} already exists`,
+                                error: 'Conflict',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
+
     it('should remove assignee from To-Do', async () => {
         // Add Team in database
         await request(httpServer)
