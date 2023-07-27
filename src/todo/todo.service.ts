@@ -193,7 +193,7 @@ export class TodoService {
     }
 
     /**
-     * Add label to To-Do and return updated ToDo
+     * Add label to To-Do and return updated To-Do
      * @param id To-Do identification
      * @param labelId Label identification
      * @return ToDo
@@ -218,7 +218,7 @@ export class TodoService {
     }
 
     /**
-     * Remove label from To-Do and return updated ToDo
+     * Remove label from To-Do and return updated To-Do
      * @param id To-Do identification
      * @param labelId Label identification
      * @return ToDo
@@ -242,7 +242,7 @@ export class TodoService {
     }
 
     /**
-     * Add assignee to To-Do and return updated ToDo
+     * Add assignee to To-Do and return updated To-Do
      * @param id To-Do identification
      * @param assigneeId assignee identification
      * @return ToDo

@@ -520,4 +520,57 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+    it('should add assignee on To-Do', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addToDoAssignee(id: 1, assigneeId: "id"){
+                       id
+                       assigneesIds
+                       activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        } 
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    addToDoAssignee: {
+                        id: '1',
+                        assigneesIds: ['id'],
+                        activities: [
+                            {
+                                id: '1',
+                                authorId: 'username',
+                                type: ActivityEnum.ASSIGNEE_ADDED,
+                                newValue: `id`,
+                            },
+                        ],
+                    },
+                },
+            });
+    });
 });

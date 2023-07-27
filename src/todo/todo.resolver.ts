@@ -47,7 +47,7 @@ export class TodoResolver {
         return await this.todoService.removeLabel(id, labelId);
     }
 
-    @Mutation(() => ToDo, { name: 'addAssignee' })
+    @Mutation(() => ToDo, { name: 'addToDoAssignee' })
     async addAssignee(
         @Args('id', { type: () => Int }) id: number,
         @Args('assigneeId', { type: () => String }) assigneeId: string,
