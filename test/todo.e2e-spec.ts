@@ -257,4 +257,52 @@ describe('To-Do (e2e)', () => {
                 data: null,
             });
     });
+
+    it('should search a To-Dos', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        for (let i = 0; i < 3; i++) {
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `
+                  mutation {
+                    createToDo(todoInput:{
+                        title: "To-Do ${i + 1}",
+                        type: ${TodoTypeEnum.ISSUE},
+                        projectId: 1
+                    }){
+                        id
+                        title
+                    }
+                  }
+                `,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query{
+                    searchToDo(searchInput:{title: "To-Do 1",page:0, limit:1}){
+                    id
+                    title
+                }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({ data: { searchToDo: [{ id: '1', title: 'To-Do 1' }] } });
+    });
 });
