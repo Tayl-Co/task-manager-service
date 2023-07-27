@@ -542,7 +542,7 @@ describe('To-Do (e2e)', () => {
             .send({
                 query: `
                 mutation {
-                    addToDoAssignee(id: 1, assigneeId: "id"){
+                    addToDoAssignee(id: 1, assigneeId: "f522b8f6-3cf8-46cc-982f-b7017dc2c22c"){
                        id
                        assigneesIds
                        activities {
@@ -560,13 +560,95 @@ describe('To-Do (e2e)', () => {
                 data: {
                     addToDoAssignee: {
                         id: '1',
-                        assigneesIds: ['id'],
+                        assigneesIds: ['f522b8f6-3cf8-46cc-982f-b7017dc2c22c'],
                         activities: [
                             {
                                 id: '1',
                                 authorId: 'username',
                                 type: ActivityEnum.ASSIGNEE_ADDED,
-                                newValue: `id`,
+                                newValue:
+                                    'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                            },
+                        ],
+                    },
+                },
+            });
+    });
+    it('should remove assignee from To-Do', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+        //Add assignee on To-Do
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addToDoAssignee(id: 1, assigneeId: "f522b8f6-3cf8-46cc-982f-b7017dc2c22c"){
+                       id
+                       assigneesIds
+                       activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        } 
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    removeToDoAssignee(id: 1, assigneeId: "f522b8f6-3cf8-46cc-982f-b7017dc2c22c"){
+                       id
+                       assigneesIds
+                       activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        } 
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    removeToDoAssignee: {
+                        id: '1',
+                        assigneesIds: [],
+                        activities: [
+                            {
+                                id: '1',
+                                authorId: 'username',
+                                type: ActivityEnum.ASSIGNEE_ADDED,
+                                newValue:
+                                    'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
+                            },
+                            {
+                                id: '2',
+                                authorId: 'username',
+                                type: ActivityEnum.ASSIGNEE_REMOVED,
+                                newValue:
+                                    'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
                             },
                         ],
                     },
