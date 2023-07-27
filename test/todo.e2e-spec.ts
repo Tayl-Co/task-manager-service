@@ -439,4 +439,85 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+
+    it('should remove Label from To-Do', async () => {
+        // Add Label in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createLabelMutation })
+            .expect(HttpStatus.OK);
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        // Add Label on To-Do
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addToDoLabel(id: 1, labelId: 1){
+                        id
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    removeToDoLabel(id: 1, labelId: 1){
+                        id
+                        labels {
+                            id
+                        }
+                        activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        }
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    removeToDoLabel: {
+                        id: '1',
+                        labels: [],
+                        activities: [
+                            {
+                                id: '1',
+                                authorId: 'username',
+                                type: ActivityEnum.LABEL_ADDED,
+                                newValue: `1`,
+                            },
+                            {
+                                id: '2',
+                                authorId: 'username',
+                                type: ActivityEnum.LABEL_REMOVED,
+                                newValue: `1`,
+                            },
+                        ],
+                    },
+                },
+            });
+    });
 });
