@@ -234,4 +234,27 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+
+    it('should return an error message if To-Do is not found', async () => {
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: findOneToDoQuery })
+            .expect(HttpStatus.OK)
+            .expect({
+                errors: [
+                    {
+                        message: `ToDo 1 not found`,
+                        extensions: {
+                            code: `${HttpStatus.NOT_FOUND}`,
+                            response: {
+                                statusCode: HttpStatus.NOT_FOUND,
+                                message: `ToDo 1 not found`,
+                                error: 'Not Found',
+                            },
+                        },
+                    },
+                ],
+                data: null,
+            });
+    });
 });
