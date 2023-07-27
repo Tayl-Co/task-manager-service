@@ -104,14 +104,16 @@ export class TodoService {
     }
 
     /**
-     * Remove To-Do based on id
+     * Delete To-Do based on id
      * @param id To-Do identification
      * @return ToDo
      */
-    async remove(id: number): Promise<ToDo> {
+    async delete(id: number): Promise<ToDo> {
         const todo = await this.findOne(id);
 
-        return await this.todoRepository.remove(todo);
+        await this.todoRepository.delete(id);
+
+        return todo;
     }
 
     /**

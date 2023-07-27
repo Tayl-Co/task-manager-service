@@ -18,8 +18,8 @@ export class TodoResolver {
     }
 
     @Mutation(() => ToDo, { name: 'deleteToDo' })
-    async remove(@Args('id', { type: () => Int }) id: number): Promise<ToDo> {
-        return await this.todoService.remove(id);
+    async delete(@Args('id', { type: () => Int }) id: number): Promise<ToDo> {
+        return await this.todoService.delete(id);
     }
 
     @Mutation(() => ToDo, { name: 'updateToDo' })

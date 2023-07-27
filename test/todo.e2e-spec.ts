@@ -114,4 +114,37 @@ describe('To-Do (e2e)', () => {
                 },
             });
     });
+
+    it('should delete a To-Do', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    deleteToDo(id: 1){
+                        id
+                        title
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({ data: { deleteToDo: { id: '1', title: 'To-Do 1' } } });
+    });
 });
