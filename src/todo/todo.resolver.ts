@@ -63,7 +63,7 @@ export class TodoResolver {
         return await this.todoService.removeAssignee(id, assigneeId);
     }
 
-    @Query(() => [ToDo], { name: 'findAll' })
+    @Query(() => [ToDo], { name: 'findAllToDo' })
     async findAll(): Promise<Array<ToDo>> {
         return await this.todoService.findAll();
     }

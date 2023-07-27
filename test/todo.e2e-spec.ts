@@ -147,4 +147,59 @@ describe('To-Do (e2e)', () => {
             .expect(HttpStatus.OK)
             .expect({ data: { deleteToDo: { id: '1', title: 'To-Do 1' } } });
     });
+
+    it('should find all To-Dos', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        for (let i = 0; i < 2; i++) {
+            await request(httpServer)
+                .post(ENDPOINT)
+                .send({
+                    query: `
+                  mutation {
+                    createToDo(todoInput:{
+                        title: "To-Do ${i + 1}",
+                        type: ${TodoTypeEnum.ISSUE},
+                        projectId: 1
+                    }){
+                        id
+                        title
+                    }
+                  }
+                `,
+                })
+                .expect(HttpStatus.OK);
+        }
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                query {
+                    findAllToDo{
+                        id
+                        title
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    findAllToDo: [
+                        { id: '1', title: 'To-Do 1' },
+                        { id: '2', title: 'To-Do 2' },
+                    ],
+                },
+            });
+    });
 });
