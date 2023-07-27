@@ -31,7 +31,7 @@ export class TodoResolver {
         return await this.todoService.update(id, todoInput);
     }
 
-    @Mutation(() => ToDo, { name: 'addLabel' })
+    @Mutation(() => ToDo, { name: 'addToDoLabel' })
     async addLabel(
         @Args('id', { type: () => Int }) id: number,
         @Args('labelId', { type: () => Int }) labelId: number,
@@ -39,7 +39,7 @@ export class TodoResolver {
         return await this.todoService.addLabel(id, labelId);
     }
 
-    @Mutation(() => ToDo, { name: 'removeLabel' })
+    @Mutation(() => ToDo, { name: 'removeToDoLabel' })
     async removeLabel(
         @Args('id', { type: () => Int }) id: number,
         @Args('labelId', { type: () => Int }) labelId: number,

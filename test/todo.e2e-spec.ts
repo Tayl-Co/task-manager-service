@@ -6,6 +6,7 @@ import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 import request from 'supertest';
 import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
 import { PriorityEnum } from '@src/common/enums/priority.enum';
+import { ActivityEnum } from '@src/common/enums/activity.enum';
 
 const createTeamMutation = `
                             mutation{
@@ -59,6 +60,21 @@ const findOneToDoQuery = `
         }
     }
 `;
+
+const createLabelMutation = `
+                        mutation{
+                            createLabel(
+                                labelInput:{
+                                    name:"Label 1", 
+                                    color: "#FBCA04"
+                                    })
+                                {
+                                    id
+                                    name
+                                    color
+                                }
+                        }
+                    `;
 
 describe('To-Do (e2e)', () => {
     let app: INestApplication;
@@ -357,5 +373,70 @@ describe('To-Do (e2e)', () => {
             })
             .expect(HttpStatus.OK)
             .expect({ data: { searchToDo: [{ id: '1', title: 'To-Do 1' }] } });
+    });
+
+    it('should add Label on To-Do', async () => {
+        // Add Label in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createLabelMutation })
+            .expect(HttpStatus.OK);
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    addToDoLabel(id: 1, labelId: 1){
+                        id
+                        labels {
+                            id
+                            name
+                            color
+                        }
+                        activities {
+                            id
+                            authorId
+                            type
+                            newValue
+                        }
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    addToDoLabel: {
+                        id: '1',
+                        labels: [
+                            { id: '1', name: 'Label 1', color: '#FBCA04' },
+                        ],
+                        activities: [
+                            {
+                                id: '1',
+                                authorId: 'username',
+                                type: ActivityEnum.LABEL_ADDED,
+                                newValue: `1`,
+                            },
+                        ],
+                    },
+                },
+            });
     });
 });
