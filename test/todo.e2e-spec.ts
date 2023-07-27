@@ -4,6 +4,8 @@ import { AppModule } from '@src/app.module';
 import { ENDPOINT } from './common/constant/endpoint.constant';
 import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 import request from 'supertest';
+import { IssueStatusEnum } from '@src/common/enums/issueStatus.enum';
+import { PriorityEnum } from '@src/common/enums/priority.enum';
 
 const createTeamMutation = `
                             mutation{
@@ -110,6 +112,57 @@ describe('To-Do (e2e)', () => {
                         id: '1',
                         title: 'To-Do 1',
                         type: TodoTypeEnum.ISSUE,
+                    },
+                },
+            });
+    });
+
+    it('should update a To-Do', async () => {
+        // Add Team in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createTeamMutation })
+            .expect(HttpStatus.OK);
+        // Add project in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createProjectMutation })
+            .expect(HttpStatus.OK);
+        // Add To-Do in database
+        await request(httpServer)
+            .post(ENDPOINT)
+            .send({ query: createToDoMutation })
+            .expect(HttpStatus.OK);
+
+        return request(httpServer)
+            .post(ENDPOINT)
+            .send({
+                query: `
+                mutation {
+                    updateToDo(id: 1, todoInput:{
+                         title: "To-Do 1",
+                         type: ${TodoTypeEnum.USER_STORY},
+                         projectId: 1,
+                         status: ${IssueStatusEnum.IN_PROGRESS},
+                         pinned: false,
+                         priority:${PriorityEnum.CRITICAL}
+                    }){
+                        id
+                        type
+                        status
+                        priority
+                    }
+                }
+            `,
+            })
+            .expect(HttpStatus.OK)
+            .expect({
+                data: {
+                    updateToDo: {
+                        id: '1',
+                        type: TodoTypeEnum.USER_STORY,
+                        status: IssueStatusEnum.IN_PROGRESS,
+                        priority: PriorityEnum.CRITICAL,
                     },
                 },
             });
