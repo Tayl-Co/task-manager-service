@@ -636,6 +636,7 @@ describe('To-Do (e2e)', () => {
                 data: null,
             });
     });
+
     it('should return an error message if assigneeId is not found', async () => {
         const assigneeId = 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c';
         // Add Team in database
