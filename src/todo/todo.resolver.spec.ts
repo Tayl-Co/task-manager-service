@@ -9,7 +9,7 @@ describe('TodoResolver', () => {
     let todos = [];
     let todoService = {
         create: jest.fn(),
-        remove: jest.fn(),
+        delete: jest.fn(),
         update: jest.fn(),
         addLabel: jest.fn(),
         removeLabel: jest.fn(),
@@ -120,18 +120,18 @@ describe('TodoResolver', () => {
             });
         });
 
-        describe('remove', () => {
-            it('should remove a To-Do', async () => {
+        describe('delete', () => {
+            it('should delete a To-Do', async () => {
                 const id = 1;
                 const todo = todos.find(todo => todo.id === id);
-                jest.spyOn(todoService, 'remove').mockResolvedValue(
+                jest.spyOn(todoService, 'delete').mockResolvedValue(
                     Promise.resolve(todo),
                 );
 
-                const response = await resolver.remove(id);
+                const response = await resolver.delete(id);
 
-                expect(todoService.remove).toHaveBeenCalledTimes(1);
-                expect(todoService.remove).toHaveBeenCalledWith(id);
+                expect(todoService.delete).toHaveBeenCalledTimes(1);
+                expect(todoService.delete).toHaveBeenCalledWith(id);
                 expect(response).toBeDefined();
                 expect(response).toMatchObject(todo);
             });
