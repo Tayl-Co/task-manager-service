@@ -36,14 +36,19 @@
 
 #### E2E Test -
    1. First, create a test database
-   2. Define in the .env file the name of the test database
-      ```console 
-      TYPEORM_TEST_DATABASE=database_test
-      ```
-   3. Run the test
+   2. Create an env file named ".env.test"
+   3. Use the [default.env](./default.env) with an example
+   4. Run the test
       ```console
         npm run test:e2e
       ```
 
 #### Unit Test -
-
+   1. Navigate to the project folder
+      ```console
+      cd <rootfolder>/task-manager-service
+        ```
+   2. Run the test command
+      ```console
+      npm run test
+      ```
