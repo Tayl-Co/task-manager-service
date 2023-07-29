@@ -45,4 +45,8 @@ export class CreateToDoDto {
     @IsNumber()
     @Field(() => Int, { nullable: true })
     parentId: number;
+
+    @IsOptional()
+    @IsString()
+    authorId?: string;
 }

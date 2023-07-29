@@ -23,6 +23,8 @@ import { default as data } from '../../test/data/todo.json';
 import { ActivityEnum } from '@src/common/enums/activity.enum';
 import { Order } from '@src/common/enums/order.enum';
 
+const authorId = 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c';
+
 describe('TodoService', () => {
     let service: TodoService;
     const repositoryToken = getRepositoryToken(ToDo);
@@ -101,6 +103,7 @@ describe('TodoService', () => {
                 dueDate: '2023-09-21',
                 type: TodoTypeEnum.TASK,
                 projectId: 1,
+                authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
             };
             const project = projects.find(
                 project => project.id === toDoInput.projectId,
@@ -144,7 +147,7 @@ describe('TodoService', () => {
                 dueDate: new Date(toDoInput.dueDate),
                 status: IssueStatusEnum.OPEN,
                 priority: PriorityEnum.LOW,
-                authorId: 'username',
+                authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
                 project,
             });
             expect(repository.save).toHaveBeenCalledTimes(1);
@@ -238,7 +241,7 @@ describe('TodoService', () => {
             const labelId = 1;
             const todo = todos.find(todo => todo.id === id);
             const activity = {
-                authorId: 'username',
+                authorId,
                 type: ActivityEnum.LABEL_ADDED,
                 newValue: `${labelId}`,
                 todo,
@@ -257,7 +260,7 @@ describe('TodoService', () => {
                 Promise.resolve(todo),
             );
 
-            const response = await service.addLabel(id, labelId);
+            const response = await service.addLabel(id, { labelId, authorId });
 
             const { date, ...activityInput } = activity;
 
@@ -293,9 +296,9 @@ describe('TodoService', () => {
                 Promise.resolve(todo),
             );
 
-            await expect(service.addLabel(id, 2)).rejects.toThrow(
-                `ToDo ${id} not found`,
-            );
+            await expect(
+                service.addLabel(id, { labelId: 2, authorId }),
+            ).rejects.toThrow(`ToDo ${id} not found`);
 
             expect(labelService.findOne).not.toHaveBeenCalled();
             expect(activityService.create).not.toHaveBeenCalled();
@@ -308,7 +311,7 @@ describe('TodoService', () => {
             const labelId = 4;
             const todo = todos.find(todo => todo.id === id);
             const activity = {
-                authorId: 'username',
+                authorId,
                 type: ActivityEnum.LABEL_REMOVED,
                 newValue: `${labelId}`,
                 todo,
@@ -323,7 +326,10 @@ describe('TodoService', () => {
                 Promise.resolve(todo),
             );
 
-            const response = await service.removeLabel(id, labelId);
+            const response = await service.removeLabel(id, {
+                labelId,
+                authorId,
+            });
 
             expect(service.findOne).toHaveBeenCalledTimes(1);
             expect(service.findOne).toHaveBeenCalledWith(id);
@@ -360,9 +366,9 @@ describe('TodoService', () => {
                 Promise.resolve(todo),
             );
 
-            await expect(service.removeLabel(id, labelId)).rejects.toThrow(
-                `ToDo ${id} not found`,
-            );
+            await expect(
+                service.removeLabel(id, { labelId, authorId }),
+            ).rejects.toThrow(`ToDo ${id} not found`);
 
             expect(service.findOne).toHaveBeenCalledTimes(1);
             expect(service.findOne).toHaveBeenCalledWith(id);
@@ -376,7 +382,7 @@ describe('TodoService', () => {
             const assigneeId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
             const todo = todos.find(todo => todo.id === id);
             const activity = {
-                authorId: 'username',
+                authorId,
                 type: ActivityEnum.ASSIGNEE_ADDED,
                 newValue: assigneeId,
                 todo,
@@ -391,7 +397,10 @@ describe('TodoService', () => {
                 (todo: any) => todo,
             );
 
-            const response = await service.addAssignee(id, assigneeId);
+            const response = await service.addAssignee(id, {
+                assigneeId,
+                authorId,
+            });
 
             expect(service.findOne).toHaveBeenCalledTimes(1);
             expect(service.findOne).toHaveBeenCalledWith(id);
@@ -425,9 +434,9 @@ describe('TodoService', () => {
             jest.spyOn(activityService, 'create').mockResolvedValue(null);
             jest.spyOn(repository, 'save').mockResolvedValue(null);
 
-            await expect(service.addAssignee(id, assigneeId)).rejects.toThrow(
-                `${assigneeId} already exists`,
-            );
+            await expect(
+                service.addAssignee(id, { authorId, assigneeId }),
+            ).rejects.toThrow(`${assigneeId} already exists`);
 
             expect(activityService.create).not.toHaveBeenCalled();
             expect(repository.save).not.toHaveBeenCalled();
@@ -439,7 +448,7 @@ describe('TodoService', () => {
             const assigneeId = '08b8b93a-9aa7-4fc1-8201-539e2cb33830';
             const todo = todos.find(todo => todo.id === id);
             const activity = {
-                authorId: 'username',
+                authorId,
                 type: ActivityEnum.ASSIGNEE_REMOVED,
                 newValue: assigneeId,
                 todo,
@@ -454,7 +463,10 @@ describe('TodoService', () => {
                 (todo: any) => todo,
             );
 
-            const response = await service.removeAssignee(id, assigneeId);
+            const response = await service.removeAssignee(id, {
+                assigneeId,
+                authorId,
+            });
 
             expect(service.findOne).toHaveBeenCalledTimes(1);
             expect(service.findOne).toHaveBeenCalledWith(id);
@@ -487,7 +499,7 @@ describe('TodoService', () => {
             jest.spyOn(repository, 'save').mockResolvedValue(null);
 
             await expect(
-                service.removeAssignee(id, assigneeId),
+                service.removeAssignee(id, { assigneeId, authorId }),
             ).rejects.toThrow(`${assigneeId} does not exist`);
 
             expect(activityService.create).not.toHaveBeenCalled();
@@ -501,7 +513,6 @@ describe('TodoService', () => {
             description: '',
             status: 10,
             priority: 10,
-            authorId: '',
             assigneesIds: [],
             creationDate: '1998-09-21',
             dueDate: '',
@@ -510,6 +521,7 @@ describe('TodoService', () => {
             type: 10,
             parentId: null,
             projectId: 1,
+            authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
         };
         it('should update title and save activity', async () => {
             const title = 'ToDo 1 updated';
@@ -517,7 +529,7 @@ describe('TodoService', () => {
                 todo: todos.find(todo => todo.id === id),
                 newValue: title,
                 type: ActivityEnum.TITLE_CHANGED,
-                authorId: 'username',
+                authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
             };
             jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
                 Promise.resolve(todos.find(todo => todo.id === id)),
@@ -560,7 +572,7 @@ describe('TodoService', () => {
                 todo: todos.find(todo => todo.id === id),
                 newValue: newDueDate?.toISOString(),
                 type: ActivityEnum.DEADLINE_CHANGED,
-                authorId: 'username',
+                authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
             };
             jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
                 Promise.resolve(todos.find(todo => todo.id === id)),
@@ -606,7 +618,7 @@ describe('TodoService', () => {
                 todo: todos.find(todo => todo.id === id),
                 newValue: `${status}`,
                 type: ActivityEnum.STATUS_CHANGED,
-                authorId: 'username',
+                authorId: 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
             };
             jest.spyOn(service, 'findOne').mockImplementation((id: number) =>
                 Promise.resolve(todos.find(todo => todo.id === id)),

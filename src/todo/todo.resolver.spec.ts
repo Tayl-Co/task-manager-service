@@ -4,6 +4,8 @@ import { TodoService } from '@todo/todo.service';
 import { TodoTypeEnum } from '@src/common/enums/todoType.enum';
 import { default as data } from '../../test/data/todo.json';
 
+const authorId = 'f522b8f6-3cf8-46cc-982f-b7017dc2c22c';
+
 describe('TodoResolver', () => {
     let resolver: TodoResolver;
     let todos = [];
@@ -78,10 +80,13 @@ describe('TodoResolver', () => {
                         ...toDoInput,
                     }),
                 );
-                const response = await resolver.create(toDoInput);
+                const response = await resolver.create(authorId, toDoInput);
 
                 expect(todoService.create).toHaveBeenCalledTimes(1);
-                expect(todoService.create).toHaveBeenCalledWith(toDoInput);
+                expect(todoService.create).toHaveBeenCalledWith({
+                    ...toDoInput,
+                    authorId,
+                });
                 expect(response).toBeDefined();
             });
         });
@@ -111,10 +116,13 @@ describe('TodoResolver', () => {
                     return Promise.resolve(todo);
                 });
 
-                const response = await resolver.update(id, todoInput);
+                const response = await resolver.update(authorId, id, todoInput);
 
                 expect(todoService.update).toHaveBeenCalledTimes(1);
-                expect(todoService.update).toHaveBeenCalledWith(id, todoInput);
+                expect(todoService.update).toHaveBeenCalledWith(id, {
+                    ...todoInput,
+                    authorId,
+                });
                 expect(response).toBeDefined();
                 expect(response).toMatchObject(todo);
             });
@@ -150,10 +158,13 @@ describe('TodoResolver', () => {
                     }),
                 );
 
-                const response = await resolver.addLabel(id, labelId);
+                const response = await resolver.addLabel(authorId, id, labelId);
 
                 expect(todoService.addLabel).toHaveBeenCalledTimes(1);
-                expect(todoService.addLabel).toHaveBeenCalledWith(id, labelId);
+                expect(todoService.addLabel).toHaveBeenCalledWith(id, {
+                    labelId,
+                    authorId,
+                });
                 expect(response).toBeDefined();
                 expect(response).toMatchObject({
                     ...todo,
@@ -175,13 +186,17 @@ describe('TodoResolver', () => {
                     }),
                 );
 
-                const response = await resolver.removeLabel(id, labelId);
-
-                expect(todoService.removeLabel).toHaveBeenCalledTimes(1);
-                expect(todoService.removeLabel).toHaveBeenCalledWith(
+                const response = await resolver.removeLabel(
+                    authorId,
                     id,
                     labelId,
                 );
+
+                expect(todoService.removeLabel).toHaveBeenCalledTimes(1);
+                expect(todoService.removeLabel).toHaveBeenCalledWith(id, {
+                    labelId,
+                    authorId,
+                });
                 expect(response).toBeDefined();
                 expect(response).toMatchObject({
                     ...todo,
@@ -201,13 +216,17 @@ describe('TodoResolver', () => {
                     }),
                 );
 
-                const response = await resolver.addAssignee(id, assignee);
-
-                expect(todoService.addAssignee).toHaveBeenCalledTimes(1);
-                expect(todoService.addAssignee).toHaveBeenCalledWith(
+                const response = await resolver.addAssignee(
+                    authorId,
                     id,
                     assignee,
                 );
+
+                expect(todoService.addAssignee).toHaveBeenCalledTimes(1);
+                expect(todoService.addAssignee).toHaveBeenCalledWith(id, {
+                    assigneeId: assignee,
+                    authorId,
+                });
                 expect(response).toBeDefined();
                 expect(response).toMatchObject({
                     ...todo,
@@ -229,13 +248,17 @@ describe('TodoResolver', () => {
                     }),
                 );
 
-                const response = await resolver.removeAssignee(id, assignee);
-
-                expect(todoService.removeAssignee).toHaveBeenCalledTimes(1);
-                expect(todoService.removeAssignee).toHaveBeenCalledWith(
+                const response = await resolver.removeAssignee(
+                    authorId,
                     id,
                     assignee,
                 );
+
+                expect(todoService.removeAssignee).toHaveBeenCalledTimes(1);
+                expect(todoService.removeAssignee).toHaveBeenCalledWith(id, {
+                    assigneeId: assignee,
+                    authorId,
+                });
                 expect(response).toBeDefined();
                 expect(response).toMatchObject({
                     ...todo,

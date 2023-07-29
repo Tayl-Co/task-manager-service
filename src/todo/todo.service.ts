@@ -28,6 +28,8 @@ import { UpdateTodoDto } from '@todo/dtos/updateTodo.dto';
 import { Activity } from '@activity/entity/activity.entity';
 import { SearchTodoDto } from '@todo/dtos/searchTodo.dto';
 import { Order } from '@src/common/enums/order.enum';
+import { AssigneeDto } from '@todo/dtos/Assignee.dto';
+import { ToDoLabelDto } from '@todo/dtos/ToDoLabel.dto';
 
 @Injectable()
 export class TodoService {
@@ -52,6 +54,7 @@ export class TodoService {
             dueDate,
             type,
             projectId,
+            authorId,
         } = todoInput;
         let project: Project | null = null;
 
@@ -69,7 +72,7 @@ export class TodoService {
             type,
             status: IssueStatusEnum.OPEN,
             priority: PriorityEnum.LOW,
-            authorId: 'username', // TODO: Remove username mock
+            authorId,
         });
 
         return this.todoRepository.save(todo);
@@ -134,6 +137,7 @@ export class TodoService {
             pinned,
             estimatedDueDate,
             assigneesIds,
+            authorId,
         } = todoInput;
         let activities: Array<Activity> = [];
         const todo = await this.findOne(id);
@@ -145,7 +149,7 @@ export class TodoService {
                     todo,
                     newValue: title,
                     type: ActivityEnum.TITLE_CHANGED,
-                    authorId: 'username',
+                    authorId,
                 }),
             );
         }
@@ -156,7 +160,7 @@ export class TodoService {
                     todo,
                     newValue: newDueDate?.toISOString(),
                     type: ActivityEnum.DEADLINE_CHANGED,
-                    authorId: 'username',
+                    authorId,
                 }),
             );
         }
@@ -167,7 +171,7 @@ export class TodoService {
                     todo,
                     newValue: `${status}`,
                     type: ActivityEnum.STATUS_CHANGED,
-                    authorId: 'username',
+                    authorId,
                 }),
             );
         }
@@ -195,14 +199,19 @@ export class TodoService {
     /**
      * Add label to To-Do and return updated To-Do
      * @param id To-Do identification
-     * @param labelId Label identification
+     * @param labelInput
+     * @param labelInput.labelId Label identification
+     * @param labelInput.authorId Author identification
      * @return ToDo
      */
-    async addLabel(id: number, labelId: number): Promise<ToDo> {
+    async addLabel(
+        id: number,
+        { labelId, authorId }: ToDoLabelDto,
+    ): Promise<ToDo> {
         const todo = await this.findOne(id);
         const label = await this.labelService.findOne(labelId);
         const activity = await this.activityService.create({
-            authorId: 'username',
+            authorId,
             type: ActivityEnum.LABEL_ADDED,
             newValue: `${labelId}`,
             todo,
@@ -220,13 +229,18 @@ export class TodoService {
     /**
      * Remove label from To-Do and return updated To-Do
      * @param id To-Do identification
-     * @param labelId Label identification
+     * @param labelInput
+     * @param labelInput.labelId Label identification
+     * @param labelInput.authorId Author identification
      * @return ToDo
      */
-    async removeLabel(id: number, labelId: number): Promise<ToDo> {
+    async removeLabel(
+        id: number,
+        { labelId, authorId }: ToDoLabelDto,
+    ): Promise<ToDo> {
         const todo = await this.findOne(id);
         const activity = await this.activityService.create({
-            authorId: 'username',
+            authorId,
             type: ActivityEnum.LABEL_REMOVED,
             newValue: `${labelId}`,
             todo,
@@ -244,10 +258,15 @@ export class TodoService {
     /**
      * Add assignee to To-Do and return updated To-Do
      * @param id To-Do identification
-     * @param assigneeId assignee identification
+     * @param assigneeInput
+     * @param assigneeInput.assigneeId assignee identification
+     * @param assigneeInput.authorId Author identification
      * @return ToDo
      */
-    async addAssignee(id: number, assigneeId: string): Promise<ToDo> {
+    async addAssignee(
+        id: number,
+        { assigneeId, authorId }: AssigneeDto,
+    ): Promise<ToDo> {
         const todo = await this.findOne(id);
         const isIncluded = todo.assigneesIds.includes(assigneeId);
 
@@ -255,7 +274,7 @@ export class TodoService {
             throw new ConflictException(`${assigneeId} already exists`);
 
         const activity = await this.activityService.create({
-            authorId: 'username',
+            authorId,
             type: ActivityEnum.ASSIGNEE_ADDED,
             newValue: assigneeId,
             todo,
@@ -273,10 +292,15 @@ export class TodoService {
     /**
      * Remove assignee from To-Do and return updated To-Do
      * @param id To-Do identification
-     * @param assigneeId assignee identification
+     * @param assigneeInput
+     * @param assigneeInput.assigneeId assignee identification
+     * @param assigneeInput.authorId Author identification
      * @return ToDo
      */
-    async removeAssignee(id: number, assigneeId: string): Promise<ToDo> {
+    async removeAssignee(
+        id: number,
+        { assigneeId, authorId }: AssigneeDto,
+    ): Promise<ToDo> {
         const todo = await this.findOne(id);
         const isIncluded = todo.assigneesIds.includes(assigneeId);
 
@@ -284,7 +308,7 @@ export class TodoService {
             throw new NotFoundException(`${assigneeId} does not exist`);
 
         const activity = await this.activityService.create({
-            authorId: 'username',
+            authorId,
             type: ActivityEnum.ASSIGNEE_REMOVED,
             newValue: assigneeId,
             todo,

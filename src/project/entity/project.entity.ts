@@ -10,7 +10,6 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Team } from '@team/entity/team.entity';
 import { ToDo } from '@todo/entity/todo.entity';
 
-//TODO: Add property issues
 @ObjectType()
 @Entity()
 export class Project {

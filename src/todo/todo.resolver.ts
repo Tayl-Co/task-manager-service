@@ -4,6 +4,7 @@ import { ToDo } from '@todo/entity/todo.entity';
 import { CreateToDoDto } from '@todo/dtos/createTodo.dto';
 import { UpdateTodoDto } from '@todo/dtos/updateTodo.dto';
 import { SearchTodoDto } from '@todo/dtos/searchTodo.dto';
+import { User } from '@src/common/decorator/user.decorator';
 
 @Resolver()
 export class TodoResolver {
@@ -11,10 +12,14 @@ export class TodoResolver {
 
     @Mutation(() => ToDo, { name: 'createToDo' })
     async create(
+        @User('id') userId: string,
         @Args('todoInput', { type: () => CreateToDoDto })
         todoInput: CreateToDoDto,
     ): Promise<ToDo> {
-        return await this.todoService.create(todoInput);
+        return await this.todoService.create({
+            ...todoInput,
+            authorId: userId,
+        });
     }
 
     @Mutation(() => ToDo, { name: 'deleteToDo' })
@@ -24,43 +29,63 @@ export class TodoResolver {
 
     @Mutation(() => ToDo, { name: 'updateToDo' })
     async update(
+        @User('id') userId: string,
         @Args('id', { type: () => Int }) id: number,
         @Args('todoInput', { type: () => UpdateTodoDto })
         todoInput: UpdateTodoDto,
     ): Promise<ToDo> {
-        return await this.todoService.update(id, todoInput);
+        return await this.todoService.update(id, {
+            ...todoInput,
+            authorId: userId,
+        });
     }
 
     @Mutation(() => ToDo, { name: 'addToDoLabel' })
     async addLabel(
+        @User('id') userId: string,
         @Args('id', { type: () => Int }) id: number,
         @Args('labelId', { type: () => Int }) labelId: number,
     ): Promise<ToDo> {
-        return await this.todoService.addLabel(id, labelId);
+        return await this.todoService.addLabel(id, {
+            labelId,
+            authorId: userId,
+        });
     }
 
     @Mutation(() => ToDo, { name: 'removeToDoLabel' })
     async removeLabel(
+        @User('id') userId: string,
         @Args('id', { type: () => Int }) id: number,
         @Args('labelId', { type: () => Int }) labelId: number,
     ): Promise<ToDo> {
-        return await this.todoService.removeLabel(id, labelId);
+        return await this.todoService.removeLabel(id, {
+            labelId,
+            authorId: userId,
+        });
     }
 
     @Mutation(() => ToDo, { name: 'addToDoAssignee' })
     async addAssignee(
+        @User('id') userId: string,
         @Args('id', { type: () => Int }) id: number,
         @Args('assigneeId', { type: () => String }) assigneeId: string,
     ): Promise<ToDo> {
-        return await this.todoService.addAssignee(id, assigneeId);
+        return await this.todoService.addAssignee(id, {
+            assigneeId,
+            authorId: userId,
+        });
     }
 
     @Mutation(() => ToDo, { name: 'removeToDoAssignee' })
     async removeAssignee(
+        @User('id') userId: string,
         @Args('id', { type: () => Int }) id: number,
         @Args('assigneeId', { type: () => String }) assigneeId: string,
     ): Promise<ToDo> {
-        return await this.todoService.removeAssignee(id, assigneeId);
+        return await this.todoService.removeAssignee(id, {
+            assigneeId,
+            authorId: userId,
+        });
     }
 
     @Query(() => [ToDo], { name: 'findAllToDo' })
