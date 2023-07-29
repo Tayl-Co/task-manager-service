@@ -25,7 +25,7 @@ import { Activity } from '@activity/entity/activity.entity';
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: `.env.${process.env.NODE_ENV}`,
+            envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
         }),
         GraphQLModule.forRoot<ApolloDriverConfig>({
             path: '/api/manager/task/',
@@ -39,8 +39,7 @@ import { Activity } from '@activity/entity/activity.entity';
             useFactory: (config: ConfigService) => {
                 return {
                     type: 'postgres',
-                    dropSchema:
-                        config.get<string>('TYPEORM_DROP_SCHEMA') === 'true',
+                    dropSchema: config.get<string>('NODE_ENV') === 'test',
                     host: config.get<string>('TYPEORM_HOST'),
                     port: config.get<number>('TYPEORM_PORT'),
                     username: config.get<string>('TYPEORM_USERNAME'),
