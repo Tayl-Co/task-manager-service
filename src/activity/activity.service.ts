@@ -11,6 +11,11 @@ export class ActivityService {
         private activityRepository: Repository<Activity>,
     ) {}
 
+    /**
+     * Creates an activity and returns the creates activity
+     * @param activity Activity Data
+     * @return Activity created
+     */
     create(activity: ActivityDto): Promise<Activity> {
         const newActivity = this.activityRepository.create({
             ...activity,

@@ -16,6 +16,11 @@ export class LabelService {
         @InjectRepository(Label) private labelRepository: Repository<Label>,
     ) {}
 
+    /**
+     * Creates a Label and returns the created Label
+     * @param labelInput Label Data
+     * @return Label created
+     */
     async create(labelInput: LabelDto): Promise<Label> {
         const label = await this.labelRepository.findOne({
             where: { name: Equal(labelInput.name) },
@@ -31,6 +36,11 @@ export class LabelService {
         return this.labelRepository.save(newLabel);
     }
 
+    /**
+     * Returns label based on id
+     * @param id Label identification
+     * @return Label
+     */
     async findOne(id: number): Promise<Label> {
         const label = await this.labelRepository.findOneBy({ id });
 
@@ -39,6 +49,11 @@ export class LabelService {
         return label;
     }
 
+    /**
+     * Delete label based on id
+     * @param id Label identification
+     * @return Label
+     */
     async delete(id: number): Promise<Label> {
         const label = await this.findOne(id);
         await this.labelRepository.delete(id);
@@ -46,6 +61,12 @@ export class LabelService {
         return label;
     }
 
+    /**
+     * Update the label and returns the updated label
+     * @param id Label identification
+     * @param labelInput Label data
+     * @return Label
+     */
     async update(id: number, labelInput: LabelDto): Promise<Label> {
         const label = await this.findOne(id);
         Object.assign(label, labelInput);
@@ -53,6 +74,18 @@ export class LabelService {
         return this.labelRepository.save(label);
     }
 
+    /**
+     * Returns labels found based on search input
+     * @param searchInput
+     * @param searchInput.ids List of label IDs you want to find
+     * @param searchInput.name Name of the label you want to find
+     * @param searchInput.color Color of the label you want to find
+     * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.orderBy = "name"] Set property to sort Labels
+     * @param [searchInput.page = 0] Current search page
+     * @param searchInput.limit Limit of returned projects
+     * @param searchInput
+     */
     search(searchInput: SearchLabelDto): Promise<Array<Label>> {
         const {
             ids,

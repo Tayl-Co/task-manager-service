@@ -53,6 +53,7 @@ export class ProjectService {
      * @param searchInput.description Description of the project you want to find
      * @param searchInput.active Search for active or non-active products
      * @param [searchInput.sortOrder = "ASC"] Search sort order
+     * @param [searchInput.orderBy = "name"] Set property to sort Projects
      * @param [searchInput.page = 0] Current search page
      * @param searchInput.limit Limit of returned projects
      * @return Array<Project>
@@ -118,7 +119,7 @@ export class ProjectService {
     }
 
     /**
-     * Update the project and return the updated project
+     * Update the project and returns the updated project
      * @param id Project identification
      * @param project Project Data
      * @param project.name Project name
