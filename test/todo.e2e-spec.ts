@@ -430,7 +430,7 @@ describe('To-Do (e2e)', () => {
                         activities: [
                             {
                                 id: '1',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.LABEL_ADDED,
                                 newValue: `1`,
                             },
@@ -505,13 +505,13 @@ describe('To-Do (e2e)', () => {
                         activities: [
                             {
                                 id: '1',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.LABEL_ADDED,
                                 newValue: `1`,
                             },
                             {
                                 id: '2',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.LABEL_REMOVED,
                                 newValue: `1`,
                             },
@@ -565,7 +565,7 @@ describe('To-Do (e2e)', () => {
                         activities: [
                             {
                                 id: '1',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.ASSIGNEE_ADDED,
                                 newValue:
                                     'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
@@ -756,14 +756,14 @@ describe('To-Do (e2e)', () => {
                         activities: [
                             {
                                 id: '1',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.ASSIGNEE_ADDED,
                                 newValue:
                                     'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
                             },
                             {
                                 id: '2',
-                                authorId: 'username',
+                                authorId: 'unknown',
                                 type: ActivityEnum.ASSIGNEE_REMOVED,
                                 newValue:
                                     'f522b8f6-3cf8-46cc-982f-b7017dc2c22c',
