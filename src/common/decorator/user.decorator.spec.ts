@@ -1,4 +1,7 @@
 import { getUser } from '@src/common/decorator/user.decorator';
+import { GqlExecutionContext } from '@nestjs/graphql';
+
+jest.mock('@nestjs/graphql');
 
 const ctxMock: any = {
     switchToHttp: () => ({
@@ -14,6 +17,13 @@ describe('User decorator', () => {
     });
 
     it('should return an unknown value if user not exists', () => {
+        jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
+            (): any => ({
+                getContext: () => ({
+                    user: undefined,
+                }),
+            }),
+        );
         const user = getUser('id', ctxMock);
 
         expect(user).toBeDefined();
@@ -21,13 +31,15 @@ describe('User decorator', () => {
     });
 
     it('should return userid if id exists', async () => {
-        jest.spyOn(ctxMock, 'switchToHttp').mockImplementation(() => ({
-            getRequest: (): any => ({
-                user: {
-                    id: '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
-                },
+        jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
+            (): any => ({
+                getContext: () => ({
+                    user: {
+                        id: '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+                    },
+                }),
             }),
-        }));
+        );
 
         const userId = getUser('id', ctxMock);
 
@@ -40,11 +52,13 @@ describe('User decorator', () => {
             id: '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
             name: 'Rodrigo',
         };
-        jest.spyOn(ctxMock, 'switchToHttp').mockImplementation(() => ({
-            getRequest: (): any => ({
-                user,
+        jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
+            (): any => ({
+                getContext: () => ({
+                    user,
+                }),
             }),
-        }));
+        );
 
         const userId = getUser('age', ctxMock);
 
