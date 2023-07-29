@@ -6,7 +6,7 @@ export const getUser = (data?: string, ctx?: ExecutionContext) => {
 
     if (!user) return 'unknown';
 
-    return data ? user[data] : user;
+    return data && user[data] ? user[data] : user;
 };
 
 export const User = createParamDecorator(getUser);

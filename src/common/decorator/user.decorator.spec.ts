@@ -34,4 +34,21 @@ describe('User decorator', () => {
         expect(userId).toBeDefined();
         expect(userId).toEqual('08b8b93a-9aa7-4fc1-8201-539e2cb33830');
     });
+
+    it('should return user object if data not found', async () => {
+        const user = {
+            id: '08b8b93a-9aa7-4fc1-8201-539e2cb33830',
+            name: 'Rodrigo',
+        };
+        jest.spyOn(ctxMock, 'switchToHttp').mockImplementation(() => ({
+            getRequest: (): any => ({
+                user,
+            }),
+        }));
+
+        const userId = getUser('age', ctxMock);
+
+        expect(userId).toBeDefined();
+        expect(userId).toMatchObject(user);
+    });
 });
